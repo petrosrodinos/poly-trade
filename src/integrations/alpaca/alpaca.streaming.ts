@@ -39,20 +39,6 @@ export class AlpacaStreamingService {
         this.wsClients.set(symbol, clients);
     }
 
-    broadcastQuote(symbol: string, quote: any): void {
-        const clients = this.wsClients.get(symbol) || [];
-        clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({
-                    symbol,
-                    bidPrice: quote.bp,
-                    askPrice: quote.ap,
-                    timestamp: quote.t
-                }));
-            }
-        });
-    }
-
     async streamQuotes(symbol: string): Promise<void> {
         const ws = await this.connectWebSocket();
 
@@ -70,6 +56,20 @@ export class AlpacaStreamingService {
         });
 
         await this.subscribeToStock(symbol, ws);
+    }
+
+    broadcastQuote(symbol: string, quote: any): void {
+        const clients = this.wsClients.get(symbol) || [];
+        clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({
+                    symbol,
+                    bidPrice: quote.bp,
+                    askPrice: quote.ap,
+                    timestamp: quote.t
+                }));
+            }
+        });
     }
 
     removeClient(symbol: string, ws: WebSocket): void {
