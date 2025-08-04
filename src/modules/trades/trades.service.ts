@@ -1,13 +1,12 @@
 import { AlpacaStreamingService } from '../../integrations/alpaca/alpaca.streaming';
-import { getAlpacaConfig } from '../../integrations/alpaca/alpaca.config';
 import { WebSocket } from 'ws';
 
 export class TradesService {
     private activeStreams: Set<string> = new Set();
-    alpacaStreamingService: AlpacaStreamingService;
+    private alpacaStreamingService: AlpacaStreamingService;
 
     constructor() {
-        this.alpacaStreamingService = new AlpacaStreamingService(getAlpacaConfig());
+        this.alpacaStreamingService = new AlpacaStreamingService();
     }
 
     async subscribeToStock(symbol: string, ws: WebSocket): Promise<void> {

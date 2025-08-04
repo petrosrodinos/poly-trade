@@ -1,15 +1,30 @@
 import { WebSocket } from 'ws';
-import { AlpacaConfig } from './alpaca.config';
+import { AlpacaConfig, getAlpacaConfig } from './alpaca.config';
+import { AlpacaStreamingType } from './alpaca.interface';
 
 
 export class AlpacaStreamingService {
+    private config: AlpacaConfig;
     private wsClients: Map<string, WebSocket[]> = new Map();
-    private wsUrl: string = 'wss://stream.data.alpaca.markets/v2/test';
 
-    constructor(private config: AlpacaConfig) { }
+    private wsTestUrl: string = 'wss://stream.data.alpaca.markets/v2/test';
+    private wsStocksUrl: string = 'wss://stream.data.alpaca.markets/v2/iex  ';
+    private wsCryptoUrl: string = 'wss://stream.data.alpaca.markets/v1beta3/crypto/us';
 
-    async connectWebSocket(): Promise<WebSocket> {
-        const ws = new WebSocket(this.wsUrl);
+    private wsUrls: Map<string, string> = new Map([
+        ['test', this.wsTestUrl],
+        ['stocks', this.wsStocksUrl],
+        ['crypto', this.wsCryptoUrl]
+    ]);
+
+    constructor() {
+        this.config = getAlpacaConfig();
+
+    }
+
+    async connectWebSocket(type: AlpacaStreamingType = 'stocks'): Promise<WebSocket> {
+        const wsUrl = this.wsUrls.get(type) || '';
+        const ws = new WebSocket(wsUrl);
 
         ws.on('open', () => {
             ws.send(JSON.stringify({
@@ -25,7 +40,7 @@ export class AlpacaStreamingService {
     async subscribeToStock(symbol: string, ws: WebSocket): Promise<void> {
         ws.on('message', (data: string) => {
             const message = JSON.parse(data);
-            console.log(message);
+            // console.log(message);
             if (message[0]?.T === 'success' && message[0]?.msg === 'authenticated') {
                 ws.send(JSON.stringify({
                     action: 'subscribe',

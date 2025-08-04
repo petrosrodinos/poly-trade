@@ -22,7 +22,9 @@
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@integrations/*": ["src/integrations/*"],
+      "@modules/*": ["src/modules/*"]
     }
   },
   "include": ["src/**/*"],

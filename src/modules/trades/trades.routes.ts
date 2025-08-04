@@ -9,8 +9,10 @@ const tradingBotController = new TradingBotController();
 
 router.get('/stream', tradesController.streamStockPrice);
 
-router.post('/bot/start/:symbol', tradingBotController.startBot);
-router.post('/bot/stop/:symbol', tradingBotController.stopBot);
-router.get('/bot/status/:symbol', tradingBotController.streamBotStatus);
+router.post('/bot/start', tradingBotController.startBot);
+router.post('/bot/stop', tradingBotController.stopBot);
+router.get('/bot/status', tradingBotController.streamBotStatus);
+router.get('/account/status', tradingBotController.getAccountStatus);
+router.get('/position', tradingBotController.getPositionInfo);
 
 export { router as tradesRouter };
