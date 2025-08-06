@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { TradesController } from './streaming/streaming.controller';
+import { AlpacaStreamingController } from './streaming/streaming.controller';
 import { TradingBotController } from './bot/trading-bot.controller';
 import { TradingSymbolsService } from './symbols/trading-symbols.service';
 
 const router = Router();
 
-const tradesController = new TradesController();
+const tradesController = new AlpacaStreamingController();
 const tradingBotController = new TradingBotController();
 const tradingSymbolsService = new TradingSymbolsService();
 

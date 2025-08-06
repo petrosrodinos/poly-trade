@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { TradesService } from './streaming.service';
 
-export class TradesController {
+export class AlpacaStreamingController {
     tradesService: TradesService;
 
     constructor() {

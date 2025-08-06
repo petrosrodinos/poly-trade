@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { usersRouter } from './modules/users/users.routes';
 import { alpacaRouter } from './modules/trades/alpaca/alpaca.routes';
+import { binanceRouter } from './modules/trades/binance/binance.routes';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/users', usersRouter);
 app.use('/api/alpaca', alpacaRouter);
+app.use('/api/binance', binanceRouter);
 
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
