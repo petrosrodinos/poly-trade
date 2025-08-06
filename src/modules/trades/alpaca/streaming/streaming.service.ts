@@ -1,4 +1,4 @@
-import { AlpacaStreamingService } from '../../integrations/alpaca/alpaca.streaming';
+import { AlpacaStreamingService } from '../../../../integrations/alpaca/services/alpaca-streaming.service';
 import { WebSocket } from 'ws';
 
 export class TradesService {

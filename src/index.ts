@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { usersRouter } from './modules/users/users.routes';
-import { tradesRouter } from './modules/trades/trades.routes';
+import { alpacaRouter } from './modules/trades/alpaca/alpaca.routes';
 
 dotenv.config();
 
@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/users', usersRouter);
-app.use('/api/trades', tradesRouter);
+app.use('/api/alpaca', alpacaRouter);
 
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });

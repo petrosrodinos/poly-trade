@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
-import { WebSocket } from 'ws';
+import { AlpacaStreamingType } from '@/integrations/alpaca/alpaca.interfaces';
 import { TradingBotService } from './trading-bot.service';
-import { AlpacaStreamingType } from '@/integrations/alpaca/alpaca.interface';
 
 export class TradingBotController {
     tradingBotService: TradingBotService;

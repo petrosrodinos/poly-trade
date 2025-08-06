@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
-import { AlpacaConfig, getAlpacaConfig } from './alpaca.config';
-import { AlpacaStreamingType } from './alpaca.interface';
+import { AlpacaConfig, getAlpacaConfig } from '../alpaca.config';
+import { AlpacaStreamingType } from '../alpaca.interfaces';
 
 
 export class AlpacaStreamingService {
@@ -55,7 +55,16 @@ export class AlpacaStreamingService {
     }
 
     async streamQuotes(symbol: string): Promise<void> {
-        const ws = await this.connectWebSocket();
+
+        let type: AlpacaStreamingType = 'stocks';
+
+        if (symbol.includes("/")) {
+            type = 'crypto'
+        } else {
+            type = 'stocks'
+        }
+
+        const ws = await this.connectWebSocket(type);
 
         ws.on('message', (data: string) => {
             const messages = JSON.parse(data);

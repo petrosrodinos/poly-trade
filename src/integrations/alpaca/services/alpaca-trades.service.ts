@@ -1,6 +1,6 @@
-import { AccountException, InsufficientBalanceException, TradingException } from "../../modules/trades/errors";
-import { AlpacaClient } from "./alpaca.client";
-import { AlpacaAccount, AlpacaPosition } from "./alpaca.interface";
+import { AccountException, InsufficientBalanceException, TradingException } from "../../../modules/trades/alpaca/errors";
+import { AlpacaClient } from "../alpaca.client";
+import { AlpacaAccount, AlpacaPosition } from "../alpaca.interfaces";
 
 export class AlpacaService {
     alpacaClient: AlpacaClient;
@@ -29,42 +29,84 @@ export class AlpacaService {
         }
     }
 
-    async validateBalance(symbol: string, side: 'buy' | 'sell', qty: number): Promise<void> {
+    async validateBalance(symbol: string, side: 'buy' | 'sell', orderValue: number, qty?: number): Promise<void> {
         const account = await this.getAccount();
 
         if (side === 'buy') {
             const buyingPower = parseFloat(account.buying_power);
-            if (buyingPower <= 0) {
-                throw new InsufficientBalanceException(symbol, qty, buyingPower);
+            if (buyingPower < orderValue) {
+                throw new InsufficientBalanceException(symbol, qty || 0, buyingPower);
             }
         } else if (side === 'sell') {
             const position = await this.getPosition(symbol);
             if (!position) {
-                throw new InsufficientBalanceException(symbol, qty, 0);
+                throw new InsufficientBalanceException(symbol, qty || 0, 0);
             }
 
             const availableQty = parseFloat(position.qty);
-            if (availableQty < qty) {
+            if (qty && availableQty < qty) {
                 throw new InsufficientBalanceException(symbol, qty, availableQty);
             }
         }
     }
 
-    async openPosition(symbol: string, side: 'buy' | 'sell'): Promise<void> {
-        const qty = 1;
-
+    async getLatestPrice(symbol: string): Promise<number> {
         try {
-            await this.validateBalance(symbol, side, qty);
+            const quote = await this.alpacaClient.getClient().getLatestQuote(symbol);
 
-            await this.alpacaClient.getClient().createOrder({
+            if (quote && quote.BidPrice && quote.AskPrice) {
+                return (quote.BidPrice + quote.AskPrice) / 2;
+            }
+
+            throw new Error('No price data available');
+        } catch (error) {
+            console.error(`Error fetching price for ${symbol}:`, error);
+            const isCrypto = symbol.includes('/');
+            return isCrypto ? 1.0 : 100.0;
+        }
+    }
+
+    private calculateOrderSize(symbol: string, price: number, side: 'buy' | 'sell'): { qty?: number; notional?: number } {
+        const isCrypto = symbol.includes('/');
+        const minOrderValue = 10;
+
+        if (side === 'buy') {
+            if (isCrypto) {
+                return { notional: minOrderValue };
+            } else {
+                const qty = Math.floor(minOrderValue / price);
+                return { qty: Math.max(qty, 1) };
+            }
+        } else {
+            return { qty: 1 };
+        }
+    }
+
+    async openPosition(symbol: string, side: 'buy' | 'sell', currentPrice?: number): Promise<void> {
+        try {
+            const price = currentPrice || await this.getLatestPrice(symbol);
+            const orderConfig = this.calculateOrderSize(symbol, price, side);
+            const orderValue = orderConfig.notional || (orderConfig.qty! * price);
+
+            await this.validateBalance(symbol, side, orderValue, orderConfig.qty);
+
+            const orderParams: any = {
                 symbol,
-                qty,
                 side,
                 type: 'market',
                 time_in_force: 'gtc'
-            });
+            };
 
-            console.log(`Opened ${side} position for ${symbol}`);
+            if (orderConfig.qty) {
+                orderParams.qty = orderConfig.qty;
+            }
+            if (orderConfig.notional) {
+                orderParams.notional = orderConfig.notional;
+            }
+
+            await this.alpacaClient.getClient().createOrder(orderParams);
+
+            console.log(`Opened ${side} position for ${symbol} (value: $${orderValue.toFixed(2)})`);
         } catch (error: any) {
             if (error instanceof InsufficientBalanceException) {
                 console.warn(`Cannot open ${side} position for ${symbol}: ${error.message}`);
@@ -78,7 +120,7 @@ export class AlpacaService {
                 if (errorData.code === 40310000) {
                     throw new InsufficientBalanceException(
                         errorData.symbol || symbol,
-                        qty,
+                        0,
                         parseFloat(errorData.available || '0')
                     );
                 }

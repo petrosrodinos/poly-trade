@@ -1,6 +1,6 @@
-import { AlpacaStreamingService } from '../../integrations/alpaca/alpaca.streaming';
-import { AlpacaStreamingType, AlpacaPosition, AlpacaAccount } from '../../integrations/alpaca/alpaca.interface';
-import { AlpacaService } from '../../integrations/alpaca/alpaca.service';
+import { AlpacaStreamingType, AlpacaAccount, AlpacaPosition } from "../../../../integrations/alpaca/alpaca.interfaces";
+import { AlpacaService } from "../../../../integrations/alpaca/services/alpaca-trades.service";
+import { AlpacaStreamingService } from "../../../../integrations/alpaca/services/alpaca-streaming.service";
 
 interface Candle {
     open: number;
@@ -18,6 +18,7 @@ export class TradingBotService {
     private candles: Map<string, Candle[]> = new Map();
     private positions: Map<string, 'call' | 'put' | null> = new Map();
     private currentMinute: Map<string, number> = new Map();
+    private lastTradeTime: Map<string, number> = new Map();
 
     constructor(
     ) {
@@ -31,6 +32,12 @@ export class TradingBotService {
                 return;
             }
 
+            if (symbol.includes("/")) {
+                type = 'crypto'
+            } else {
+                type = 'stocks'
+            }
+
             this.activeStreams.add(symbol);
             this.candles.set(symbol, []);
             this.positions.set(symbol, null);
@@ -41,6 +48,8 @@ export class TradingBotService {
                 const messages = JSON.parse(data);
                 messages.forEach((message: any) => {
                     if (message.T === 'q' && message.S === symbol) {
+                        console.log('Quote', message);
+                        return;
                         this.processQuote(symbol, message);
                     }
                 });
@@ -62,12 +71,17 @@ export class TradingBotService {
             const minute = Math.floor(timestamp / 60000); // 1-minute timeframe
             const price = (quote.bp + quote.ap) / 2; // Midpoint of bid/ask
 
-            if (this.currentMinute.get(symbol) !== minute) {
+            const currentStoredMinute = this.currentMinute.get(symbol);
+            const lastTradeMinute = this.lastTradeTime.get(symbol);
+
+            if (currentStoredMinute !== minute) {
+                console.log('New minute', minute, quote.bp, quote.ap);
                 // New minute, finalize previous candle
                 const candles = this.candles.get(symbol) || [];
-                if (candles.length > 0) {
+                if (candles.length > 0 && lastTradeMinute !== minute) {
                     const lastCandle = candles[candles.length - 1];
                     await this.processCandle(symbol, lastCandle);
+                    this.lastTradeTime.set(symbol, minute);
                 }
 
                 // Start new candle
@@ -94,22 +108,27 @@ export class TradingBotService {
 
     private async processCandle(symbol: string, candle: Candle): Promise<void> {
         try {
-            const isGreen = candle.close > candle.open;
+            const candles = this.candles.get(symbol) || [];
+            if (candles.length < 2) return; // Need at least two candles to compare
+
+            const previousCandle = candles[candles.length - 2];
+            const isCurrentGreen = candle.close > candle.open;
+            const isPreviousGreen = previousCandle.close > previousCandle.open;
             const currentPosition = this.positions.get(symbol);
 
-            if (isGreen && currentPosition !== 'call') {
-                // Green candle: open call (buy) position
+            if (isCurrentGreen && isPreviousGreen && currentPosition !== 'call') {
+                // Two consecutive green candles: open call (buy) position
                 if (currentPosition === 'put') {
                     await this.alpacaService.closePosition(symbol);
                 }
-                await this.alpacaService.openPosition(symbol, 'buy');
+                await this.alpacaService.openPosition(symbol, 'buy', candle.close);
                 this.positions.set(symbol, 'call');
-            } else if (!isGreen && currentPosition !== 'put') {
+            } else if (!isCurrentGreen && currentPosition !== 'put') {
                 // Red candle: open put (sell) position
                 if (currentPosition === 'call') {
                     await this.alpacaService.closePosition(symbol);
                 }
-                await this.alpacaService.openPosition(symbol, 'sell');
+                await this.alpacaService.openPosition(symbol, 'sell', candle.close);
                 this.positions.set(symbol, 'put');
             }
         } catch (error) {
@@ -126,6 +145,7 @@ export class TradingBotService {
                 this.candles.delete(symbol);
                 this.positions.delete(symbol);
                 this.currentMinute.delete(symbol);
+                this.lastTradeTime.delete(symbol);
                 await this.alpacaService.closePosition(symbol);
                 console.log(`Stopped bot for ${symbol}`);
             }

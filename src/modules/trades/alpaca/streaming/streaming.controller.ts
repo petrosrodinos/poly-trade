@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { TradesService } from './trades.service';
+import { TradesService } from './streaming.service';
 
 export class TradesController {
     tradesService: TradesService;
