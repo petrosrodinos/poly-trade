@@ -26,6 +26,7 @@ export class AlpacaStreamingService {
         const wsUrl = this.wsUrls.get(type) || '';
         const ws = new WebSocket(wsUrl);
 
+
         ws.on('open', () => {
             ws.send(JSON.stringify({
                 action: 'auth',

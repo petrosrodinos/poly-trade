@@ -3,7 +3,6 @@ import { AlpacaClient } from "../alpaca.client";
 export class AlpacaSymbols {
     alpacaClient: AlpacaClient;
 
-
     constructor() {
         this.alpacaClient = new AlpacaClient();
 
@@ -16,11 +15,11 @@ export class AlpacaSymbols {
                 asset_class: 'us_equity'
             });
 
-            const optionableTickers = assets
-                .filter((asset: any) => asset.tradable && asset.optionable)
-                .map((asset: any) => asset.symbol);
+            // const optionableTickers = assets
+            //     .filter((asset: any) => asset.tradable && asset.optionable)
+            //     .map((asset: any) => asset.symbol);
 
-            return optionableTickers;
+            return assets;
         } catch (error) {
             throw error;
         }
@@ -35,6 +34,17 @@ export class AlpacaSymbols {
             } else {
                 return { symbol, optionable: false, details: asset };
             }
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getOptionContracts(underlyingSymbol: string) {
+        try {
+            const response = await this.alpacaClient.getClient().getOptionChain(underlyingSymbol, {});
+
+            const contracts = response.map((snapshot: any) => snapshot.symbol);
+            return contracts;
         } catch (error) {
             throw error;
         }
