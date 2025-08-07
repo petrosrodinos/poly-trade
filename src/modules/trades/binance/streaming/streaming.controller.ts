@@ -26,7 +26,7 @@ export class BinanceStreamingController {
 
             console.log(`Starting stream for symbol: ${symbol}`);
 
-            this.streamingService.streamCandlesticks(symbol, req, (candlestick: any) => {
+            this.streamingService.streamCandlesticksFutures(symbol, req, (candlestick: any) => {
                 try {
                     console.log(`Sending candlestick data for ${symbol}:`, candlestick);
 

@@ -1,6 +1,8 @@
-import { BinanceAccount, BinancePosition, BinanceCandlestick } from "../../../../integrations/binance/binance.interfaces";
+import { BinancePosition, BinanceCandlestick } from "../../../../integrations/binance/binance.interfaces";
 import { BinanceTradesService } from "../../../../integrations/binance/services/binance-trades.service";
 import { BinanceStreamingService } from "../../../../integrations/binance/services/binance-streaming.service";
+import { BinanceAccountService } from "../../../../integrations/binance/services/binance-account.service";
+import { TradesConfig } from "../../../../shared/constants/trades";
 
 interface Candle {
     open: number;
@@ -13,6 +15,7 @@ interface Candle {
 export class BinanceTradingBotService {
     binanceStreamingService: BinanceStreamingService;
     binanceTradesService: BinanceTradesService;
+    binanceAccountService: BinanceAccountService;
 
     private activeStreams: Set<string> = new Set();
     private candles: Map<string, Candle[]> = new Map();
@@ -24,6 +27,7 @@ export class BinanceTradingBotService {
     constructor() {
         this.binanceStreamingService = new BinanceStreamingService();
         this.binanceTradesService = new BinanceTradesService();
+        this.binanceAccountService = new BinanceAccountService();
     }
 
     async startBot(symbol: string): Promise<void> {
@@ -36,7 +40,7 @@ export class BinanceTradingBotService {
             this.candles.set(symbol, []);
             this.positions.set(symbol, null);
 
-            const streamEndpoint = this.binanceStreamingService.streamCandlesticks(
+            const streamEndpoint = this.binanceStreamingService.streamCandlesticksFutures(
                 symbol,
                 {} as any,
                 (data: BinanceCandlestick) => {
@@ -55,41 +59,40 @@ export class BinanceTradingBotService {
 
     private async processCandlestick(symbol: string, candlestick: BinanceCandlestick): Promise<void> {
         try {
-            if (!candlestick.isKlineClosed) {
-                return;
+            if (!candlestick.isKlineClosed) return;
+
+            const minute = Math.floor(candlestick.timestamp / 60000);
+
+            const lastProcessedMinute = this.lastTradeTime.get(symbol) || -1;
+            const lastStoredMinute = this.currentMinute.get(symbol) || -1;
+
+            if (lastStoredMinute === minute) return;
+
+            const candles = this.candles.get(symbol) || [];
+
+            if (candles.length > 0 && lastProcessedMinute !== minute) {
+                const lastCandle = candles[candles.length - 1];
+                await this.processCandle(symbol, lastCandle);
+                this.lastTradeTime.set(symbol, minute);
             }
 
-            const timestamp = new Date(candlestick.timestamp).getTime();
-            const minute = Math.floor(timestamp / 60000);
-            const currentStoredMinute = this.currentMinute.get(symbol);
-            const lastTradeMinute = this.lastTradeTime.get(symbol);
+            const newCandle: Candle = {
+                open: candlestick.open,
+                close: candlestick.close,
+                high: candlestick.high,
+                low: candlestick.low,
+                timestamp: candlestick.timestamp
+            };
 
-            if (currentStoredMinute !== minute) {
-                const candles = this.candles.get(symbol) || [];
+            candles.push(newCandle);
+            this.candles.set(symbol, candles);
+            this.currentMinute.set(symbol, minute);
 
-                if (candles.length > 0 && lastTradeMinute !== minute) {
-                    const lastCandle = candles[candles.length - 1];
-                    await this.processCandle(symbol, lastCandle);
-                    this.lastTradeTime.set(symbol, minute);
-                }
-
-                const newCandle: Candle = {
-                    open: candlestick.open,
-                    close: candlestick.close,
-                    high: candlestick.high,
-                    low: candlestick.low,
-                    timestamp
-                };
-
-                this.candles.set(symbol, [...candles, newCandle]);
-                this.currentMinute.set(symbol, minute);
-
-                console.log(`New candle for ${symbol}:`, newCandle);
-            }
         } catch (error) {
             console.error(`Error processing candlestick for ${symbol}:`, error);
         }
     }
+
 
     private async processCandle(symbol: string, candle: Candle): Promise<void> {
         try {
@@ -101,18 +104,20 @@ export class BinanceTradingBotService {
             const isPreviousGreen = previousCandle.close > previousCandle.open;
             const currentPosition = this.positions.get(symbol);
 
+            const quantity = Math.floor(TradesConfig.amount / candle.close);
+
             if (isCurrentGreen && isPreviousGreen && currentPosition !== 'long') {
                 if (currentPosition === 'short') {
                     await this.binanceTradesService.closePosition(symbol);
                 }
-                await this.binanceTradesService.openPosition(symbol, 'buy', candle.close, 10);
+                await this.binanceTradesService.openPosition(symbol, 'buy', candle.close, quantity);
                 this.positions.set(symbol, 'long');
                 console.log(`Opened LONG position for ${symbol} at ${candle.close}`);
             } else if (!isCurrentGreen && currentPosition !== 'short') {
                 if (currentPosition === 'long') {
                     await this.binanceTradesService.closePosition(symbol);
                 }
-                await this.binanceTradesService.openPosition(symbol, 'sell', candle.close, 10);
+                await this.binanceTradesService.openPosition(symbol, 'sell', candle.close, quantity);
                 this.positions.set(symbol, 'short');
                 console.log(`Opened SHORT position for ${symbol} at ${candle.close}`);
             }
@@ -149,9 +154,6 @@ export class BinanceTradingBotService {
         return this.activeStreams.has(symbol);
     }
 
-    async getAccountStatus(): Promise<BinanceAccount> {
-        return this.binanceTradesService.getAccount();
-    }
 
     async getPositionInfo(symbol: string): Promise<BinancePosition | null> {
         return this.binanceTradesService.getPosition(symbol);
@@ -169,7 +171,6 @@ export class BinanceTradingBotService {
 
     async getAllPositions(): Promise<BinancePosition[]> {
         try {
-            const account = await this.binanceTradesService.getAccount();
             const positions: BinancePosition[] = [];
 
             for (const symbol of this.activeStreams) {
@@ -185,4 +186,6 @@ export class BinanceTradingBotService {
             throw error;
         }
     }
+
+
 }

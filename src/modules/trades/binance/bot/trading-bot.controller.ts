@@ -72,33 +72,7 @@ export class BinanceTradingBotController {
         }
     }
 
-    getAccountStatus = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const account = await this.tradingBotService.getAccountStatus();
-            res.status(200).json({
-                account_id: account.id,
-                status: account.status,
-                buying_power: account.buying_power,
-                cash: account.cash,
-                portfolio_value: account.portfolio_value,
-                balances: account.balances
-            });
-        } catch (error: any) {
-            console.error('Failed to get account status:', error);
 
-            if (error.message?.includes('Account')) {
-                res.status(503).json({
-                    message: 'Binance account service unavailable',
-                    error: error.message
-                });
-            } else {
-                res.status(500).json({
-                    message: 'Failed to retrieve account status',
-                    error: error.message || 'Unknown error occurred'
-                });
-            }
-        }
-    }
 
     getPositionInfo = async (req: Request, res: Response): Promise<void> => {
         const symbol = (req.params.symbol as string)?.toUpperCase();
