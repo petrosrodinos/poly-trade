@@ -140,18 +140,6 @@ export class BinanceTradesService {
     }
 
 
-    async getOpenOrders(symbol?: string): Promise<any[]> {
-        try {
-            const orders = symbol
-                ? await this.binanceClient.futuresOpenOrders(symbol)
-                : await this.binanceClient.futuresOpenOrders();
-
-            return orders;
-        } catch (error) {
-            console.error('Error getting open orders:', error);
-            throw new Error(`Failed to get open orders: ${error}`);
-        }
-    }
 
     async cancelAllOrders(symbol?: string): Promise<any> {
         try {

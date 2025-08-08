@@ -25,18 +25,6 @@ export class BinanceAccountController {
         }
     }
 
-    getAccountFuturesBalance = async (req: Request, res: Response) => {
-        try {
-            const account = await this.binanceAccountService.getAccountFuturesBalance();
-            res.status(200).json(account);
-        } catch (error: any) {
-            res.status(500).json({
-                message: 'Failed to get account status',
-                error: error.message
-            });
-        }
-    }
-
 
     getFuturesUserTrades = async (req: Request, res: Response) => {
         try {
@@ -45,19 +33,6 @@ export class BinanceAccountController {
         } catch (error: any) {
             res.status(500).json({
                 message: 'Failed to get futures orders',
-                error: error.message
-            });
-        }
-    }
-
-    getOpenOrders = async (req: Request, res: Response) => {
-        try {
-            const symbol = req.params.symbol as string;
-            const orders = await this.binanceTradesService.getOpenOrders(symbol);
-            res.status(200).json(orders);
-        } catch (error: any) {
-            res.status(500).json({
-                message: 'Failed to get open orders',
                 error: error.message
             });
         }
@@ -82,23 +57,6 @@ export class BinanceAccountController {
         }
     }
 
-    cancelOrderById = async (req: Request, res: Response) => {
-        try {
-            const symbol = req.params.symbol as string;
-            const orderId = req.params.orderId as string;
-            const order = await this.binanceTradesService.cancelOrder(symbol, orderId);
-            logger.success(`Order ${orderId} cancelled for ${symbol}`);
-            res.status(200).json({
-                message: 'Order cancelled',
-                order: order
-            });
-        } catch (error: any) {
-            res.status(500).json({
-                message: 'Failed to cancel order',
-                error: error.message
-            });
-        }
-    }
 
     getFuturesIncome = async (req: Request, res: Response) => {
         try {
