@@ -3,6 +3,7 @@ import { BinanceTradesService } from "../../../../integrations/binance/services/
 import { BinanceStreamingService } from "../../../../integrations/binance/services/binance-streaming.service";
 import { BinanceAccountService } from "../../../../integrations/binance/services/binance-account.service";
 import { TradesConfig } from "../../../../shared/constants/trades";
+import { logger } from "../../../../shared/utils/logger";
 
 interface Candle {
     open: number;
@@ -50,7 +51,7 @@ export class BinanceTradingBotService {
 
             this.streamEndpoints.set(symbol, streamEndpoint);
 
-            console.log(`Started Binance trading bot for ${symbol}`);
+            logger.success(`Started Binance trading bot for ${symbol}`);
         } catch (error) {
             console.error(`Error starting bot for ${symbol}:`, error);
             throw error;
@@ -97,9 +98,9 @@ export class BinanceTradingBotService {
     private async processCandle(symbol: string, candle: Candle): Promise<void> {
         try {
             const candles = this.candles.get(symbol) || [];
-            if (candles.length < 2) return;
+            if (candles.length < 1) return;
 
-            const previousCandle = candles[candles.length - 2];
+            const previousCandle = candles[candles.length - 1];
             const isCurrentGreen = candle.close > candle.open;
             const isPreviousGreen = previousCandle.close > previousCandle.open;
             const currentPosition = this.positions.get(symbol);
@@ -110,16 +111,16 @@ export class BinanceTradingBotService {
                 if (currentPosition === 'short') {
                     await this.binanceTradesService.closePosition(symbol);
                 }
-                await this.binanceTradesService.openPosition(symbol, 'buy', candle.close, quantity);
+                const position = await this.binanceTradesService.openPosition(symbol, 'buy', candle.close, quantity);
                 this.positions.set(symbol, 'long');
-                console.log(`Opened LONG position for ${symbol} at ${candle.close}`);
+                logger.long(`${symbol}, ${candle.close}, ${quantity}, ${position.orderId}`);
             } else if (!isCurrentGreen && currentPosition !== 'short') {
                 if (currentPosition === 'long') {
                     await this.binanceTradesService.closePosition(symbol);
                 }
-                await this.binanceTradesService.openPosition(symbol, 'sell', candle.close, quantity);
+                const position = await this.binanceTradesService.openPosition(symbol, 'sell', candle.close, quantity);
                 this.positions.set(symbol, 'short');
-                console.log(`Opened SHORT position for ${symbol} at ${candle.close}`);
+                logger.short(`${symbol}, ${candle.close}, ${quantity}, ${position.orderId}`);
             }
         } catch (error) {
             console.error(`Error processing candle for ${symbol}:`, error);
@@ -131,7 +132,7 @@ export class BinanceTradingBotService {
             if (this.activeStreams.has(symbol)) {
                 const streamEndpoint = this.streamEndpoints.get(symbol);
                 if (streamEndpoint) {
-                    await this.binanceStreamingService.terminateStream(`${symbol.toLowerCase()}@kline_1m`);
+                    await this.binanceStreamingService.terminateStream(`${symbol.toLowerCase()}@kline_${TradesConfig.timeframe}`);
                     this.streamEndpoints.delete(symbol);
                 }
 
@@ -142,7 +143,7 @@ export class BinanceTradingBotService {
                 this.lastTradeTime.delete(symbol);
 
                 await this.binanceTradesService.closePosition(symbol);
-                console.log(`Stopped bot for ${symbol}`);
+                logger.success(`Stopped bot for ${symbol}`);
             }
         } catch (error) {
             console.error(`Error stopping bot for ${symbol}:`, error);
