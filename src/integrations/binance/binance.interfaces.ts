@@ -93,6 +93,33 @@ export interface FuturesBalanceEntry {
     updateTime: number;
 }
 
+export interface FuturesTrade {
+    symbol: string;
+    id: number;
+    orderId: number;
+    side: 'BUY' | 'SELL';
+    price: string;
+    qty: string;
+    realizedPnl: string;
+    quoteQty: string;
+    commission: string;
+    commissionAsset: string;
+    time: number; // timestamp in ms
+    positionSide: 'BOTH' | 'LONG' | 'SHORT';
+    maker: boolean;
+    buyer: boolean;
+}
+
+export interface FuturesIncome {
+    symbol: string;
+    incomeType: 'REALIZED_PNL' | 'COMMISSION' | 'FUNDING_FEE' | string;
+    income: string; // can be negative
+    asset: string;
+    time: number; // timestamp in ms
+    info: string;
+    tranId: number;
+    tradeId: string;
+}
 
 export type BinanceOrderSide = 'BUY' | 'SELL';
 export type BinanceOrderType = 'MARKET' | 'LIMIT';

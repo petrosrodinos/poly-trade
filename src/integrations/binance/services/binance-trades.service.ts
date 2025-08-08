@@ -151,13 +151,7 @@ export class BinanceTradesService {
         }
     }
 
-    async futuresIncome(): Promise<any> {
-        try {
-            return await this.binanceClient.futuresIncome();
-        } catch (error) {
-            throw new Error(`Failed to get futures income: ${error}`);
-        }
-    }
+
 
 
 }

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { BinanceTradesService } from "../../../../integrations/binance/services/binance-trades.service";
 import { BinanceTradingBotService } from './trading-bot.service';
+import { logger } from '../../../../shared/utils/logger';
 
 export class BinanceTradingBotController {
     private binanceTradesService: BinanceTradesService;
@@ -167,5 +168,25 @@ export class BinanceTradingBotController {
         ws.on('close', () => {
             clearInterval(interval);
         });
+    }
+
+
+    cancelOrder = async (req: Request, res: Response) => {
+        try {
+
+            const symbol = req.params.symbol as string;
+
+            const orders = await this.binanceTradesService.closePosition(symbol);
+            logger.success(`Cancelled order for ${symbol}`);
+            res.status(200).json({
+                message: 'Order cancelled',
+                orders: orders
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                message: 'Failed to cancel order',
+                error: error.message
+            });
+        }
     }
 }

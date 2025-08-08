@@ -151,14 +151,6 @@ export class BinanceTradingBotService {
         }
     }
 
-    isBotRunning(symbol: string): boolean {
-        return this.activeStreams.has(symbol);
-    }
-
-
-    async getPositionInfo(symbol: string): Promise<BinancePosition | null> {
-        return this.binanceTradesService.getPosition(symbol);
-    }
 
     getBotStatus(symbol: string): any {
         return {
@@ -168,6 +160,15 @@ export class BinanceTradingBotService {
             lastCandle: this.candles.get(symbol)?.slice(-1)[0] || null,
             totalCandles: this.candles.get(symbol)?.length || 0
         };
+    }
+
+    isBotRunning(symbol: string): boolean {
+        return this.activeStreams.has(symbol);
+    }
+
+
+    async getPositionInfo(symbol: string): Promise<BinancePosition | null> {
+        return this.binanceTradesService.getPosition(symbol);
     }
 
     async getAllPositions(): Promise<BinancePosition[]> {
@@ -187,6 +188,8 @@ export class BinanceTradingBotService {
             throw error;
         }
     }
+
+
 
 
 }
