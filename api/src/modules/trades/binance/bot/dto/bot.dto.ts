@@ -33,8 +33,6 @@ export const BotSchema = z.object({
     amount: z.number()
         .positive('Amount must be a positive number')
         .min(0.01, 'Amount must be at least 0.01'),
-    quantity: z.number()
-        .nonnegative('Quantity cannot be negative'),
     leverage: z.number()
         .int('Leverage must be an integer')
         .min(1, 'Leverage must be at least 1')

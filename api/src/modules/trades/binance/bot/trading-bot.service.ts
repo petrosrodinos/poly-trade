@@ -55,7 +55,6 @@ export class BinanceTradingBotService {
                 leverage: botData.leverage,
                 active: botData.active,
                 created_at: new Date().toISOString(),
-                quantity: 0,
             };
 
             this.bots.set(bot.id, new BotModel(bot));
@@ -196,6 +195,19 @@ export class BinanceTradingBotService {
 
     getBots(): BotModel[] {
         return Array.from(this.bots.values());
+    }
+
+    updateBot(id: string, bot: Partial<Bot>): BotModel | null {
+        const existingBot = this.bots.get(id);
+        if (existingBot) {
+            this.bots.set(id, new BotModel({ ...existingBot, ...bot }));
+            return this.bots.get(id) || null;
+        }
+        return null;
+    }
+
+    deleteBot(id: string): void {
+        this.bots.delete(id);
     }
 
     isBotRunning(symbol: string): boolean {

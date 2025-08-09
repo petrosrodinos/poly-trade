@@ -18,6 +18,8 @@ router.post('/bot/start/:id', binanceTradingBotController.startBot);
 router.post('/bot/stop/:id', binanceTradingBotController.stopBot);
 router.get('/bot/:id', binanceTradingBotController.getBot);
 router.get('/bots', binanceTradingBotController.getBots);
+router.put('/bot/:id', binanceTradingBotController.updateBot);
+router.delete('/bot/:id', binanceTradingBotController.deleteBot);
 router.post('/bot/orders/cancel/:symbol', binanceTradingBotController.cancelOrder);
 router.get('/bot/position/:symbol', binanceTradingBotController.getPositionInfo); // to remove
 router.get('/bot/positions', binanceTradingBotController.getAllPositions); // to remove

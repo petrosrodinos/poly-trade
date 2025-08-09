@@ -2,12 +2,11 @@ export interface Bot {
     id: string;
     active: boolean;
     symbol: string;
-    created_at: string;
     interval: string;
     amount: number;
-    quantity: number;
-    profit: number;
-    leverage?: number;
+    leverage: number;
+    created_at: string;
+    quantity?: number;
 }
 
 export interface BotFormData {

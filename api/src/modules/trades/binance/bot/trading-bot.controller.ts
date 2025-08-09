@@ -132,6 +132,40 @@ export class BinanceTradingBotController {
         }
     }
 
+    updateBot = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const id = req.params.id;
+            const validatedData = validateRequest(BotFormDataSchema, req.body);
+            if (!id) {
+                res.status(400).json({ message: `Bot ID is required` });
+                return;
+            }
+
+            const bot = this.tradingBotService.updateBot(id, validatedData);
+            res.status(200).json(bot);
+        } catch (error: any) {
+            console.error(`Failed to update bot:`, error);
+            res.status(500).json({
+                message: `Failed to update bot`,
+                error: error.message || 'Unknown error occurred'
+            });
+        }
+    }
+
+    deleteBot = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const id = req.params.id;
+            this.tradingBotService.deleteBot(id);
+            res.status(200).json({ message: `Bot deleted` });
+        } catch (error: any) {
+            console.error(`Failed to delete bot:`, error);
+            res.status(500).json({
+                message: `Failed to delete bot`,
+                error: error.message || 'Unknown error occurred'
+            });
+        }
+    }
+
 
     getPositionInfo = async (req: Request, res: Response): Promise<void> => {
         try {
