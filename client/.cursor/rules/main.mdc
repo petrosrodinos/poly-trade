@@ -1,0 +1,43 @@
+---
+description: This rule provides standards for frontend components
+globs:
+alwaysApply: true
+---
+
+This rule provides standards for frontend components:
+When working in components directory:
+Always use Tailwind and shadcn/ui for styling
+Follow component naming conventions
+Props interface at top. Example UserPageProps
+Component as named export
+
+When working in pages directory:
+Follow page naming conventions
+Props interface at top. Example UserPageProps
+Component as named export
+
+example folder structure
+
+- features/
+
+  - user/
+    - hooks/use-user.ts
+    - services/user.service.ts
+    - interfaces/user.interface.ts
+    - utils/user.utils.ts
+
+- pages/
+  - user/
+    - hooks/use-user.ts
+    - components/
+      - user-card.tsx
+      - user-list.tsx
+      - user-form.tsx
+    - pages/
+      - user-page.tsx
+      - user-list-page.tsx
+- services/
+- interfaces/
+- utils/
+- hooks/
+- stores/
