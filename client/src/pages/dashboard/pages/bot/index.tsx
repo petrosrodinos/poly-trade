@@ -1,30 +1,48 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { useFormatters } from "../../hooks";
-import { useAccountTrades, useAccountIncome } from "@/features/account/hooks/use-account";
-import { TradesTable } from "./components/TradesTable";
-import { IncomeTable } from "./components/IncomeTable";
+import { useAccountTrades } from "@/features/account/hooks/use-account";
+import { BotTrades } from "./components/BotTrades";
+import { BotInfo } from "./components/BotInfo";
+import { BotControls } from "./components/BotControls";
+import { Button } from "@/components/ui/button";
 
 const BotPage = () => {
+  const navigate = useNavigate();
   const { data: trades, isLoading: isTradesLoading } = useAccountTrades();
-  const { data: income, isLoading: isIncomeLoading } = useAccountIncome();
-
   const { formatCurrency, formatTimestamp } = useFormatters();
+
+  const [isRunning, setIsRunning] = useState(true);
+
+  const botData = {
+    quantity: 10,
+    price: 42350.75,
+    interval: "5m",
+    profit: 1250.89,
+    symbol: "BTCUSDT",
+  };
+
+  const handleStartStop = () => {
+    setIsRunning(!isRunning);
+  };
+
+  const handleDelete = () => {
+    console.log("Delete bot requested");
+  };
+
   return (
-    <div>
-      <Tabs defaultValue="trades" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="trades">Recent Trades</TabsTrigger>
-          <TabsTrigger value="income">Income History</TabsTrigger>
-        </TabsList>
+    <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+      <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="mb-2">
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back to Dashboard
+      </Button>
 
-        <TabsContent value="trades" className="space-y-4">
-          <TradesTable trades={trades} isLoading={isTradesLoading} formatCurrency={formatCurrency} formatTimestamp={formatTimestamp} />
-        </TabsContent>
+      <BotControls isRunning={isRunning} onStartStop={handleStartStop} onDelete={handleDelete} symbol={botData.symbol} />
 
-        <TabsContent value="income" className="space-y-4">
-          <IncomeTable income={income} isLoading={isIncomeLoading} formatCurrency={formatCurrency} formatTimestamp={formatTimestamp} />
-        </TabsContent>
-      </Tabs>
+      <BotInfo quantity={botData.quantity} price={botData.price} interval={botData.interval} profit={botData.profit} formatCurrency={formatCurrency} />
+
+      <BotTrades trades={trades} isLoading={isTradesLoading} formatCurrency={formatCurrency} formatTimestamp={formatTimestamp} />
     </div>
   );
 };
