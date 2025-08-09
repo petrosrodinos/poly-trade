@@ -24,7 +24,9 @@ router.post('/bot/orders/cancel/:symbol', binanceTradingBotController.cancelOrde
 
 router.get('/account/status', binanceAccountController.getAccount);
 router.get('/account/trades', binanceAccountController.getFuturesUserTrades);
-router.get('/account/income', binanceAccountController.getFuturesIncome);
 router.get('/account/info', binanceAccountController.getAccountFutures);
+router.get('/account/income', binanceAccountController.getFuturesIncome);
+router.get('/account/income/chart', binanceAccountController.getAccountIncomeChart);
+
 
 export { router as binanceRouter };

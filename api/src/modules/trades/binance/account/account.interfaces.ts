@@ -14,3 +14,10 @@ export interface AccountSummary {
     income: TradeProfitSummary;
 }
 
+export interface AccountIncomeChart {
+    time: string;
+    value: number;
+}
+
+export type Timeframe = "hour" | "day" | "week" | "month";
+

@@ -1,6 +1,6 @@
 import { FuturesAccountInfo, FuturesIncome, FuturesTrade } from "@/integrations/binance/binance.interfaces";
 import { BinanceAccountService } from "../../../../integrations/binance/services/binance-account.service";
-import { AccountSummary } from "./account.interfaces";
+import { AccountIncomeChart, AccountSummary, Timeframe } from "./account.interfaces";
 import { AccountUtils } from "./account.utils";
 
 
@@ -30,6 +30,16 @@ export class BinanceAccountServiceClass {
             };
         } catch (error: any) {
             throw new Error(`Failed to get account status: ${error}`);
+        }
+    }
+
+    getAccountIncomeChart = async (timeframe: Timeframe): Promise<AccountIncomeChart[]> => {
+        try {
+            const income = await this.getFuturesIncome();
+            const incomeChart = this.accountUtils.calculateIncomeChart(income, timeframe);
+            return incomeChart
+        } catch (error: any) {
+            throw new Error(`Failed to get account income chart: ${error}`);
         }
     }
 

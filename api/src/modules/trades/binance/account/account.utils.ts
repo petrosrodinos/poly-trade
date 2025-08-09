@@ -1,5 +1,5 @@
 import { FuturesIncome, FuturesTrade } from "@/integrations/binance/binance.interfaces";
-import { TradeProfitSummary } from "./account.interfaces";
+import { AccountIncomeChart, Timeframe, TradeProfitSummary } from "./account.interfaces";
 
 export class AccountUtils {
 
@@ -45,5 +45,50 @@ export class AccountUtils {
             trades: incomes.length
 
         };
+    }
+
+    calculateIncomeChart(
+        incomes: FuturesIncome[],
+        timeframe: Timeframe = "hour"
+    ): AccountIncomeChart[] {
+        const grouped = incomes.reduce((acc: Record<string, number>, entry) => {
+            const date = new Date(entry.time);
+            let key: string;
+
+            switch (timeframe) {
+                case "hour":
+                    key = date.toISOString().slice(0, 13) + ":00"; // YYYY-MM-DDTHH:00
+                    break;
+                case "day":
+                    key = date.toISOString().slice(0, 10); // YYYY-MM-DD
+                    break;
+                case "week": {
+                    const firstDayOfWeek = new Date(date);
+                    const day = date.getUTCDay(); // 0 (Sun) - 6 (Sat)
+                    const diff = date.getUTCDate() - day; // Move to Sunday
+                    firstDayOfWeek.setUTCDate(diff);
+                    firstDayOfWeek.setUTCHours(0, 0, 0, 0);
+                    key = firstDayOfWeek.toISOString().slice(0, 10); // Week start date
+                    break;
+                }
+                case "month":
+                    key = date.toISOString().slice(0, 7); // YYYY-MM
+                    break;
+                default:
+                    key = date.toISOString();
+            }
+
+            if (!acc[key]) {
+                acc[key] = 0;
+            }
+            acc[key] += parseFloat(entry.income);
+
+            return acc;
+        }, {});
+
+        return Object.entries(grouped).map(([time, value]) => ({
+            time,
+            value
+        }));
     }
 }

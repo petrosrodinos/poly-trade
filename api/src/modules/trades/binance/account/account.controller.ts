@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { BinanceAccountServiceClass } from "./account.service";
+import { Timeframe } from "./account.interfaces";
 
 export class BinanceAccountController {
     private binanceAccountService: BinanceAccountServiceClass;
@@ -15,6 +16,19 @@ export class BinanceAccountController {
         } catch (error: any) {
             res.status(500).json({
                 message: 'Failed to get account status',
+                error: error.message
+            });
+        }
+    }
+
+    getAccountIncomeChart = async (req: Request, res: Response) => {
+        try {
+            const timeframe = req.query.timeframe as Timeframe;
+            const incomeChart = await this.binanceAccountService.getAccountIncomeChart(timeframe);
+            res.status(200).json(incomeChart);
+        } catch (error: any) {
+            res.status(500).json({
+                message: 'Failed to get account income chart',
                 error: error.message
             });
         }
