@@ -1,5 +1,5 @@
 import { useAccountStatus } from "@/features/account/hooks/use-account";
-import { DashboardHeader, BotsStatus } from "./components";
+import { DashboardHeader, BotsStatus, BotsGrid } from "./components";
 import { StatCards } from "./components/Stats/StatCards";
 import { PerformanceOverview } from "./components/PerformanceOverview";
 
@@ -17,6 +17,8 @@ const DashboardPage = () => {
           <PerformanceOverview accountStatus={accountStatus} isLoading={isAccountLoading} />
           <BotsStatus />
         </div>
+
+        <BotsGrid />
       </div>
     </div>
   );

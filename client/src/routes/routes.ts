@@ -5,6 +5,7 @@ export const Routes = {
     },
     dashboard: {
         root: "/dashboard",
+        bot: (id: string) => `/dashboard/bot/${id}`,
     },
 
 };
