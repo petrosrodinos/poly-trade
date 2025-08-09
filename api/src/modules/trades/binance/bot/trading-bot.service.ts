@@ -37,6 +37,11 @@ export class BinanceTradingBotService {
     async createBot(botData: BotFormData): Promise<BotModel> {
         try {
 
+            const existingBot = Array.from(this.bots.values()).find((bot: BotModel) => bot.symbol === botData.symbol);
+            if (existingBot) {
+                throw new Error('Bot already exists');
+            }
+
             const account = await this.binanceAccountService.getAccountFutures();
             if (!account) {
                 throw new Error('Unable to fetch account information');

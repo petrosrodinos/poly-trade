@@ -16,5 +16,7 @@ export const ApiRoutes = {
         get: "/binance/bots",
         start: "/binance/bot/start",
         stop: "/binance/bot/stop",
+        start_all: "/binance/bots/start-all",
+        stop_all: "/binance/bots/stop-all",
     },
 }

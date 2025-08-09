@@ -20,27 +20,54 @@ export const createBot = async (bot: BotFormData): Promise<Bot> => {
     }
 };
 
-export const startBot = async (botId: string): Promise<Bot> => {
+export const startBot = async (id: string): Promise<Bot> => {
     try {
-        const response = await axiosInstance.post(ApiRoutes.bot.start, { botId });
+        const response = await axiosInstance.post(ApiRoutes.bot.start, { id });
         return response.data;
     } catch (error) {
         throw error;
     }
 };
 
-export const stopBot = async (botId: string): Promise<Bot> => {
+export const stopBot = async (id: string): Promise<Bot> => {
     try {
-        const response = await axiosInstance.post(ApiRoutes.bot.stop, { botId });
+        const response = await axiosInstance.post(ApiRoutes.bot.stop, { id });
         return response.data;
     } catch (error) {
         throw error;
     }
 };
 
-export const deleteBot = async (botId: string): Promise<Bot> => {
+export const deleteBot = async (id: string): Promise<Bot> => {
     try {
-        const response = await axiosInstance.delete(`${ApiRoutes.bot.prefix}/${botId}`);
+        const response = await axiosInstance.delete(`${ApiRoutes.bot.prefix}/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const updateBot = async (bot: Bot): Promise<Bot> => {
+    try {
+        const response = await axiosInstance.put(`${ApiRoutes.bot.prefix}/${bot.id}`, bot);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const startAllBots = async (): Promise<Bot[]> => {
+    try {
+        const response = await axiosInstance.post(ApiRoutes.bot.start_all);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const stopAllBots = async (): Promise<Bot[]> => {
+    try {
+        const response = await axiosInstance.post(ApiRoutes.bot.stop_all);
         return response.data;
     } catch (error) {
         throw error;

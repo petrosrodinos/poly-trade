@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getBots, createBot, startBot, stopBot, deleteBot } from "../services/bot.service";
+import { getBots, createBot, startBot, stopBot, deleteBot, startAllBots, stopAllBots, updateBot } from "../services/bot.service";
 import { toast } from "@/hooks/use-toast";
 
 export const useBots = () => {
@@ -22,7 +22,6 @@ export const useCreateBot = () => {
             queryClient.invalidateQueries({ queryKey: ["bots"] });
         },
         onError: (error: any) => {
-            console.log(error);
             toast({
                 title: "Error",
                 description: error?.message || "Failed to create bot",
@@ -74,6 +73,27 @@ export const useStopBot = () => {
     });
 };
 
+export const useUpdateBot = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: updateBot,
+        onSuccess: () => {
+            toast({
+                title: "Bot updated successfully",
+                description: "Bot updated successfully",
+            });
+            queryClient.invalidateQueries({ queryKey: ["bots"] });
+        },
+        onError: () => {
+            toast({
+                title: "Error",
+                description: "Failed to update bot",
+                variant: "error",
+            });
+        },
+    });
+}
+
 export const useDeleteBot = () => {
     const queryClient = useQueryClient();
     return useMutation({
@@ -94,3 +114,41 @@ export const useDeleteBot = () => {
         },
     });
 };
+
+export const useStartAllBots = () => {
+    return useMutation({
+        mutationFn: startAllBots,
+        onSuccess: () => {
+            toast({
+                title: "All bots started successfully",
+                description: "All bots started successfully",
+            });
+        },
+        onError: () => {
+            toast({
+                title: "Error",
+                description: "Failed to start all bots",
+                variant: "error",
+            });
+        },
+    });
+}
+
+export const useStopAllBots = () => {
+    return useMutation({
+        mutationFn: stopAllBots,
+        onSuccess: () => {
+            toast({
+                title: "All bots stopped successfully",
+                description: "All bots stopped successfully",
+            });
+        },
+        onError: () => {
+            toast({
+                title: "Error",
+                description: "Failed to stop all bots",
+                variant: "error",
+            });
+        },
+    });
+}
