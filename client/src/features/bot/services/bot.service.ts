@@ -1,22 +1,22 @@
 import axiosInstance from "@/config/api/axios";
 import { ApiRoutes } from "@/config/api/routes";
-import type { Bot } from "../interfaces/bot.interface";
+import type { Bot, BotFormData } from "../interfaces/bot.interface";
 
 export const getBots = async (): Promise<Bot[]> => {
     try {
-        const response = await axiosInstance.get(ApiRoutes.bot.prefix);
+        const response = await axiosInstance.get(ApiRoutes.bot.get);
         return response.data;
     } catch (error) {
         throw error;
     }
 };
 
-export const createBot = async (bot: Bot): Promise<Bot> => {
+export const createBot = async (bot: BotFormData): Promise<Bot> => {
     try {
         const response = await axiosInstance.post(ApiRoutes.bot.prefix, bot);
         return response.data;
-    } catch (error) {
-        throw error;
+    } catch (error: any) {
+        throw new Error(error?.response?.data?.error || "Failed to create bot");
     }
 };
 

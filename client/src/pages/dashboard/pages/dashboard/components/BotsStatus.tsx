@@ -1,81 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play, Square, Bot } from "lucide-react";
+import { Play, Square, Bot as BotIcon } from "lucide-react";
+import type { Bot } from "@/features/bot/interfaces/bot.interface";
 
-interface BotData {
-  id: string;
-  name: string;
-  status: "running" | "stopped" | "paused" | "error";
-  exchange: "binance" | "alpaca";
-  activeSymbols: number;
-  uptime: string;
-  profit24h: number;
-  totalTrades: number;
+interface BotsStatusProps {
+  bots: Bot[];
 }
 
-const mockBots: BotData[] = [
-  {
-    id: "1",
-    name: "Crypto Scalper",
-    status: "running",
-    exchange: "binance",
-    activeSymbols: 5,
-    uptime: "2h 34m",
-    profit24h: 234.56,
-    totalTrades: 23,
-  },
-  {
-    id: "2",
-    name: "Stock Momentum",
-    status: "running",
-    exchange: "alpaca",
-    activeSymbols: 3,
-    uptime: "1h 12m",
-    profit24h: -45.2,
-    totalTrades: 8,
-  },
-  {
-    id: "3",
-    name: "DCA Bot",
-    status: "stopped",
-    exchange: "binance",
-    activeSymbols: 0,
-    uptime: "0h 0m",
-    profit24h: 0,
-    totalTrades: 0,
-  },
-  {
-    id: "4",
-    name: "Arbitrage Hunter",
-    status: "paused",
-    exchange: "binance",
-    activeSymbols: 2,
-    uptime: "4h 45m",
-    profit24h: 89.12,
-    totalTrades: 15,
-  },
-  {
-    id: "5",
-    name: "Grid Trader",
-    status: "error",
-    exchange: "alpaca",
-    activeSymbols: 0,
-    uptime: "0h 0m",
-    profit24h: -12.34,
-    totalTrades: 2,
-  },
-];
-
-export const BotsStatus = () => {
-  const runningBots = mockBots.filter((bot) => bot.status === "running").length;
-  const totalBots = mockBots.length;
-  const totalActiveSymbols = mockBots.reduce((sum, bot) => sum + bot.activeSymbols, 0);
+export const BotsStatus = ({ bots }: BotsStatusProps) => {
+  const runningBots = bots.filter((bot) => bot.active).length;
+  const totalBots = bots.length;
+  const totalActiveSymbols = bots.reduce((sum, bot) => sum + (bot.active ? 1 : 0), 0);
 
   return (
     <Card className="border-0 shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-center">
-          <Bot className="w-5 h-5 mr-2" />
+          <BotIcon className="w-5 h-5 mr-2" />
           Trading Bots Overview
         </CardTitle>
       </CardHeader>

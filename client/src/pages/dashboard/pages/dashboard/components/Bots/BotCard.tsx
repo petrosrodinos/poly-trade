@@ -65,7 +65,7 @@ export const BotCard = ({ bot }: BotCardProps) => {
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-center space-x-2">
             <TrendingUp className="w-4 h-4 text-emerald-500" />
-            <span className={`font-semibold ${getProfitColor(bot.profit)}`}>{formatCurrency(bot.profit)}</span>
+            <span className={`font-semibold ${getProfitColor(bot.profit || 0)}`}>{formatCurrency(bot.profit || 0)}</span>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -77,7 +77,7 @@ export const BotCard = ({ bot }: BotCardProps) => {
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-center space-x-2">
             <Hash className="w-4 h-4 text-indigo-500" />
-            <span className="font-semibold">{bot.quantity.toLocaleString()}</span>
+            <span className="font-semibold">{bot.quantity?.toLocaleString() || "-"}</span>
           </div>
 
           <div className="flex items-center space-x-2">

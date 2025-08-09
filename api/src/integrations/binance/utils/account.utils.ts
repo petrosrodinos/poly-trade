@@ -1,11 +1,23 @@
 import { FuturesIncome, FuturesTrade } from "@/integrations/binance/binance.interfaces";
-import { AccountIncomeChart, Timeframe, TradeProfitSummary } from "./account.interfaces";
+import { AccountIncomeChart, Timeframe, TradeProfitSummary } from "../../../modules/trades/binance/account/account.interfaces";
 
 export class AccountUtils {
 
     constructor() { }
 
     calculateTotalProfit(trades: FuturesTrade[]): TradeProfitSummary {
+
+        if (trades.length === 0) {
+            return {
+                grossProfit: 0,
+                commission: 0,
+                netProfit: 0,
+                averageProfit: 0,
+                averageCommission: 0,
+                trades: 0
+            };
+        }
+
         let grossProfit = 0;
         let commission = 0;
 
@@ -25,6 +37,18 @@ export class AccountUtils {
     }
 
     calculateIncomeSummary(incomes: FuturesIncome[]): TradeProfitSummary {
+
+        if (incomes.length === 0) {
+            return {
+                grossProfit: 0,
+                commission: 0,
+                netProfit: 0,
+                averageProfit: 0,
+                averageCommission: 0,
+                trades: 0
+            };
+        }
+
         let grossProfit = 0;
         let commission = 0;
 

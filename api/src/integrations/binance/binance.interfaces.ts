@@ -121,5 +121,15 @@ export interface FuturesIncome {
     tradeId: string;
 }
 
+export interface FuturesIncomeTradesAndProfit {
+    profit: number;
+    income: FuturesIncome[];
+}
+
+export interface FuturesTradeAndProfit {
+    profit: number;
+    trades: FuturesTrade[];
+}
+
 export type BinanceOrderSide = 'BUY' | 'SELL';
 export type BinanceOrderType = 'MARKET' | 'LIMIT';

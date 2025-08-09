@@ -13,6 +13,7 @@ export const ApiRoutes = {
     },
     bot: {
         prefix: "/binance/bot",
+        get: "/binance/bots",
         start: "/binance/bot/start",
         stop: "/binance/bot/stop",
     },

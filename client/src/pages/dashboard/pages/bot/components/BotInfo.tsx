@@ -16,7 +16,7 @@ export const BotInfo = ({ bot }: BotInfoProps) => {
       <Card>
         <CardHeader className="pb-2">
           <CardDescription>Total Profit</CardDescription>
-          <CardTitle className={`text-xl sm:text-2xl ${profit >= 0 ? "text-green-600" : "text-red-600"}`}>{formatCurrency(profit)}</CardTitle>
+          <CardTitle className={`text-xl sm:text-2xl ${profit && profit >= 0 ? "text-green-600" : "text-red-600"}`}>{formatCurrency(profit || 0)}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">All time</p>

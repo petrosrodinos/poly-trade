@@ -4,7 +4,7 @@ import { BinanceStreamingService } from "../../../../integrations/binance/servic
 import { BinanceAccountService } from "../../../../integrations/binance/services/binance-account.service";
 import { TradesConfig } from "../../../../shared/constants/trades";
 import { logger } from "../../../../shared/utils/logger";
-import { Bot, BotFormData } from "./dto/bot.dto";
+import { BotFormData } from "./dto/bot.dto";
 import { BotModel } from "./models/bot.model";
 
 interface Candle {
@@ -34,7 +34,7 @@ export class BinanceTradingBotService {
         this.binanceAccountService = new BinanceAccountService();
     }
 
-    async createBot(botData: BotFormData): Promise<Bot> {
+    async createBot(botData: BotFormData): Promise<BotModel> {
         try {
 
             const account = await this.binanceAccountService.getAccountFutures();
@@ -47,8 +47,9 @@ export class BinanceTradingBotService {
                 throw new Error('Insufficient balance to create bot');
             }
 
-            const bot: Bot = {
-                id: `bot_${botData.symbol}_${Date.now()}`,
+            const bot: BotModel = {
+                // id: `bot_${botData.symbol}_${Date.now()}`,
+                id: `${this.bots.size + 1}`,
                 symbol: botData.symbol,
                 amount: botData.amount,
                 interval: botData.interval,
@@ -189,25 +190,46 @@ export class BinanceTradingBotService {
     }
 
 
-    getBot(id: string): BotModel | null {
-        return this.bots.get(id) || null;
+    async getBot(id: string): Promise<BotModel | null> {
+        let bot = this.bots.get(id) || null;
+
+        if (bot?.id) {
+            const { profit } = await this.binanceAccountService.getFuturesIncomeTradesAndProfit(bot.symbol);
+            const { trades } = await this.binanceAccountService.getFuturesUserTradesAndProfit(bot.symbol);
+            bot.trades = trades;
+            bot.profit = profit;
+        }
+
+        return bot;
     }
 
     getBots(): BotModel[] {
-        return Array.from(this.bots.values());
+        try {
+            return Array.from(this.bots.values());
+        } catch (error) {
+            throw new Error(`Failed to get bots: ${error}`);
+        }
     }
 
-    updateBot(id: string, bot: Partial<Bot>): BotModel | null {
-        const existingBot = this.bots.get(id);
-        if (existingBot) {
-            this.bots.set(id, new BotModel({ ...existingBot, ...bot }));
-            return this.bots.get(id) || null;
+    updateBot(id: string, bot: Partial<BotModel>): BotModel | null {
+        try {
+            const existingBot = this.bots.get(id);
+            if (existingBot) {
+                this.bots.set(id, new BotModel({ ...existingBot, ...bot }));
+                return this.bots.get(id) || null;
+            }
+            return null;
+        } catch (error) {
+            throw new Error(`Failed to update bot: ${error}`);
         }
-        return null;
     }
 
     deleteBot(id: string): void {
-        this.bots.delete(id);
+        try {
+            this.bots.delete(id);
+        } catch (error) {
+            throw new Error(`Failed to delete bot: ${error}`);
+        }
     }
 
     isBotRunning(symbol: string): boolean {
@@ -216,7 +238,11 @@ export class BinanceTradingBotService {
 
 
     async getPositionInfo(symbol: string): Promise<BinancePosition | null> {
-        return this.binanceTradesService.getPosition(symbol);
+        try {
+            return this.binanceTradesService.getPosition(symbol);
+        } catch (error) {
+            throw new Error(`Failed to get position info: ${error}`);
+        }
     }
 
     async getAllPositions(): Promise<BinancePosition[]> {
@@ -232,7 +258,6 @@ export class BinanceTradingBotService {
 
             return positions;
         } catch (error) {
-            console.error('Error getting all positions:', error);
             throw error;
         }
     }

@@ -1,3 +1,5 @@
+import type { FuturesTrade } from "@/features/account/interfaces/account.interfaces";
+
 export interface Bot {
     id: string;
     active: boolean;
@@ -5,8 +7,10 @@ export interface Bot {
     interval: string;
     amount: number;
     leverage: number;
-    created_at: string;
+    profit?: number;
+    trades?: FuturesTrade[];
     quantity?: number;
+    created_at: string;
 }
 
 export interface BotFormData {
@@ -14,4 +18,5 @@ export interface BotFormData {
     amount: number;
     interval: string;
     leverage: number;
+    active: boolean;
 }

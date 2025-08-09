@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import type { BotFormData } from "@/features/bot/interfaces/bot.interface";
+import { useCreateBot } from "@/features/bot/hooks/use-bot";
 
 interface CreateBotModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (botData: BotFormData) => void;
 }
 
 const CRYPTO_PAIRS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT", "SOLUSDT", "DOGEUSDT", "DOTUSDT", "AVAXUSDT", "MATICUSDT", "LTCUSDT", "ATOMUSDT", "LINKUSDT", "UNIUSDT", "ALGOUSDT", "VETUSDT", "FILUSDT", "TRXUSDT", "ETCUSDT", "XLMUSDT"];
@@ -22,12 +22,15 @@ const INTERVALS = [
   { value: "4h", label: "4 hours" },
 ];
 
-export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose, onSubmit }) => {
+export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose }) => {
+  const { mutate: createBot } = useCreateBot();
+
   const [formData, setFormData] = useState<BotFormData>({
     symbol: "BTCUSDT",
     amount: 100,
     interval: "5m",
     leverage: 1,
+    active: true,
   });
 
   const [errors, setErrors] = useState<Partial<BotFormData>>({});
@@ -50,8 +53,11 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose,
       return;
     }
 
-    onSubmit(formData);
-    handleClose();
+    createBot(formData, {
+      onSuccess: () => {
+        handleClose();
+      },
+    });
   };
 
   const handleClose = () => {
@@ -60,12 +66,13 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose,
       amount: 100,
       interval: "5m",
       leverage: 1,
+      active: true,
     });
     setErrors({});
     onClose();
   };
 
-  const handleInputChange = (field: keyof BotFormData, value: string | number) => {
+  const handleInputChange = (field: keyof BotFormData, value: string | number | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
@@ -119,6 +126,13 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose,
               </div>
             </div>
             {errors.leverage && <p className="text-red-500 text-sm mt-1">Leverage must be between 1x and 50x</p>}
+          </div>
+
+          <div className="flex items-center justify-between">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Bot Immediately</label>
+            <button type="button" onClick={() => handleInputChange("active", !formData.active)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${formData.active ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-600"}`}>
+              <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.active ? "translate-x-6" : "translate-x-1"}`} />
+            </button>
           </div>
         </form>
 

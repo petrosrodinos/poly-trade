@@ -103,7 +103,8 @@ export class BinanceTradingBotController {
 
             const id = req.params.id;
 
-            const bot = this.tradingBotService.getBot(id);
+            const bot = await this.tradingBotService.getBot(id);
+
             res.status(200).json(bot);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
