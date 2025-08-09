@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import { BinanceTradesService } from "../../../../integrations/binance/services/binance-trades.service";
 import { BinanceTradingBotService } from './trading-bot.service';
 import { logger } from '../../../../shared/utils/logger';
+import { BotFormDataSchema, SymbolParamSchema } from './dto/bot.dto';
+import { handleValidationError, validateRequest } from '../../../../shared/utils/validation';
+import { z } from 'zod';
 
 export class BinanceTradingBotController {
     private binanceTradesService: BinanceTradesService;
@@ -12,19 +15,40 @@ export class BinanceTradingBotController {
         this.tradingBotService = new BinanceTradingBotService();
     }
 
-    startBot = async (req: Request, res: Response): Promise<void> => {
-        const symbol = (req.params.symbol as string)?.toUpperCase();
-
-        if (!symbol) {
-            res.status(400).json({ message: 'Symbol parameter is required' });
-            return;
-        }
-
+    createBot = async (req: Request, res: Response): Promise<void> => {
         try {
+            const validatedData = validateRequest(BotFormDataSchema, req.body);
+
+            const bot = await this.tradingBotService.createBot(validatedData);
+
+            res.status(200).json({ message: `Binance trading bot created for ${validatedData.symbol}`, bot });
+        } catch (error: any) {
+            if (error instanceof z.ZodError) {
+                handleValidationError(error, res);
+                return;
+            }
+
+            console.error(`Failed to create bot:`, error);
+            res.status(500).json({
+                message: `Failed to create bot`,
+                error: error.message || 'Unknown error occurred'
+            });
+        }
+    }
+
+    startBot = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { symbol } = validateRequest(SymbolParamSchema, req.params);
+
             await this.tradingBotService.startBot(symbol);
             res.status(200).json({ message: `Binance trading bot started for ${symbol}` });
         } catch (error: any) {
-            console.error(`Failed to start bot for ${symbol}:`, error);
+            if (error instanceof z.ZodError) {
+                handleValidationError(error, res);
+                return;
+            }
+
+            console.error(`Failed to start bot:`, error);
 
             if (error.message?.includes('Insufficient balance')) {
                 res.status(400).json({
@@ -38,7 +62,7 @@ export class BinanceTradingBotController {
                 });
             } else {
                 res.status(500).json({
-                    message: `Failed to start bot for ${symbol}`,
+                    message: `Failed to start bot`,
                     error: error.message || 'Unknown error occurred'
                 });
             }
@@ -46,18 +70,18 @@ export class BinanceTradingBotController {
     }
 
     stopBot = async (req: Request, res: Response): Promise<void> => {
-        const symbol = (req.params.symbol as string)?.toUpperCase();
-
-        if (!symbol) {
-            res.status(400).json({ message: 'Symbol parameter is required' });
-            return;
-        }
-
         try {
+            const { symbol } = validateRequest(SymbolParamSchema, req.params);
+
             await this.tradingBotService.stopBot(symbol);
             res.status(200).json({ message: `Binance trading bot stopped for ${symbol}` });
         } catch (error: any) {
-            console.error(`Failed to stop bot for ${symbol}:`, error);
+            if (error instanceof z.ZodError) {
+                handleValidationError(error, res);
+                return;
+            }
+
+            console.error(`Failed to stop bot:`, error);
 
             if (error.message?.includes('Trading')) {
                 res.status(400).json({
@@ -66,7 +90,7 @@ export class BinanceTradingBotController {
                 });
             } else {
                 res.status(500).json({
-                    message: `Failed to stop bot for ${symbol}`,
+                    message: `Failed to stop bot`,
                     error: error.message || 'Unknown error occurred'
                 });
             }
@@ -74,16 +98,45 @@ export class BinanceTradingBotController {
     }
 
 
+    getBot = async (req: Request, res: Response): Promise<void> => {
+        try {
+
+            const id = req.params.id;
+
+            const bot = this.tradingBotService.getBot(id);
+            res.status(200).json(bot);
+        } catch (error: any) {
+            if (error instanceof z.ZodError) {
+                handleValidationError(error, res);
+                return;
+            }
+
+            console.error(`Failed to get bot status:`, error);
+            res.status(500).json({
+                message: `Failed to retrieve bot status`,
+                error: error.message || 'Unknown error occurred'
+            });
+        }
+    }
+
+    getBots = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const bots = this.tradingBotService.getBots();
+            res.status(200).json(bots);
+        } catch (error: any) {
+            console.error(`Failed to get bots:`, error);
+            res.status(500).json({
+                message: `Failed to retrieve bots`,
+                error: error.message || 'Unknown error occurred'
+            });
+        }
+    }
+
 
     getPositionInfo = async (req: Request, res: Response): Promise<void> => {
-        const symbol = (req.params.symbol as string)?.toUpperCase();
-
-        if (!symbol) {
-            res.status(400).json({ message: 'Symbol parameter is required' });
-            return;
-        }
-
         try {
+            const { symbol } = validateRequest(SymbolParamSchema, req.params);
+
             const position = await this.tradingBotService.getPositionInfo(symbol);
 
             if (!position) {
@@ -100,33 +153,20 @@ export class BinanceTradingBotController {
                 positionSide: position.positionSide
             });
         } catch (error: any) {
-            console.error(`Failed to get position info for ${symbol}:`, error);
+            if (error instanceof z.ZodError) {
+                handleValidationError(error, res);
+                return;
+            }
+
+            console.error(`Failed to get position info:`, error);
             res.status(500).json({
-                message: `Failed to retrieve position info for ${symbol}`,
+                message: `Failed to retrieve position info`,
                 error: error.message || 'Unknown error occurred'
             });
         }
     }
 
-    getBotStatus = async (req: Request, res: Response): Promise<void> => {
-        const symbol = (req.params.symbol as string)?.toUpperCase();
 
-        if (!symbol) {
-            res.status(400).json({ message: 'Symbol parameter is required' });
-            return;
-        }
-
-        try {
-            const status = this.tradingBotService.getBotStatus(symbol);
-            res.status(200).json(status);
-        } catch (error: any) {
-            console.error(`Failed to get bot status for ${symbol}:`, error);
-            res.status(500).json({
-                message: `Failed to retrieve bot status for ${symbol}`,
-                error: error.message || 'Unknown error occurred'
-            });
-        }
-    }
 
     getAllPositions = async (req: Request, res: Response): Promise<void> => {
         try {
@@ -141,40 +181,10 @@ export class BinanceTradingBotController {
         }
     }
 
-    streamBotStatus = async (req: Request, res: Response): Promise<void> => {
-        const symbol = (req.params.symbol as string)?.toUpperCase();
-
-        if (!symbol) {
-            res.status(400).json({ message: 'Symbol parameter is required' });
-            return;
-        }
-
-        if (!req.headers.upgrade || req.headers.upgrade.toLowerCase() !== 'websocket') {
-            res.status(400).send('WebSocket connection required');
-            return;
-        }
-
-        const ws = req.socket as any;
-
-        const sendStatus = () => {
-            const status = this.tradingBotService.getBotStatus(symbol);
-            ws.send(JSON.stringify(status));
-        };
-
-        sendStatus();
-
-        const interval = setInterval(sendStatus, 5000);
-
-        ws.on('close', () => {
-            clearInterval(interval);
-        });
-    }
-
 
     cancelOrder = async (req: Request, res: Response) => {
         try {
-
-            const symbol = req.params.symbol as string;
+            const { symbol } = validateRequest(SymbolParamSchema, req.params);
 
             const orders = await this.binanceTradesService.closePosition(symbol);
             logger.success(`Cancelled order for ${symbol}`);
@@ -183,6 +193,11 @@ export class BinanceTradingBotController {
                 orders: orders
             });
         } catch (error: any) {
+            if (error instanceof z.ZodError) {
+                handleValidationError(error, res);
+                return;
+            }
+
             res.status(500).json({
                 message: 'Failed to cancel order',
                 error: error.message

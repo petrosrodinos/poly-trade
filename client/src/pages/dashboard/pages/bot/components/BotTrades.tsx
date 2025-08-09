@@ -4,15 +4,16 @@ import { Spinner } from "@/components/ui/spinner";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
 import { usePagination } from "@/hooks/usePagination";
 import type { FuturesTrade } from "@/features/account/interfaces/account.interfaces";
+import { useFormatters } from "@/pages/dashboard/hooks";
 
 interface TradesTableProps {
   trades?: FuturesTrade[];
   isLoading: boolean;
-  formatCurrency: (amount: number) => string;
-  formatTimestamp: (timestamp: number) => string;
 }
 
-export const BotTrades = ({ trades, isLoading, formatCurrency, formatTimestamp }: TradesTableProps) => {
+export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
+  const { formatCurrency, formatTimestamp } = useFormatters();
+
   const displayTrades = trades && trades.length > 0 ? trades : [];
 
   const {

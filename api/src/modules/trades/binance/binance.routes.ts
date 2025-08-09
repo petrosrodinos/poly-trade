@@ -10,17 +10,17 @@ const binanceTradingBotController = new BinanceTradingBotController();
 const binanceAccountController = new BinanceAccountController();
 
 router.get('/stream/:symbol', binanceStreamingController.streamTickerPrice);
-
 router.get('/status', binanceStreamingController.getStreamStatus);
 router.post('/terminate-all', binanceStreamingController.terminateAllStreams);
 
-router.post('/bot/start/:symbol', binanceTradingBotController.startBot);
-router.post('/bot/stop/:symbol', binanceTradingBotController.stopBot);
-router.get('/bot/status/:symbol', binanceTradingBotController.getBotStatus);
-router.get('/bot/position/:symbol', binanceTradingBotController.getPositionInfo);
-router.get('/bot/positions', binanceTradingBotController.getAllPositions);
-router.get('/bot/stream-status/:symbol', binanceTradingBotController.streamBotStatus);
+router.post('/bot', binanceTradingBotController.createBot);
+router.post('/bot/start/:id', binanceTradingBotController.startBot);
+router.post('/bot/stop/:id', binanceTradingBotController.stopBot);
+router.get('/bot/:id', binanceTradingBotController.getBot);
+router.get('/bots', binanceTradingBotController.getBots);
 router.post('/bot/orders/cancel/:symbol', binanceTradingBotController.cancelOrder);
+router.get('/bot/position/:symbol', binanceTradingBotController.getPositionInfo); // to remove
+router.get('/bot/positions', binanceTradingBotController.getAllPositions); // to remove
 
 router.get('/account/status', binanceAccountController.getAccount);
 router.get('/account/trades', binanceAccountController.getFuturesUserTrades);

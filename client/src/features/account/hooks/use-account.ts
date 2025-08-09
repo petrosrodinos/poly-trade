@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAccountIncome, getAccountIncomeChart, getAccountStatus, getAccountTrades, getIncomeChart } from "../services";
+import { getAccountIncome, getAccountIncomeChart, getAccountStatus, getAccountTrades, getIncomeChart } from "../services/account.service";
 
 export const useAccountIncome = () => {
     return useQuery({

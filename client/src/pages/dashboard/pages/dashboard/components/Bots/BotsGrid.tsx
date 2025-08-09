@@ -3,19 +3,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BotCard } from "./BotCard";
 import { CreateBotModal } from "./CreateBotModal";
-import type { BotFormData } from "./CreateBotModal";
-
-interface Bot {
-  id: string;
-  active: boolean;
-  symbol: string;
-  created_at: string;
-  interval: string;
-  amount: number;
-  quantity: number;
-  profit: number;
-  exchange?: "binance" | "alpaca";
-}
+import type { Bot, BotFormData } from "@/features/bot/interfaces/bot.interface";
 
 const mockBots: Bot[] = [
   {
@@ -27,7 +15,7 @@ const mockBots: Bot[] = [
     amount: 1000,
     quantity: 0.025,
     profit: 234.56,
-    exchange: "binance",
+    leverage: 10,
   },
   {
     id: "2",
@@ -38,7 +26,7 @@ const mockBots: Bot[] = [
     amount: 2500,
     quantity: 15,
     profit: -45.2,
-    exchange: "alpaca",
+    leverage: 10,
   },
   {
     id: "3",
@@ -49,7 +37,7 @@ const mockBots: Bot[] = [
     amount: 500,
     quantity: 0.8,
     profit: 0,
-    exchange: "binance",
+    leverage: 10,
   },
   {
     id: "4",
@@ -60,7 +48,7 @@ const mockBots: Bot[] = [
     amount: 750,
     quantity: 1250,
     profit: 89.12,
-    exchange: "binance",
+    leverage: 10,
   },
   {
     id: "5",
@@ -71,7 +59,7 @@ const mockBots: Bot[] = [
     amount: 1800,
     quantity: 8,
     profit: -12.34,
-    exchange: "alpaca",
+    leverage: 10,
   },
   {
     id: "6",
@@ -82,7 +70,7 @@ const mockBots: Bot[] = [
     amount: 1200,
     quantity: 12.5,
     profit: 156.78,
-    exchange: "binance",
+    leverage: 10,
   },
 ];
 

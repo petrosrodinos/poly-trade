@@ -1,18 +1,12 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import type { BotFormData } from "@/features/bot/interfaces/bot.interface";
 
 interface CreateBotModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (botData: BotFormData) => void;
-}
-
-export interface BotFormData {
-  symbol: string;
-  amount: number;
-  interval: string;
-  leverage: number;
 }
 
 const CRYPTO_PAIRS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT", "SOLUSDT", "DOGEUSDT", "DOTUSDT", "AVAXUSDT", "MATICUSDT", "LTCUSDT", "ATOMUSDT", "LINKUSDT", "UNIUSDT", "ALGOUSDT", "VETUSDT", "FILUSDT", "TRXUSDT", "ETCUSDT", "XLMUSDT"];

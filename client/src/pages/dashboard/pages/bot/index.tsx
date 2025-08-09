@@ -1,26 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { useFormatters } from "../../hooks";
 import { useAccountTrades } from "@/features/account/hooks/use-account";
 import { BotTrades } from "./components/BotTrades";
 import { BotInfo } from "./components/BotInfo";
 import { BotControls } from "./components/BotControls";
 import { Button } from "@/components/ui/button";
+import type { Bot } from "@/features/bot/interfaces/bot.interface";
 
 const BotPage = () => {
   const navigate = useNavigate();
   const { data: trades, isLoading: isTradesLoading } = useAccountTrades();
-  const { formatCurrency, formatTimestamp } = useFormatters();
 
   const [isRunning, setIsRunning] = useState(true);
 
-  const botData = {
+  const botData: Bot = {
+    id: "1",
+    active: true,
+    created_at: "2024-01-15T10:30:00Z",
     quantity: 10,
-    price: 42350.75,
+    amount: 42350.75,
     interval: "5m",
     profit: 1250.89,
     symbol: "BTCUSDT",
+    leverage: 10,
   };
 
   const handleStartStop = () => {
@@ -40,9 +43,9 @@ const BotPage = () => {
 
       <BotControls isRunning={isRunning} onStartStop={handleStartStop} onDelete={handleDelete} symbol={botData.symbol} />
 
-      <BotInfo quantity={botData.quantity} price={botData.price} interval={botData.interval} profit={botData.profit} formatCurrency={formatCurrency} />
+      <BotInfo bot={botData} />
 
-      <BotTrades trades={trades} isLoading={isTradesLoading} formatCurrency={formatCurrency} formatTimestamp={formatTimestamp} />
+      <BotTrades trades={trades} isLoading={isTradesLoading} />
     </div>
   );
 };

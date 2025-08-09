@@ -4,6 +4,8 @@ import { BinanceStreamingService } from "../../../../integrations/binance/servic
 import { BinanceAccountService } from "../../../../integrations/binance/services/binance-account.service";
 import { TradesConfig } from "../../../../shared/constants/trades";
 import { logger } from "../../../../shared/utils/logger";
+import { Bot, BotFormData } from "./dto/bot.dto";
+import { BotModel } from "./models/bot.model";
 
 interface Candle {
     open: number;
@@ -18,6 +20,7 @@ export class BinanceTradingBotService {
     binanceTradesService: BinanceTradesService;
     binanceAccountService: BinanceAccountService;
 
+    private bots: Map<string, BotModel> = new Map();
     private activeStreams: Set<string> = new Set();
     private candles: Map<string, Candle[]> = new Map();
     private positions: Map<string, 'long' | 'short' | null> = new Map();
@@ -29,6 +32,41 @@ export class BinanceTradingBotService {
         this.binanceStreamingService = new BinanceStreamingService();
         this.binanceTradesService = new BinanceTradesService();
         this.binanceAccountService = new BinanceAccountService();
+    }
+
+    async createBot(botData: BotFormData): Promise<Bot> {
+        try {
+
+            const account = await this.binanceAccountService.getAccountFutures();
+            if (!account) {
+                throw new Error('Unable to fetch account information');
+            }
+
+            const usdtBalance = account.assets.find((asset: any) => asset.asset === 'USDT')?.availableBalance || 0;
+            if (parseFloat(usdtBalance.toString()) < botData.amount) {
+                throw new Error('Insufficient balance to create bot');
+            }
+
+            const bot: Bot = {
+                id: `bot_${botData.symbol}_${Date.now()}`,
+                symbol: botData.symbol,
+                amount: botData.amount,
+                interval: botData.interval,
+                leverage: botData.leverage,
+                active: botData.active,
+                created_at: new Date().toISOString(),
+                quantity: 0,
+            };
+
+            this.bots.set(bot.id, new BotModel(bot));
+
+            logger.success(`Bot configuration created for ${botData.symbol}`);
+            return bot;
+
+        } catch (error) {
+            console.error(`Error creating bot for ${botData.symbol}:`, error);
+            throw error;
+        }
     }
 
     async startBot(symbol: string): Promise<void> {
@@ -152,14 +190,12 @@ export class BinanceTradingBotService {
     }
 
 
-    getBotStatus(symbol: string): any {
-        return {
-            symbol,
-            isRunning: this.isBotRunning(symbol),
-            position: this.positions.get(symbol) || 'none',
-            lastCandle: this.candles.get(symbol)?.slice(-1)[0] || null,
-            totalCandles: this.candles.get(symbol)?.length || 0
-        };
+    getBot(id: string): BotModel | null {
+        return this.bots.get(id) || null;
+    }
+
+    getBots(): BotModel[] {
+        return Array.from(this.bots.values());
     }
 
     isBotRunning(symbol: string): boolean {

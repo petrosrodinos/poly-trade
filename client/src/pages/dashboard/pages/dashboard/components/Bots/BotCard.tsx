@@ -1,20 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bot, Calendar, Clock, DollarSign, Hash, TrendingUp } from "lucide-react";
+import { Bot as BotIcon, Calendar, Clock, DollarSign, Hash, Scale, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Routes } from "@/routes/routes";
+import type { Bot } from "@/features/bot/interfaces/bot.interface";
 
 interface BotCardProps {
-  bot: {
-    id: string;
-    active: boolean;
-    symbol: string;
-    created_at: string;
-    interval: string;
-    amount: number;
-    quantity: number;
-    profit: number;
-  };
+  bot: Bot;
   onToggle?: (botId: string) => void;
 }
 
@@ -60,7 +52,7 @@ export const BotCard = ({ bot }: BotCardProps) => {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center text-lg">
-            <Bot className="w-5 h-5 mr-2" />
+            <BotIcon className="w-5 h-5 mr-2" />
             {bot.symbol}
           </CardTitle>
           <Badge variant={getStatusBadgeVariant(bot.active)} className={getStatusColor(bot.active)}>
@@ -91,6 +83,11 @@ export const BotCard = ({ bot }: BotCardProps) => {
           <div className="flex items-center space-x-2">
             <Clock className="w-4 h-4 text-purple-500" />
             <span className="font-semibold">{bot.interval}</span>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Scale className="w-4 h-4 text-orange-500" />
+            <span className="font-semibold">{bot.leverage}x</span>
           </div>
 
           <div className="flex items-center space-x-2">

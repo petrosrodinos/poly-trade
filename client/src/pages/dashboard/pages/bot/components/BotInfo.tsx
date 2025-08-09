@@ -1,14 +1,16 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Bot } from "@/features/bot/interfaces/bot.interface";
+import { useFormatters } from "@/pages/dashboard/hooks";
 
 interface BotInfoProps {
-  quantity: number;
-  price: number;
-  interval: string;
-  profit: number;
-  formatCurrency: (amount: number) => string;
+  bot: Bot;
 }
 
-export const BotInfo = ({ quantity, price, interval, profit, formatCurrency }: BotInfoProps) => {
+export const BotInfo = ({ bot }: BotInfoProps) => {
+  const { quantity, amount, interval, profit, leverage } = bot;
+
+  const { formatCurrency } = useFormatters();
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <Card>
@@ -33,11 +35,11 @@ export const BotInfo = ({ quantity, price, interval, profit, formatCurrency }: B
 
       <Card>
         <CardHeader className="pb-2">
-          <CardDescription>Price</CardDescription>
-          <CardTitle className="text-xl sm:text-2xl">{formatCurrency(price)}</CardTitle>
+          <CardDescription>Amount</CardDescription>
+          <CardTitle className="text-xl sm:text-2xl">{formatCurrency(amount)}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">Entry price</p>
+          <p className="text-sm text-muted-foreground">Entry amount</p>
         </CardContent>
       </Card>
 
@@ -48,6 +50,16 @@ export const BotInfo = ({ quantity, price, interval, profit, formatCurrency }: B
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">Trading frequency</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardDescription>Leverage</CardDescription>
+          <CardTitle className="text-xl sm:text-2xl">{leverage}x</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">Leverage used</p>
         </CardContent>
       </Card>
     </div>
