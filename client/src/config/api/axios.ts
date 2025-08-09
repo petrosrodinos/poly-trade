@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { API_URL } from './routes'
-import { getAuthStoreState } from '@/stores/auth'
+import { getAuthStoreState } from '@/stores/auth.store'
 import { isTokenExpired } from '@/lib/token';
 
 const axiosInstance = axios.create({
@@ -17,7 +17,7 @@ axiosInstance.interceptors.request.use((config) => {
     if (authState?.expires_in && isTokenExpired(authState.expires_in)) {
         authState.logout();
 
-        return config;
+        return Promise.reject(new Error('Token expired'));
     }
 
     if (authState.access_token) {

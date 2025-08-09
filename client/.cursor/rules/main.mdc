@@ -1,15 +1,17 @@
 ---
-description: This rule provides standards for frontend components
+description: This a mobile first, responsive and modern styled react project for a trading bot platform
 globs:
 alwaysApply: true
 ---
 
 This rule provides standards for frontend components:
-Always use Tailwind and shadcn/ui for styling
 Follow component naming conventions
 Props interface at top. Example UserPageProps
 Component as named export
+always separate components into separate files following the folder structure below
+never create readme.md files
 use arrow functions for functions and components
+place helper page and componentfunctions in the hooks folder at the top level of the component folder
 use snake_case for object keys,interfaces
 use camelCase for function names, functionparameters,variable names and hooks
 use PascalCase for component names
@@ -44,3 +46,9 @@ Folder structure
 - lib/
 - config/
 - constants/
+
+Styling
+Always use Tailwind and shadcn/ui for styling
+always use responsive mobile first design
+always use modern styled components
+always optimize for dark theme mode
