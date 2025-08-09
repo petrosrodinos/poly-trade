@@ -5,18 +5,17 @@ alwaysApply: true
 ---
 
 This rule provides standards for frontend components:
-When working in components directory:
 Always use Tailwind and shadcn/ui for styling
 Follow component naming conventions
 Props interface at top. Example UserPageProps
 Component as named export
+use arrow functions for functions and components
+use snake_case for object keys,interfaces
+use camelCase for function names, functionparameters,variable names and hooks
+use PascalCase for component names
+use kebab-case for file names
 
-When working in pages directory:
-Follow page naming conventions
-Props interface at top. Example UserPageProps
-Component as named export
-
-example folder structure
+Folder structure
 
 - features/
 
@@ -41,3 +40,7 @@ example folder structure
 - utils/
 - hooks/
 - stores/
+- routes/
+- lib/
+- config/
+- constants/
