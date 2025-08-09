@@ -1,6 +1,7 @@
 import { BinanceAccountService } from "../../../../integrations/binance/services/binance-account.service";
 import { AccountUtils } from "./account.utils";
 
+
 export class BinanceAccountServiceClass {
     private binanceAccountService: BinanceAccountService;
     private accountUtils: AccountUtils;
@@ -25,6 +26,8 @@ export class BinanceAccountServiceClass {
                 commission,
                 netProfit,
                 trades: trades.length,
+                averageProfit: netProfit / trades.length,
+                averageCommission: commission / trades.length,
                 income: incomeSummary,
             };
         } catch (error: any) {
