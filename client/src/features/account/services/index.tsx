@@ -37,3 +37,12 @@ export const getAccountIncomeChart = async (): Promise<AccountIncomeChart[]> => 
     throw error;
   }
 };
+
+export const getIncomeChart = async (): Promise<AccountIncomeChart[]> => {
+  try {
+    const response = await axiosInstance.get(ApiRoutes.account.income_chart);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -2,6 +2,7 @@ import { useAccountStatus } from "@/features/account/hooks/use-account";
 import { DashboardHeader, BotsStatus, BotsGrid } from "./components";
 import { StatCards } from "./components/Stats/StatCards";
 import { PerformanceOverview } from "./components/PerformanceOverview";
+import { IncomeChart } from "@/pages/dashboard/pages/dashboard/components/IncomeChart";
 
 const DashboardPage = () => {
   const { data: accountStatus, isLoading: isAccountLoading } = useAccountStatus();
@@ -16,6 +17,10 @@ const DashboardPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <PerformanceOverview accountStatus={accountStatus} isLoading={isAccountLoading} />
           <BotsStatus />
+        </div>
+
+        <div className="grid grid-cols-1 gap-6">
+          <IncomeChart title="Income Performance" height={350} />
         </div>
 
         <BotsGrid />

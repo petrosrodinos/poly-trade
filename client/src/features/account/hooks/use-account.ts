@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAccountIncome, getAccountIncomeChart, getAccountStatus, getAccountTrades } from "../services";
+import { getAccountIncome, getAccountIncomeChart, getAccountStatus, getAccountTrades, getIncomeChart } from "../services";
 
 export const useAccountIncome = () => {
     return useQuery({
@@ -26,5 +26,12 @@ export const useAccountIncomeChart = () => {
     return useQuery({
         queryKey: ["account-income-chart"],
         queryFn: getAccountIncomeChart,
+    });
+};
+
+export const useIncomeChart = () => {
+    return useQuery({
+        queryKey: ["income-chart"],
+        queryFn: getIncomeChart,
     });
 };
