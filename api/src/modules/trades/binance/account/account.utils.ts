@@ -17,7 +17,10 @@ export class AccountUtils {
         return {
             grossProfit,
             commission,
-            netProfit: grossProfit - commission
+            netProfit: grossProfit - commission,
+            averageProfit: grossProfit / trades.length,
+            averageCommission: commission / trades.length,
+            trades: trades.length
         };
     }
 
@@ -36,7 +39,11 @@ export class AccountUtils {
         return {
             grossProfit,
             commission,
-            netProfit: grossProfit - commission
+            netProfit: grossProfit - commission,
+            averageProfit: grossProfit / incomes.length,
+            averageCommission: commission / incomes.length,
+            trades: incomes.length
+
         };
     }
 }

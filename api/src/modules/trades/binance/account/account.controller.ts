@@ -35,7 +35,8 @@ export class BinanceAccountController {
 
     getFuturesUserTrades = async (req: Request, res: Response) => {
         try {
-            const orders = await this.binanceAccountService.getFuturesUserTrades();
+            const symbol = req.query.symbol?.toString().toUpperCase() as string;
+            const orders = await this.binanceAccountService.getFuturesUserTrades(symbol);
             res.status(200).json(orders);
         } catch (error: any) {
             res.status(500).json({
@@ -46,11 +47,10 @@ export class BinanceAccountController {
     }
 
 
-
-
     getFuturesIncome = async (req: Request, res: Response) => {
         try {
-            const income = await this.binanceAccountService.getFuturesIncome();
+            const symbol = req.query.symbol?.toString().toUpperCase() as string;
+            const income = await this.binanceAccountService.getFuturesIncome(symbol);
             res.status(200).json(income);
         } catch (error: any) {
             res.status(500).json({

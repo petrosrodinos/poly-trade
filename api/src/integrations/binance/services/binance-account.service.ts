@@ -21,9 +21,16 @@ export class BinanceAccountService {
         return trades;
     }
 
-    async futuresIncome(): Promise<FuturesIncome[]> {
+    async futuresIncome(symbol?: string): Promise<FuturesIncome[]> {
         try {
-            return await this.binanceClient.futuresIncome();
+
+            let income = await this.binanceClient.futuresIncome();
+
+            if (symbol) {
+                income = income.filter((income: FuturesIncome) => income.symbol === symbol);
+            }
+
+            return income;
         } catch (error) {
             throw new Error(`Failed to get futures income: ${error}`);
         }
