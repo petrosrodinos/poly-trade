@@ -1,4 +1,9 @@
+import { useState } from "react";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { BotCard } from "./BotCard";
+import { CreateBotModal } from "./CreateBotModal";
+import type { BotFormData } from "./CreateBotModal";
 
 interface Bot {
   id: string;
@@ -82,8 +87,13 @@ const mockBots: Bot[] = [
 ];
 
 export const BotsGrid = () => {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const activeBots = mockBots.filter((bot) => bot.active).length;
   const totalProfit = mockBots.reduce((sum, bot) => sum + bot.profit, 0);
+
+  const handleCreateBot = (botData: BotFormData) => {
+    console.log("Creating new bot:", botData);
+  };
 
   return (
     <div className="space-y-6">
@@ -101,6 +111,11 @@ export const BotsGrid = () => {
             </span>
           </p>
         </div>
+
+        <Button onClick={() => setIsCreateModalOpen(true)}>
+          <Plus size={20} />
+          Create New Bot
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -108,6 +123,8 @@ export const BotsGrid = () => {
           <BotCard key={bot.id} bot={bot} />
         ))}
       </div>
+
+      <CreateBotModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} onSubmit={handleCreateBot} />
     </div>
   );
 };
