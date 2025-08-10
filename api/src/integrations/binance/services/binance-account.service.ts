@@ -46,7 +46,7 @@ export class BinanceAccountService {
                 income = income.filter((income: FuturesIncome) => income.symbol === symbol);
             }
 
-            return income;
+            return this.accountUtils.sortIncomes(income);
         } catch (error) {
             throw new Error(`Failed to get futures income: ${error}`);
         }

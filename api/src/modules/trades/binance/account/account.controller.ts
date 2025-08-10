@@ -24,7 +24,7 @@ export class BinanceAccountController {
     getAccountIncomeChart = async (req: Request, res: Response) => {
         try {
             const timeframe = req.query.timeframe as Timeframe;
-            const incomeChart = await this.binanceAccountService.getAccountIncomeChart(timeframe);
+            const incomeChart = await this.binanceAccountService.getAccountTradesChart(timeframe);
             res.status(200).json(incomeChart);
         } catch (error: any) {
             res.status(500).json({

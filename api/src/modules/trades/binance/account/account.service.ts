@@ -1,6 +1,6 @@
 import { FuturesAccountInfo, FuturesIncome, FuturesTrade } from "@/integrations/binance/binance.interfaces";
 import { BinanceAccountService } from "../../../../integrations/binance/services/binance-account.service";
-import { AccountIncomeChart, AccountSummary, Timeframe } from "./account.interfaces";
+import { AccountChartData, AccountSummary, Timeframe } from "./account.interfaces";
 import { AccountUtils } from "../../../../integrations/binance/utils/account.utils";
 
 
@@ -22,11 +22,12 @@ export class BinanceAccountServiceClass {
             const tradesSummary = this.accountUtils.calculateTotalProfit(trades);
             const incomeSummary = this.accountUtils.calculateIncomeSummary(income);
 
+
             return {
                 totalWalletBalance: parseFloat(account.totalWalletBalance),
                 availableBalance: parseFloat(account.availableBalance),
-                trades: tradesSummary,
-                income: incomeSummary,
+                trades: incomeSummary,
+                income: tradesSummary,
             };
         } catch (error: any) {
             throw new Error(`Failed to get account status: ${error}`);
@@ -64,10 +65,20 @@ export class BinanceAccountServiceClass {
     }
 
 
-    getAccountIncomeChart = async (timeframe: Timeframe): Promise<AccountIncomeChart[]> => {
+    getAccountIncomeChart = async (timeframe: Timeframe): Promise<AccountChartData[]> => {
         try {
             const income = await this.getFuturesIncome();
             const incomeChart = this.accountUtils.calculateIncomeChart(income, timeframe);
+            return incomeChart
+        } catch (error: any) {
+            throw new Error(`Failed to get account income chart: ${error}`);
+        }
+    }
+
+    getAccountTradesChart = async (timeframe: Timeframe): Promise<AccountChartData[]> => {
+        try {
+            const trades = await this.getFuturesUserTrades();
+            const incomeChart = this.accountUtils.calculateTradesChart(trades, timeframe);
             return incomeChart
         } catch (error: any) {
             throw new Error(`Failed to get account income chart: ${error}`);

@@ -14,7 +14,7 @@ export interface AccountSummary {
     income: TradeProfitSummary;
 }
 
-export interface AccountIncomeChart {
+export interface AccountChartData {
     time: string;
     value: number;
 }
