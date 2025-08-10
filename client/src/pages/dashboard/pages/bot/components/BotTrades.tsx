@@ -156,6 +156,7 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
                   <div className="flex justify-between sm:block sm:text-right">
                     <div className="text-sm font-medium">{formatCurrency(parseFloat(trade.price))}</div>
                     <div className={`text-xs ${parseFloat(trade.realizedPnl) >= 0 ? "text-green-600" : "text-red-600"}`}>{formatCurrency(parseFloat(trade.realizedPnl))}</div>
+                    <div className="text-xs text-slate-500">Commission: {formatCurrency(parseFloat(trade.commission))}</div>
                   </div>
                 </div>
               ))}
