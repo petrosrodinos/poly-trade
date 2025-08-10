@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { BotCard } from "./BotCard";
 import { CreateBotModal } from "./CreateBotModal";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface BotsGridProps {
   bots: Bot[];
+  isLoading: boolean;
 }
 
-export const BotsGrid = ({ bots }: BotsGridProps) => {
+export const BotsGrid = ({ bots, isLoading }: BotsGridProps) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const activeBots = bots?.filter((bot) => bot.active).length;
   const totalProfit = bots?.reduce((sum, bot) => sum + (bot.profit || 0), 0) || 0;
@@ -20,7 +22,7 @@ export const BotsGrid = ({ bots }: BotsGridProps) => {
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Trading Bots</h2>
           <p className="text-gray-600 dark:text-gray-400">
-            {activeBots} of {bots?.length} bots active • Total P&L:{" "}
+            {activeBots} of {bots?.length} bots active • Total Profit:{" "}
             <span className={totalProfit >= 0 ? "text-green-600" : "text-red-600"}>
               {new Intl.NumberFormat("en-US", {
                 style: "currency",
@@ -37,7 +39,13 @@ export const BotsGrid = ({ bots }: BotsGridProps) => {
         </Button>
       </div>
 
-      {bots && bots.length > 0 ? (
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, index) => (
+            <Skeleton key={index} className="w-full h-32" />
+          ))}
+        </div>
+      ) : bots && bots.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {bots.map((bot) => (
             <BotCard key={bot.id} bot={bot} />

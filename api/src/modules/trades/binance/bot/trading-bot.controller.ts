@@ -122,7 +122,7 @@ export class BinanceTradingBotController {
 
     getBots = async (req: Request, res: Response): Promise<void> => {
         try {
-            const bots = this.tradingBotService.getBots();
+            const bots = await this.tradingBotService.getBots();
             res.status(200).json(bots);
         } catch (error: any) {
             console.error(`Failed to get bots:`, error);

@@ -1,38 +1,17 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { useAccountTrades } from "@/features/account/hooks/use-account";
 import { BotTrades } from "./components/BotTrades";
 import { BotInfo } from "./components/BotInfo";
 import { BotControls } from "./components/BotControls";
 import { Button } from "@/components/ui/button";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
+import { useBot } from "@/features/bot/hooks/use-bot";
 
 const BotPage = () => {
   const navigate = useNavigate();
-  const { data: trades, isLoading: isTradesLoading } = useAccountTrades();
+  const { id } = useParams();
 
-  const [isRunning, setIsRunning] = useState(true);
-
-  const botData: Bot = {
-    id: "1",
-    active: true,
-    created_at: "2024-01-15T10:30:00Z",
-    quantity: 10,
-    amount: 42350.75,
-    interval: "5m",
-    profit: 1250.89,
-    symbol: "BTCUSDT",
-    leverage: 10,
-  };
-
-  const handleStartStop = () => {
-    setIsRunning(!isRunning);
-  };
-
-  const handleDelete = () => {
-    console.log("Delete bot requested");
-  };
+  const { data: bot, isLoading: isBotLoading, refetch: refetchBot, isRefetching: isRefetchingBot } = useBot(id || "");
 
   return (
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
@@ -41,11 +20,11 @@ const BotPage = () => {
         Back to Dashboard
       </Button>
 
-      <BotControls isRunning={isRunning} onStartStop={handleStartStop} onDelete={handleDelete} symbol={botData.symbol} />
+      <BotControls bot={bot || ({} as Bot)} isLoading={isBotLoading} refetch={refetchBot} isRefetching={isRefetchingBot} />
 
-      <BotInfo bot={botData} />
+      <BotInfo bot={bot || ({} as Bot)} isLoading={isBotLoading} />
 
-      <BotTrades trades={trades} isLoading={isTradesLoading} />
+      <BotTrades trades={bot?.trades || []} isLoading={isBotLoading} />
     </div>
   );
 };

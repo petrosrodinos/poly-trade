@@ -22,6 +22,7 @@ export interface FuturesTrade {
     price: string;
     qty: string;
     realizedPnl: string;
+    unrealizedPnl: string;
     quoteQty: string;
     commission: string;
     commissionAsset: string;

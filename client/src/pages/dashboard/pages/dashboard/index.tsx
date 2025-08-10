@@ -6,13 +6,13 @@ import { IncomeChart } from "@/pages/dashboard/pages/dashboard/components/Income
 import { useBots } from "@/features/bot/hooks/use-bot";
 
 const DashboardPage = () => {
-  const { data: accountStatus, isLoading: isAccountLoading } = useAccountStatus();
-  const { data: bots } = useBots();
+  const { data: accountStatus, isLoading: isAccountLoading, isRefetching: isRefetchingAccount, refetch: refetchAccount } = useAccountStatus();
+  const { data: bots, isLoading: isLoading } = useBots();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        <DashboardHeader />
+        <DashboardHeader refetch={refetchAccount} isRefreshing={isAccountLoading || isLoading || isRefetchingAccount} />
 
         <StatCards accountStatus={accountStatus!} isAccountLoading={isAccountLoading} />
 
@@ -25,7 +25,7 @@ const DashboardPage = () => {
           <IncomeChart title="Income Performance" height={350} />
         </div>
 
-        <BotsGrid bots={bots || []} />
+        <BotsGrid bots={bots || []} isLoading={isLoading} />
       </div>
     </div>
   );

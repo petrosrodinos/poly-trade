@@ -52,11 +52,27 @@ export class BinanceAccountService {
         }
     }
 
+    async getAccountBalance(symbol: string): Promise<number> {
+        try {
+            const account = await this.getAccountFutures();
+            if (!account) {
+                throw new Error('Unable to fetch account information');
+            }
+
+            const balance = parseFloat(account.assets.find((asset: any) => asset.asset === symbol)?.availableBalance || '0');
+
+            return balance;
+
+        } catch (error) {
+            throw new Error(`Failed to get account balance: ${error}`);
+        }
+    }
+
     async getFuturesIncomeTradesAndProfit(symbol?: string): Promise<FuturesIncomeTradesAndProfit> {
         try {
             let incomes = await this.binanceClient.futuresIncome();
 
-            if (incomes.length === 0) {
+            if (!incomes || incomes.length === 0) {
                 return {
                     profit: 0,
                     income: []
@@ -82,7 +98,7 @@ export class BinanceAccountService {
         try {
             const trades = await this.binanceClient.futuresUserTrades(symbol);
 
-            if (trades.length === 0) {
+            if (!trades || trades.length === 0) {
                 return {
                     profit: 0,
                     trades: []

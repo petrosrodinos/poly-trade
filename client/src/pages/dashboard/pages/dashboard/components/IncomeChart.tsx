@@ -3,8 +3,9 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { Line } from "react-chartjs-2";
 import { useIncomeChart } from "@/features/account/hooks/use-account";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
+import { Button } from "../../../../../components/ui/button";
 import { Spinner } from "../../../../../components/ui/spinner";
-import { TrendingUp, TrendingDown, Activity } from "lucide-react";
+import { TrendingUp, TrendingDown, Activity, RotateCcw } from "lucide-react";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -16,7 +17,7 @@ interface IncomeChartProps {
 }
 
 export function IncomeChart({ className = "", title = "Income Chart", height = 300 }: IncomeChartProps) {
-  const { data: incomeData, isLoading, error } = useIncomeChart();
+  const { data: incomeData, isLoading, error, refetch, isRefetching } = useIncomeChart();
   const chartId = React.useMemo(() => `income-chart-${Math.random().toString(36).substr(2, 9)}`, []);
 
   const stats = React.useMemo(() => {
@@ -172,6 +173,9 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
               <Activity className="w-5 h-5 text-chart-1" />
               {title}
             </CardTitle>
+            <Button variant="ghost" size="sm" onClick={() => refetch()} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
+              <RotateCcw className="w-4 h-4" />
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -195,6 +199,9 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
               <Activity className="w-5 h-5 text-destructive" />
               {title}
             </CardTitle>
+            <Button variant="ghost" size="sm" onClick={() => refetch()} disabled={isRefetching} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
+              <RotateCcw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -220,6 +227,9 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
               <Activity className="w-5 h-5 text-muted-foreground" />
               {title}
             </CardTitle>
+            <Button variant="ghost" size="sm" onClick={() => refetch()} disabled={isRefetching} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
+              <RotateCcw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -244,8 +254,8 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
             <Activity className="w-5 h-5 text-chart-1" />
             {title}
           </CardTitle>
-          {stats && (
-            <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4">
+            {stats && (
               <div className="text-right">
                 <p className="text-2xl font-bold text-foreground">${stats.latest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 <div className={`flex items-center gap-1 text-sm font-medium ${stats.trend >= 0 ? "text-emerald-600" : "text-red-500"}`}>
@@ -253,8 +263,11 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
                   {Math.abs(stats.trend).toFixed(1)}%
                 </div>
               </div>
-            </div>
-          )}
+            )}
+            <Button variant="ghost" size="sm" onClick={() => refetch()} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
+              <RotateCcw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
+            </Button>
+          </div>
         </div>
         {stats && (
           <div className="flex items-center gap-6 mt-3 text-sm text-muted-foreground">

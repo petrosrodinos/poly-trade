@@ -13,6 +13,8 @@ interface BotCardProps {
 export const BotCard = ({ bot }: BotCardProps) => {
   const navigate = useNavigate();
 
+  const { symbol, active } = bot;
+
   const handleCardClick = () => {
     navigate(Routes.dashboard.bot(bot.id));
   };
@@ -33,14 +35,6 @@ export const BotCard = ({ bot }: BotCardProps) => {
     });
   };
 
-  const getStatusBadgeVariant = (active: boolean) => {
-    return active ? "default" : "secondary";
-  };
-
-  const getStatusColor = (active: boolean) => {
-    return active ? "text-green-600" : "text-gray-500";
-  };
-
   const getProfitColor = (profit: number) => {
     if (profit > 0) return "text-green-600";
     if (profit < 0) return "text-red-600";
@@ -53,11 +47,17 @@ export const BotCard = ({ bot }: BotCardProps) => {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center text-lg">
             <BotIcon className="w-5 h-5 mr-2" />
-            {bot.symbol}
+            {symbol}
           </CardTitle>
-          <Badge variant={getStatusBadgeVariant(bot.active)} className={getStatusColor(bot.active)}>
+          <div className="flex items-center gap-2">
+            <Badge variant={active ? "default" : "secondary"} className={`text-sm px-3 py-1 font-medium ${active ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}`}>
+              {active && <div className={`w-3 h-3 rounded-full flex items-center justify-center ${active ? "bg-green-500 shadow-green-500/50 shadow-lg animate-pulse" : "bg-gray-400"}`}>{active && <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>}</div>}
+              {active ? "Active" : "Stopped"}
+            </Badge>
+          </div>
+          {/* <Badge variant={getStatusBadgeVariant(bot.active)} className={`${getStatusColor(bot.active)} ${bot.active ? "animate-pulse" : ""}`}>
             {bot.active ? "Active" : "Inactive"}
-          </Badge>
+          </Badge> */}
         </div>
       </CardHeader>
 

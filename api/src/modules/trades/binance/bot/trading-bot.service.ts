@@ -42,13 +42,9 @@ export class BinanceTradingBotService {
                 throw new Error('Bot already exists');
             }
 
-            const account = await this.binanceAccountService.getAccountFutures();
-            if (!account) {
-                throw new Error('Unable to fetch account information');
-            }
+            const balance = await this.binanceAccountService.getAccountBalance("USDT");
 
-            const usdtBalance = account.assets.find((asset: any) => asset.asset === 'USDT')?.availableBalance || 0;
-            if (parseFloat(usdtBalance.toString()) < botData.amount) {
+            if (balance < botData.amount) {
                 throw new Error('Insufficient balance to create bot');
             }
 
@@ -65,11 +61,10 @@ export class BinanceTradingBotService {
 
             this.bots.set(bot.id, new BotModel(bot));
 
-            logger.success(`Bot configuration created for ${botData.symbol}`);
+            logger.success(`Bot created for ${botData.symbol}`);
             return bot;
 
         } catch (error) {
-            console.error(`Error creating bot for ${botData.symbol}:`, error);
             throw error;
         }
     }
@@ -208,9 +203,24 @@ export class BinanceTradingBotService {
         return bot;
     }
 
-    getBots(): BotModel[] {
+    async getBots(): Promise<BotModel[]> {
         try {
-            return Array.from(this.bots.values());
+            const bots = Array.from(this.bots.values());
+            const botsWithData = await Promise.all(
+                bots.map(async (bot) => {
+                    try {
+                        const { profit } = await this.binanceAccountService.getFuturesIncomeTradesAndProfit(bot.symbol);
+                        const { trades } = await this.binanceAccountService.getFuturesUserTradesAndProfit(bot.symbol);
+                        bot.trades = trades;
+                        bot.profit = profit;
+                        return bot;
+                    } catch (error) {
+                        return bot;
+                    }
+                })
+            );
+
+            return botsWithData;
         } catch (error) {
             throw new Error(`Failed to get bots: ${error}`);
         }

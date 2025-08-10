@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import type { BotFormData } from "@/features/bot/interfaces/bot.interface";
 import { useCreateBot } from "@/features/bot/hooks/use-bot";
+import { Spinner } from "@/components/ui/spinner";
 
 interface CreateBotModalProps {
   isOpen: boolean;
@@ -23,7 +24,7 @@ const INTERVALS = [
 ];
 
 export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose }) => {
-  const { mutate: createBot } = useCreateBot();
+  const { mutate: createBot, isPending: isCreatingBot } = useCreateBot();
 
   const [formData, setFormData] = useState<BotFormData>({
     symbol: "BTCUSDT",
@@ -140,8 +141,8 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
           <Button type="button" variant="outline" onClick={handleClose}>
             Cancel
           </Button>
-          <Button type="submit" onClick={handleSubmit}>
-            Create Bot
+          <Button type="submit" onClick={handleSubmit} disabled={isCreatingBot}>
+            {isCreatingBot ? <Spinner size="sm" /> : "Create Bot"}
           </Button>
         </DialogFooter>
       </DialogContent>

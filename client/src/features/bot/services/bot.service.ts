@@ -11,6 +11,15 @@ export const getBots = async (): Promise<Bot[]> => {
     }
 };
 
+export const getBot = async (id: string): Promise<Bot> => {
+    try {
+        const response = await axiosInstance.get(`${ApiRoutes.bot.prefix}/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const createBot = async (bot: BotFormData): Promise<Bot> => {
     try {
         const response = await axiosInstance.post(ApiRoutes.bot.prefix, bot);
