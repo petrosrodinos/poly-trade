@@ -183,55 +183,31 @@ export class BinanceTradingBotController {
         }
     }
 
-
-    getPositionInfo = async (req: Request, res: Response): Promise<void> => {
+    startAllBots = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { symbol } = validateRequest(SymbolParamSchema, req.params);
-
-            const position = await this.tradingBotService.getPositionInfo(symbol);
-
-            if (!position) {
-                res.status(404).json({ message: `No position found for ${symbol}` });
-                return;
-            }
-
-            res.status(200).json({
-                symbol: position.symbol,
-                positionAmt: position.positionAmt,
-                entryPrice: position.entryPrice,
-                markPrice: position.markPrice,
-                unrealized_pl: position.unRealizedProfit,
-                positionSide: position.positionSide
-            });
+            await this.tradingBotService.startAllBots();
+            res.status(200).json({ message: `All bots started` });
         } catch (error: any) {
-            if (error instanceof z.ZodError) {
-                handleValidationError(error, res);
-                return;
-            }
-
-            console.error(`Failed to get position info:`, error);
+            console.error(`Failed to start all bots:`, error);
             res.status(500).json({
-                message: `Failed to retrieve position info`,
+                message: `Failed to start all bots`,
                 error: error.message || 'Unknown error occurred'
             });
         }
     }
 
-
-
-    getAllPositions = async (req: Request, res: Response): Promise<void> => {
+    stopAllBots = async (req: Request, res: Response): Promise<void> => {
         try {
-            const positions = await this.tradingBotService.getAllPositions();
-            res.status(200).json({ positions });
+            await this.tradingBotService.stopAllBots();
+            res.status(200).json({ message: `All bots stopped` });
         } catch (error: any) {
-            console.error('Failed to get all positions:', error);
+            console.error(`Failed to stop all bots:`, error);
             res.status(500).json({
-                message: 'Failed to retrieve all positions',
+                message: `Failed to stop all bots`,
                 error: error.message || 'Unknown error occurred'
             });
         }
     }
-
 
     cancelOrder = async (req: Request, res: Response) => {
         try {
