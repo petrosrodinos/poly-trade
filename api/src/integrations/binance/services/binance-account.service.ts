@@ -27,7 +27,7 @@ export class BinanceAccountService {
     async getFuturesUserTrades(symbol?: string): Promise<FuturesTrade[]> {
         try {
             const trades = await this.binanceClient.futuresUserTrades(symbol);
-            return this.accountUtils.sortTradesByTime(trades);
+            return this.accountUtils.sortTrades(trades);
         } catch (error) {
             throw new Error(`Failed to get futures user trades: ${error}`);
         }
@@ -70,17 +70,13 @@ export class BinanceAccountService {
 
     async getFuturesIncomeTradesAndProfit(symbol?: string): Promise<FuturesIncomeTradesAndProfit> {
         try {
-            let incomes = await this.binanceClient.futuresIncome();
+            let incomes = await this.futuresIncome(symbol);
 
             if (!incomes || incomes.length === 0) {
                 return {
                     profit: 0,
                     income: []
                 }
-            }
-
-            if (symbol) {
-                incomes = incomes.filter((income: FuturesIncome) => income.symbol === symbol);
             }
 
             const profit = this.accountUtils.calculateIncomeSummary(incomes).netProfit;

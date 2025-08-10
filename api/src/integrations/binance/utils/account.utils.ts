@@ -71,8 +71,8 @@ export class AccountUtils {
         };
     }
 
-    sortTradesByTime(trades: FuturesTrade[]): FuturesTrade[] {
-        return trades.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+    sortTrades(trades: FuturesTrade[]): FuturesTrade[] {
+        return trades.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
     }
 
     calculateIncomeChart(

@@ -2,7 +2,6 @@ import { BinancePosition, BinanceCandlestick } from "../../../../integrations/bi
 import { BinanceTradesService } from "../../../../integrations/binance/services/binance-trades.service";
 import { BinanceStreamingService } from "../../../../integrations/binance/services/binance-streaming.service";
 import { BinanceAccountService } from "../../../../integrations/binance/services/binance-account.service";
-import { TradesConfig } from "../../../../shared/constants/trades";
 import { logger } from "../../../../shared/utils/logger";
 import { BotFormData } from "./dto/bot.dto";
 import { BotModel } from "./models/bot.model";
@@ -124,7 +123,9 @@ export class BinanceTradingBotService {
     private async processCandlestick(bot: BotModel, candlestick: BinanceCandlestick): Promise<void> {
         try {
 
-            const { id, timeframe } = bot;
+            const { id, timeframe, active } = bot;
+
+            if (!active) return;
 
             const timeframeInMiliseconds = this.botUtils.getTimeframeInMiliseconds(timeframe);
 
@@ -203,7 +204,8 @@ export class BinanceTradingBotService {
             if (this.activeStreams.has(bot.id)) {
                 const streamEndpoint = this.streamEndpoints.get(bot.id);
                 if (streamEndpoint) {
-                    await this.binanceStreamingService.terminateStream(`${bot.symbol.toLowerCase()}@kline_${bot.timeframe || TradesConfig.timeframe}`);
+                    streamEndpoint.close();
+                    await this.binanceStreamingService.terminateStream(`${bot.symbol.toLowerCase()}@kline_${bot.timeframe}`);
                     this.streamEndpoints.delete(bot.id);
                 }
 
@@ -246,8 +248,8 @@ export class BinanceTradingBotService {
                 bots.map(async (bot) => {
                     try {
                         const { profit } = await this.binanceAccountService.getFuturesIncomeTradesAndProfit(bot.symbol);
-                        const { trades } = await this.binanceAccountService.getFuturesUserTradesAndProfit(bot.symbol);
-                        bot.trades = trades;
+                        // const { trades } = await this.binanceAccountService.getFuturesUserTradesAndProfit(bot.symbol);
+                        bot.trades = [];
                         bot.profit = profit;
                         return bot;
                     } catch (error) {

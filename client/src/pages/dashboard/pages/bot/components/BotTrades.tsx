@@ -59,7 +59,7 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
                       <div className="font-medium text-sm truncate">{trade.symbol}</div>
                       <div className="text-xs text-slate-500">{formatTimestamp(trade.time)}</div>
                     </div>
-                    <Badge variant={trade.side === "BUY" ? "default" : "destructive"} className="text-xs w-fit">
+                    <Badge variant={trade.side === "BUY" ? "success" : "destructive"} className="text-xs w-fit">
                       {trade.side}
                     </Badge>
                   </div>
