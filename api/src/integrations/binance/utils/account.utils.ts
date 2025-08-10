@@ -84,8 +84,31 @@ export class AccountUtils {
             let key: string;
 
             switch (timeframe) {
+                case "1minute":
+                case "3minute":
+                case "5minute":
+                case "15minute":
+                case "30minute": {
+                    // Extract the number of minutes from the timeframe string
+                    const minuteCount = parseInt(timeframe.replace("minute", ""), 10);
+                    const minutes = date.getUTCMinutes();
+                    // Round down minutes to the nearest interval bucket (e.g. for 3 minutes: 0,3,6,9,...)
+                    const roundedMinutes = Math.floor(minutes / minuteCount) * minuteCount;
+                    // Build key like YYYY-MM-DDTHH:mm:00Z, zero pad minutes if needed
+                    const paddedMinutes = roundedMinutes.toString().padStart(2, "0");
+                    key = `${date.getUTCFullYear()}-${(date.getUTCMonth() + 1)
+                        .toString()
+                        .padStart(2, "0")}-${date
+                            .getUTCDate()
+                            .toString()
+                            .padStart(2, "0")}T${date
+                                .getUTCHours()
+                                .toString()
+                                .padStart(2, "0")}:${paddedMinutes}:00Z`;
+                    break;
+                }
                 case "hour":
-                    key = date.toISOString().slice(0, 13) + ":00"; // YYYY-MM-DDTHH:00
+                    key = date.toISOString().slice(0, 13) + ":00Z"; // YYYY-MM-DDTHH:00Z
                     break;
                 case "day":
                     key = date.toISOString().slice(0, 10); // YYYY-MM-DD
@@ -116,7 +139,7 @@ export class AccountUtils {
 
         return Object.entries(grouped).map(([time, value]) => ({
             time,
-            value
+            value,
         }));
     }
 

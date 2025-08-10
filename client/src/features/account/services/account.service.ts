@@ -1,6 +1,6 @@
 import { ApiRoutes } from "@/config/api/routes";
 import axiosInstance from "@/config/api/axios";
-import type { AccountIncomeChart, AccountSummary, FuturesIncome, FuturesTrade } from "../interfaces/account.interfaces";
+import type { AccountIncomeChart, AccountSummary, FuturesIncome, FuturesTrade, Timeframe } from "../interfaces/account.interfaces";
 
 export const getAccountIncome = async (): Promise<FuturesIncome[]> => {
   try {
@@ -38,9 +38,11 @@ export const getAccountIncomeChart = async (): Promise<AccountIncomeChart[]> => 
   }
 };
 
-export const getIncomeChart = async (): Promise<AccountIncomeChart[]> => {
+export const getIncomeChart = async (timeframe: Timeframe = "1minute"): Promise<AccountIncomeChart[]> => {
   try {
-    const response = await axiosInstance.get(ApiRoutes.account.income_chart);
+    const response = await axiosInstance.get(ApiRoutes.account.income_chart, {
+      params: { timeframe }
+    });
     return response.data;
   } catch (error) {
     throw error;

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import type { BotFormData } from "@/features/bot/interfaces/bot.interface";
 import { useCreateBot } from "@/features/bot/hooks/use-bot";
 import { Spinner } from "@/components/ui/spinner";
+import { TimeframeSelect } from "@/components/ui/timeframe-select";
 
 interface CreateBotModalProps {
   isOpen: boolean;
@@ -11,17 +12,6 @@ interface CreateBotModalProps {
 }
 
 const CRYPTO_PAIRS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT", "SOLUSDT", "DOGEUSDT", "DOTUSDT", "AVAXUSDT", "MATICUSDT", "LTCUSDT", "ATOMUSDT", "LINKUSDT", "UNIUSDT", "ALGOUSDT", "VETUSDT", "FILUSDT", "TRXUSDT", "ETCUSDT", "XLMUSDT"];
-
-const TIMEFRAMES = [
-  { value: "1m", label: "1 minute" },
-  { value: "3m", label: "3 minutes" },
-  { value: "5m", label: "5 minutes" },
-  { value: "15m", label: "15 minutes" },
-  { value: "30m", label: "30 minutes" },
-  { value: "1h", label: "1 hour" },
-  { value: "2h", label: "2 hours" },
-  { value: "4h", label: "4 hours" },
-];
 
 export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose }) => {
   const { mutate: createBot, isPending: isCreatingBot } = useCreateBot();
@@ -107,13 +97,7 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Time Interval</label>
-            <select value={formData.timeframe} onChange={(e) => handleInputChange("timeframe", e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-              {TIMEFRAMES.map((timeframe) => (
-                <option key={timeframe.value} value={timeframe.value}>
-                  {timeframe.label}
-                </option>
-              ))}
-            </select>
+            <TimeframeSelect<string> value={formData.timeframe} onValueChange={(value) => handleInputChange("timeframe", value)} type="bot" className="w-full" />
           </div>
 
           <div>

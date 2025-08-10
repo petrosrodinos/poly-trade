@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAccountIncome, getAccountIncomeChart, getAccountStatus, getAccountTrades, getIncomeChart } from "../services/account.service";
+import type { Timeframe } from "../interfaces/account.interfaces";
 
 export const useAccountIncome = () => {
     return useQuery({
@@ -29,9 +30,9 @@ export const useAccountIncomeChart = () => {
     });
 };
 
-export const useIncomeChart = () => {
+export const useIncomeChart = (timeframe: Timeframe = "1minute") => {
     return useQuery({
-        queryKey: ["income-chart"],
-        queryFn: getIncomeChart,
+        queryKey: ["income-chart", timeframe],
+        queryFn: () => getIncomeChart(timeframe),
     });
 };

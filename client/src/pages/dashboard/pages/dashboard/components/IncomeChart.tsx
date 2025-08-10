@@ -5,7 +5,9 @@ import { useIncomeChart } from "@/features/account/hooks/use-account";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
 import { Button } from "../../../../../components/ui/button";
 import { Spinner } from "../../../../../components/ui/spinner";
+import { TimeframeSelect } from "../../../../../components/ui/timeframe-select";
 import { TrendingUp, TrendingDown, Activity, RotateCcw } from "lucide-react";
+import type { Timeframe } from "@/features/account/interfaces/account.interfaces";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -17,7 +19,8 @@ interface IncomeChartProps {
 }
 
 export function IncomeChart({ className = "", title = "Income Chart", height = 300 }: IncomeChartProps) {
-  const { data: incomeData, isLoading, error, refetch, isRefetching } = useIncomeChart();
+  const [selectedTimeframe, setSelectedTimeframe] = React.useState<Timeframe>("1minute");
+  const { data: incomeData, isLoading, error, refetch, isRefetching } = useIncomeChart(selectedTimeframe);
   const chartId = React.useMemo(() => `income-chart-${Math.random().toString(36).substr(2, 9)}`, []);
 
   const stats = React.useMemo(() => {
@@ -169,10 +172,13 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
       <Card className={`group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-br from-background to-muted/20 ${className}`}>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <Activity className="w-5 h-5 text-chart-1" />
-              {title}
-            </CardTitle>
+            <div className="flex items-center gap-4">
+              <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                <Activity className="w-5 h-5 text-chart-1" />
+                {title}
+              </CardTitle>
+              <TimeframeSelect value={selectedTimeframe} onValueChange={setSelectedTimeframe} size="sm" />
+            </div>
             <Button variant="ghost" size="sm" onClick={() => refetch()} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
               <RotateCcw className="w-4 h-4" />
             </Button>
@@ -195,10 +201,13 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
       <Card className={`group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-br from-background to-muted/20 ${className}`}>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <Activity className="w-5 h-5 text-destructive" />
-              {title}
-            </CardTitle>
+            <div className="flex items-center gap-4">
+              <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                <Activity className="w-5 h-5 text-destructive" />
+                {title}
+              </CardTitle>
+              <TimeframeSelect value={selectedTimeframe} onValueChange={setSelectedTimeframe} size="sm" />
+            </div>
             <Button variant="ghost" size="sm" onClick={() => refetch()} disabled={isRefetching} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
               <RotateCcw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
             </Button>
@@ -223,10 +232,13 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
       <Card className={`group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-br from-background to-muted/20 ${className}`}>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <Activity className="w-5 h-5 text-muted-foreground" />
-              {title}
-            </CardTitle>
+            <div className="flex items-center gap-4">
+              <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                <Activity className="w-5 h-5 text-muted-foreground" />
+                {title}
+              </CardTitle>
+              <TimeframeSelect value={selectedTimeframe} onValueChange={setSelectedTimeframe} size="sm" />
+            </div>
             <Button variant="ghost" size="sm" onClick={() => refetch()} disabled={isRefetching} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
               <RotateCcw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
             </Button>
@@ -250,10 +262,13 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
     <Card className={`group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-br from-background to-muted/20 backdrop-blur-sm ${className}`}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold flex items-center gap-2">
-            <Activity className="w-5 h-5 text-chart-1" />
-            {title}
-          </CardTitle>
+          <div className="flex items-center gap-4">
+            <CardTitle className="text-lg font-semibold flex items-center gap-2">
+              <Activity className="w-5 h-5 text-chart-1" />
+              {title}
+            </CardTitle>
+            <TimeframeSelect value={selectedTimeframe} onValueChange={setSelectedTimeframe} size="sm" />
+          </div>
           <div className="flex items-center gap-4">
             {stats && (
               <div className="text-right">

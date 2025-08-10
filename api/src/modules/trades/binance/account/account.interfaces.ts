@@ -19,5 +19,5 @@ export interface AccountIncomeChart {
     value: number;
 }
 
-export type Timeframe = "hour" | "day" | "week" | "month";
+export type Timeframe = "1minute" | "3minute" | "5minute" | "15minute" | "30minute" | "hour" | "day" | "week" | "month";
 
