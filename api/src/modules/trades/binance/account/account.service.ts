@@ -68,7 +68,8 @@ export class BinanceAccountServiceClass {
     getAccountIncomeChart = async (timeframe: Timeframe): Promise<AccountChartData[]> => {
         try {
             const income = await this.getFuturesIncome();
-            const incomeChart = this.accountUtils.calculateIncomeChart(income, timeframe);
+            const reversedIncome = income.reverse();
+            const incomeChart = this.accountUtils.calculateIncomeChart(reversedIncome, timeframe);
             return incomeChart
         } catch (error: any) {
             throw new Error(`Failed to get account income chart: ${error}`);
@@ -78,7 +79,8 @@ export class BinanceAccountServiceClass {
     getAccountTradesChart = async (timeframe: Timeframe): Promise<AccountChartData[]> => {
         try {
             const trades = await this.getFuturesUserTrades();
-            const incomeChart = this.accountUtils.calculateTradesChart(trades, timeframe);
+            const reversedTrades = trades.reverse();
+            const incomeChart = this.accountUtils.calculateTradesChart(reversedTrades, timeframe);
             return incomeChart
         } catch (error: any) {
             throw new Error(`Failed to get account income chart: ${error}`);

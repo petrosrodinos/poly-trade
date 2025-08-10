@@ -1,5 +1,6 @@
 
 const Binance = require('node-binance-api');
+import { logger } from '../../shared/utils/logger';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -41,7 +42,7 @@ export class BinanceClient {
             }
         });
 
-        console.log(`Binance client initialized successfully (${useTestnet ? 'Testnet' : 'Mainnet'} mode)`);
+        logger.debug(`Binance client initialized successfully (${useTestnet ? 'Testnet' : 'Mainnet'} mode)`);
     }
 
 

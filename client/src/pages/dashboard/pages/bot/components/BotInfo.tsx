@@ -67,7 +67,7 @@ export const BotInfo = ({ bot, isLoading }: BotInfoProps) => {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardDescription>Interval</CardDescription>
+          <CardDescription>Timeframe</CardDescription>
           <CardTitle className="text-xl sm:text-2xl">{timeframe}</CardTitle>
         </CardHeader>
         <CardContent>

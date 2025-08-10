@@ -119,29 +119,47 @@ export class BotManagerService {
 
     private async processCandle(bot: BotModel, candle: Candle): Promise<void> {
         const candles = this.candles.get(bot.id) || [];
-        if (candles.length < 1) return;
+        if (candles.length < 2) return; // Need at least 2 previous candles to check
 
-        const previousCandle = candles[candles.length - 1];
+        const prevCandle = candles[candles.length - 1];
+        const prevPrevCandle = candles[candles.length - 2];
+
         const isCurrentGreen = candle.close > candle.open;
-        const isPreviousGreen = previousCandle.close > previousCandle.open;
+        const isPrevGreen = prevCandle.close > prevCandle.open;
+        const isPrevPrevGreen = prevPrevCandle.close > prevPrevCandle.open;
+
         const currentPosition = this.positions.get(bot.id);
         const quantity = bot.quantity;
 
         if (quantity === 0) return;
 
         try {
-            if (isCurrentGreen && isPreviousGreen && currentPosition !== 'long') {
+            if (isCurrentGreen && isPrevGreen && isPrevPrevGreen && currentPosition !== 'long') {
                 if (currentPosition === 'short') {
                     await this.binanceTradesService.closePosition(bot.symbol);
                 }
-                const position = await this.binanceTradesService.openPosition(bot.symbol, 'buy', candle.close, quantity, bot.leverage);
+                const position = await this.binanceTradesService.openPosition(
+                    bot.symbol,
+                    'buy',
+                    candle.close,
+                    quantity,
+                    bot.leverage
+                );
                 this.positions.set(bot.id, 'long');
                 logger.long(`${bot.symbol}, ${candle.close}, ${quantity}, ID: ${bot.id}, ${position.orderId}`);
-            } else if (!isCurrentGreen && currentPosition !== 'short') {
+            }
+
+            else if (!isCurrentGreen && !isPrevGreen && !isPrevPrevGreen && currentPosition !== 'short') {
                 if (currentPosition === 'long') {
                     await this.binanceTradesService.closePosition(bot.symbol);
                 }
-                const position = await this.binanceTradesService.openPosition(bot.symbol, 'sell', candle.close, quantity, bot.leverage);
+                const position = await this.binanceTradesService.openPosition(
+                    bot.symbol,
+                    'sell',
+                    candle.close,
+                    quantity,
+                    bot.leverage
+                );
                 this.positions.set(bot.id, 'short');
                 logger.short(`${bot.symbol}, ${candle.close}, ${quantity}, ID: ${bot.id}, ${position.orderId}`);
             }
@@ -149,6 +167,7 @@ export class BotManagerService {
             logger.error(`Error processing candle for ${bot.symbol} ID: ${bot.id}:`, error);
         }
     }
+
 
 
 

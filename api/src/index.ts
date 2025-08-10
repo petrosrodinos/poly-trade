@@ -7,6 +7,7 @@ import { usersRouter } from './modules/users/users.routes';
 import { alpacaRouter } from './modules/trades/alpaca/alpaca.routes';
 import { binanceRouter } from './modules/trades/binance/binance.routes';
 import { logger } from './shared/utils/logger';
+import { BinanceTradingBotService } from './modules/trades/binance/bot/trading-bot.service';
 
 dotenv.config();
 
@@ -33,6 +34,12 @@ app.use('*', (req, res) => {
 
 const shutdown = async (signal: string) => {
     logger.debug(`Received ${signal}, shutting down gracefully...`);
+    try {
+        const botService = new BinanceTradingBotService();
+        await botService.stopAllBots();
+    } catch (error: any) {
+        logger.error("Could not stop all bots", error?.message);
+    }
     await new Promise(resolve => setTimeout(resolve, 1000));
     process.exit(0);
 };
