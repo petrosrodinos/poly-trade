@@ -6,6 +6,8 @@ import { TradesConfig } from "../../../../shared/constants/trades";
 import { logger } from "../../../../shared/utils/logger";
 import { BotFormData } from "./dto/bot.dto";
 import { BotModel } from "./models/bot.model";
+import { BotUtils } from "./utils/bot.utils";
+import { AccountUtils } from "../../../../integrations/binance/utils/account.utils";
 
 interface Candle {
     open: number;
@@ -19,6 +21,8 @@ export class BinanceTradingBotService {
     binanceStreamingService: BinanceStreamingService;
     binanceTradesService: BinanceTradesService;
     binanceAccountService: BinanceAccountService;
+    binanceAccountUtils: AccountUtils;
+    botUtils: BotUtils;
 
     private bots: Map<string, BotModel> = new Map();
     private activeStreams: Set<string> = new Set();
@@ -32,6 +36,8 @@ export class BinanceTradingBotService {
         this.binanceStreamingService = new BinanceStreamingService();
         this.binanceTradesService = new BinanceTradesService();
         this.binanceAccountService = new BinanceAccountService();
+        this.binanceAccountUtils = new AccountUtils();
+        this.botUtils = new BotUtils();
     }
 
     async createBot(botData: BotFormData): Promise<BotModel> {
@@ -48,20 +54,36 @@ export class BinanceTradingBotService {
                 throw new Error('Insufficient balance to create bot');
             }
 
+            const price = await this.binanceTradesService.getFuturesPrices(botData.symbol);
+
+            const { minQty, stepSize } = await this.binanceTradesService.getExchangeInfo(botData.symbol);
+
+            const quantityValue = this.binanceAccountUtils.calculateQuantity(botData.amount, price || 0, minQty, stepSize);
+
+            if (quantityValue === 0) {
+                throw new Error('Insufficient balance to create bot');
+            }
+
             const bot: BotModel = {
                 // id: `bot_${botData.symbol}_${Date.now()}`,
                 id: `${this.bots.size + 1}`,
                 symbol: botData.symbol,
                 amount: botData.amount,
-                interval: botData.interval,
+                timeframe: botData.timeframe,
                 leverage: botData.leverage,
                 active: botData.active,
+                quantity: quantityValue,
                 created_at: new Date().toISOString(),
             };
 
             this.bots.set(bot.id, new BotModel(bot));
 
-            logger.success(`Bot created for ${botData.symbol}`);
+            logger.success(`Bot created for ${botData.symbol}, ID: ${bot.id}`);
+
+            if (botData.active) {
+                this.startBot(bot);
+            }
+
             return bot;
 
         } catch (error) {
@@ -69,50 +91,58 @@ export class BinanceTradingBotService {
         }
     }
 
-    async startBot(symbol: string): Promise<void> {
+    async startBot(bot: BotModel): Promise<void> {
         try {
-            if (this.activeStreams.has(symbol)) {
+            if (this.activeStreams.has(bot.id)) {
                 return;
             }
 
-            this.activeStreams.add(symbol);
-            this.candles.set(symbol, []);
-            this.positions.set(symbol, null);
+            bot.active = true;
+            this.bots.set(bot.id, bot);
+
+            this.activeStreams.add(bot.id);
+            this.candles.set(bot.id, []);
+            this.positions.set(bot.id, null);
 
             const streamEndpoint = this.binanceStreamingService.streamCandlesticksFutures(
-                symbol,
-                {} as any,
+                bot.symbol,
+                bot.timeframe,
                 (data: BinanceCandlestick) => {
-                    this.processCandlestick(symbol, data);
+                    this.processCandlestick(bot, data);
                 }
             );
 
-            this.streamEndpoints.set(symbol, streamEndpoint);
+            this.streamEndpoints.set(bot.id, streamEndpoint);
 
-            logger.success(`Started Binance trading bot for ${symbol}`);
+            logger.success(`Started ${bot.symbol} bot, ID: ${bot.id}`);
         } catch (error) {
-            console.error(`Error starting bot for ${symbol}:`, error);
+            console.error(`Error starting bot for ${bot.id}:`, error);
             throw error;
         }
     }
 
-    private async processCandlestick(symbol: string, candlestick: BinanceCandlestick): Promise<void> {
+    private async processCandlestick(bot: BotModel, candlestick: BinanceCandlestick): Promise<void> {
         try {
+
+            const { id, timeframe } = bot;
+
+            const timeframeInMiliseconds = this.botUtils.getTimeframeInMiliseconds(timeframe);
+
             if (!candlestick.isKlineClosed) return;
 
-            const minute = Math.floor(candlestick.timestamp / 60000);
+            const minute = Math.floor(candlestick.timestamp / timeframeInMiliseconds);
 
-            const lastProcessedMinute = this.lastTradeTime.get(symbol) || -1;
-            const lastStoredMinute = this.currentMinute.get(symbol) || -1;
+            const lastProcessedMinute = this.lastTradeTime.get(id) || -1;
+            const lastStoredMinute = this.currentMinute.get(id) || -1;
 
             if (lastStoredMinute === minute) return;
 
-            const candles = this.candles.get(symbol) || [];
+            const candles = this.candles.get(id) || [];
 
             if (candles.length > 0 && lastProcessedMinute !== minute) {
                 const lastCandle = candles[candles.length - 1];
-                await this.processCandle(symbol, lastCandle);
-                this.lastTradeTime.set(symbol, minute);
+                await this.processCandle(bot, lastCandle);
+                this.lastTradeTime.set(id, minute);
             }
 
             const newCandle: Candle = {
@@ -124,67 +154,73 @@ export class BinanceTradingBotService {
             };
 
             candles.push(newCandle);
-            this.candles.set(symbol, candles);
-            this.currentMinute.set(symbol, minute);
+            this.candles.set(id, candles);
+            this.currentMinute.set(id, minute);
 
         } catch (error) {
-            console.error(`Error processing candlestick for ${symbol}:`, error);
+            console.error(`Error processing candlestick for ${bot.id}:`, error);
         }
     }
 
 
-    private async processCandle(symbol: string, candle: Candle): Promise<void> {
+    private async processCandle(bot: BotModel, candle: Candle): Promise<void> {
+        const { id, symbol, quantity, leverage } = bot;
+
         try {
-            const candles = this.candles.get(symbol) || [];
+
+            const candles = this.candles.get(id) || [];
             if (candles.length < 1) return;
 
             const previousCandle = candles[candles.length - 1];
             const isCurrentGreen = candle.close > candle.open;
             const isPreviousGreen = previousCandle.close > previousCandle.open;
-            const currentPosition = this.positions.get(symbol);
+            const currentPosition = this.positions.get(id);
 
-            const quantity = Math.floor(TradesConfig.amount / candle.close);
+            if (quantity === 0) return;
 
             if (isCurrentGreen && isPreviousGreen && currentPosition !== 'long') {
                 if (currentPosition === 'short') {
                     await this.binanceTradesService.closePosition(symbol);
                 }
-                const position = await this.binanceTradesService.openPosition(symbol, 'buy', candle.close, quantity);
-                this.positions.set(symbol, 'long');
-                logger.long(`${symbol}, ${candle.close}, ${quantity}, ${position.orderId}`);
+                const position = await this.binanceTradesService.openPosition(symbol, 'buy', candle.close, quantity, leverage);
+                this.positions.set(id, 'long');
+                logger.long(`${symbol}, ${candle.close}, ${quantity}, ID: ${id}, ${position.orderId}`);
             } else if (!isCurrentGreen && currentPosition !== 'short') {
                 if (currentPosition === 'long') {
                     await this.binanceTradesService.closePosition(symbol);
                 }
-                const position = await this.binanceTradesService.openPosition(symbol, 'sell', candle.close, quantity);
-                this.positions.set(symbol, 'short');
-                logger.short(`${symbol}, ${candle.close}, ${quantity}, ${position.orderId}`);
+                const position = await this.binanceTradesService.openPosition(symbol, 'sell', candle.close, quantity, leverage);
+                this.positions.set(id, 'short');
+                logger.short(`${symbol}, ${candle.close}, ${quantity}, ID: ${id}, ${position.orderId}`);
             }
         } catch (error) {
-            console.error(`Error processing candle for ${symbol}:`, error);
+            logger.error(`Error processing candle for ${symbol} ID: ${id}:`, error);
         }
     }
 
-    async stopBot(symbol: string): Promise<void> {
+    async stopBot(bot: BotModel): Promise<void> {
         try {
-            if (this.activeStreams.has(symbol)) {
-                const streamEndpoint = this.streamEndpoints.get(symbol);
+            if (this.activeStreams.has(bot.id)) {
+                const streamEndpoint = this.streamEndpoints.get(bot.id);
                 if (streamEndpoint) {
-                    await this.binanceStreamingService.terminateStream(`${symbol.toLowerCase()}@kline_${TradesConfig.timeframe}`);
-                    this.streamEndpoints.delete(symbol);
+                    await this.binanceStreamingService.terminateStream(`${bot.symbol.toLowerCase()}@kline_${bot.timeframe || TradesConfig.timeframe}`);
+                    this.streamEndpoints.delete(bot.id);
                 }
 
-                this.activeStreams.delete(symbol);
-                this.candles.delete(symbol);
-                this.positions.delete(symbol);
-                this.currentMinute.delete(symbol);
-                this.lastTradeTime.delete(symbol);
+                this.activeStreams.delete(bot.id);
+                this.candles.delete(bot.id);
+                this.positions.delete(bot.id);
+                this.currentMinute.delete(bot.id);
+                this.lastTradeTime.delete(bot.id);
+                bot.active = false;
 
-                await this.binanceTradesService.closePosition(symbol);
-                logger.success(`Stopped bot for ${symbol}`);
+                this.bots.set(bot.id, bot);
+
+                await this.binanceTradesService.closePosition(bot.symbol);
+                logger.success(`Stopped: ${bot.symbol} for ${bot.id}`);
             }
         } catch (error) {
-            console.error(`Error stopping bot for ${symbol}:`, error);
+            logger.error(`Error stopping bot: ${bot.symbol} for ${bot.id}:`, error);
             throw error;
         }
     }
@@ -245,10 +281,6 @@ export class BinanceTradingBotService {
         } catch (error) {
             throw new Error(`Failed to delete bot: ${error}`);
         }
-    }
-
-    isBotRunning(symbol: string): boolean {
-        return this.activeStreams.has(symbol);
     }
 
 

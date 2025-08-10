@@ -124,7 +124,7 @@ export const BotControls = ({ bot, isLoading, refetch, isRefetching }: BotContro
           <div className="flex items-center gap-2">
             <div className={`w-3 h-3 rounded-full flex items-center justify-center ${active ? "bg-green-500 shadow-green-500/50 shadow-lg animate-pulse" : "bg-gray-400"}`}>{active && <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>}</div>
             <Badge variant={active ? "default" : "secondary"} className={`text-sm px-3 py-1 font-medium ${active ? "bg-green-100 text-green-800 border-green-200" : "bg-gray-100 text-gray-600 border-gray-200"}`}>
-              {active ? "Bot Active" : "Bot Stopped"}
+              {active ? "Active" : "Inactive"}
             </Badge>
           </div>
 

@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { BotTrades } from "./components/BotTrades";
 import { BotInfo } from "./components/BotInfo";
 import { BotControls } from "./components/BotControls";
+import { BotNotFound } from "./components/bot-not-found";
 import { Button } from "@/components/ui/button";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
 import { useBot } from "@/features/bot/hooks/use-bot";
@@ -11,7 +12,11 @@ const BotPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const { data: bot, isLoading: isBotLoading, refetch: refetchBot, isRefetching: isRefetchingBot } = useBot(id || "");
+  const { data: bot, isLoading: isBotLoading, refetch: refetchBot, isRefetching: isRefetchingBot, error } = useBot(id || "");
+
+  if (!isBotLoading && (!bot || error)) {
+    return <BotNotFound />;
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">

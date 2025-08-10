@@ -1,6 +1,6 @@
 import { TradesConfig } from "../../../shared/constants/trades";
 import { BinanceClient } from "../binance.client";
-import { BinancePosition, BinanceOrderResponse, BinanceOrderSide } from "../binance.interfaces";
+import { BinancePosition, BinanceOrderResponse, BinanceOrderSide, BinanceExchangeInfo } from "../binance.interfaces";
 import { BinanceAccountService } from "./binance-account.service";
 import { logger } from "../../../shared/utils/logger";
 
@@ -41,13 +41,15 @@ export class BinanceTradesService {
         }
     }
 
-    async openPosition(symbol: string, side: 'buy' | 'sell', price: number, quantity?: number): Promise<BinanceOrderResponse> {
+    async openPosition(symbol: string, side: 'buy' | 'sell', price: number, quantity?: number, leverage?: number): Promise<BinanceOrderResponse> {
         try {
             const orderSide: BinanceOrderSide = side.toUpperCase() as BinanceOrderSide;
 
             let order;
 
-            await this.binanceClient.futuresLeverage(symbol, TradesConfig.leverage);
+            const leverageValue = leverage || TradesConfig.leverage;
+
+            await this.binanceClient.futuresLeverage(symbol, leverageValue);
 
             if (orderSide === 'BUY') {
                 order = await this.binanceClient.futuresMarketBuy(symbol, quantity);
@@ -128,7 +130,6 @@ export class BinanceTradesService {
     }
 
 
-
     async cancelOrder(symbol: string, orderId: string): Promise<any> {
         try {
             console.log(`Cancelling order ${orderId} for ${symbol}`);
@@ -152,6 +153,28 @@ export class BinanceTradesService {
     }
 
 
+    async getExchangeInfo(symbol: string): Promise<BinanceExchangeInfo> {
+        try {
+            const info = await this.binanceClient.futuresExchangeInfo();
+            const symbolInfo = info.symbols.find((s: any) => s.symbol === symbol);
+            const lotSizeFilter = symbolInfo.filters.find((f: any) => f.filterType === "LOT_SIZE");
 
+            return {
+                minQty: parseFloat(lotSizeFilter.minQty),
+                stepSize: parseFloat(lotSizeFilter.stepSize)
+            };
+        } catch (error) {
+            throw new Error(`Failed to get exchange info for ${symbol}: ${error}`);
+        }
+    }
+
+    async getFuturesPrices(symbol: string): Promise<number | null> {
+        try {
+            const prices = await this.binanceClient.futuresPrices();
+            return parseFloat(prices?.[symbol] || 0);
+        } catch (error) {
+            throw new Error(`Failed to get futures prices for ${symbol}: ${error}`);
+        }
+    }
 
 }

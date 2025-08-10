@@ -4,7 +4,7 @@ export interface Bot {
     id: string;
     active: boolean;
     symbol: string;
-    interval: string;
+    timeframe: string;
     amount: number;
     leverage: number;
     profit?: number;
@@ -16,7 +16,7 @@ export interface Bot {
 export interface BotFormData {
     symbol: string;
     amount: number;
-    interval: string;
+    timeframe: string;
     leverage: number;
     active: boolean;
 }

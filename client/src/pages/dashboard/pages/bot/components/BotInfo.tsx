@@ -9,7 +9,7 @@ interface BotInfoProps {
 }
 
 export const BotInfo = ({ bot, isLoading }: BotInfoProps) => {
-  const { amount, interval, profit, leverage } = bot;
+  const { amount, timeframe, profit, leverage } = bot;
 
   const { formatCurrency } = useFormatters();
 
@@ -68,7 +68,7 @@ export const BotInfo = ({ bot, isLoading }: BotInfoProps) => {
       <Card>
         <CardHeader className="pb-2">
           <CardDescription>Interval</CardDescription>
-          <CardTitle className="text-xl sm:text-2xl">{interval}</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl">{timeframe}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">Trading frequency</p>

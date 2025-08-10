@@ -27,7 +27,7 @@ export class BinanceAccountService {
     async getFuturesUserTrades(symbol?: string): Promise<FuturesTrade[]> {
         try {
             const trades = await this.binanceClient.futuresUserTrades(symbol);
-            return trades;
+            return this.accountUtils.sortTradesByTime(trades);
         } catch (error) {
             throw new Error(`Failed to get futures user trades: ${error}`);
         }
@@ -96,7 +96,7 @@ export class BinanceAccountService {
 
     async getFuturesUserTradesAndProfit(symbol?: string): Promise<FuturesTradeAndProfit> {
         try {
-            const trades = await this.binanceClient.futuresUserTrades(symbol);
+            const trades = await this.getFuturesUserTrades(symbol);
 
             if (!trades || trades.length === 0) {
                 return {

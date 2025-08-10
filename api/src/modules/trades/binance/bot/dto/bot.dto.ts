@@ -8,9 +8,9 @@ export const BotFormDataSchema = z.object({
     amount: z.number()
         .positive('Amount must be a positive number')
         .min(0.01, 'Amount must be at least 0.01'),
-    interval: z.string()
-        .min(1, 'Interval is required')
-        .regex(/^(1m|3m|5m|15m|30m|1h|2h|4h)$/, 'Invalid interval format'),
+    timeframe: z.string()
+        .min(1, 'Timeframe is required')
+        .regex(/^(1m|3m|5m|15m|30m|1h|2h|4h)$/, 'Invalid timeframe format'),
     leverage: z.number()
         .int('Leverage must be an integer')
         .min(1, 'Leverage must be at least 1')

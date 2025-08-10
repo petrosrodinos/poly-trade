@@ -71,6 +71,10 @@ export class AccountUtils {
         };
     }
 
+    sortTradesByTime(trades: FuturesTrade[]): FuturesTrade[] {
+        return trades.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+    }
+
     calculateIncomeChart(
         incomes: FuturesIncome[],
         timeframe: Timeframe = "hour"
@@ -114,5 +118,21 @@ export class AccountUtils {
             time,
             value
         }));
+    }
+
+    calculateQuantity(amount: number, price: number, minQty: number, stepSize: number) {
+
+        let qty = amount / price;
+
+        // If below minimum, set to 0 to skip
+        if (qty < minQty) {
+            return 0;
+        }
+
+        // Adjust to step size (truncate to valid increment)
+        qty = Math.floor(qty / stepSize) * stepSize;
+
+        // Ensure proper decimal precision
+        return parseFloat(qty.toFixed(8));
     }
 }

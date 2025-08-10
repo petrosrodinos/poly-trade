@@ -10,7 +10,7 @@ export class BinanceStreamingService {
         this.binanceClient = BinanceClient.getClient();
     }
 
-    streamCandlesticksFutures(symbol: string, req: Request, callback: (data: any) => void) {
+    streamCandlesticksFutures(symbol: string, timeframe: string, callback: (data: any) => void) {
 
         try {
 
@@ -23,7 +23,9 @@ export class BinanceStreamingService {
             //     this.activeStreams.delete(streamKey);
             // }
 
-            const streamEndpoint = this.binanceClient.futuresSubscribe(`${symbol.toLowerCase()}@kline_${TradesConfig.timeframe}`, (candlesticks: any) => {
+            const timeframeValue = timeframe || TradesConfig.timeframe;
+
+            const streamEndpoint = this.binanceClient.futuresSubscribe(`${symbol.toLowerCase()}@kline_${timeframeValue}`, (candlesticks: any) => {
                 const kline = candlesticks.k || candlesticks;
                 const data = {
                     symbol: kline.s ?? candlesticks.s ?? symbol,
@@ -95,19 +97,7 @@ export class BinanceStreamingService {
     async terminateStream(endpoint: string) {
         try {
 
-            // const result = await this.binanceClient.websockets.terminate(endpoint);
-
-            const resultFutures = await this.binanceClient.futuresTerminate(endpoint);
-
-            console.log(`Terminated stream futures: ${resultFutures}`);
-
-            // console.log(`Terminated stream: ${result}`);
-
-            // this.activeStreams.delete(endpoint);
-
-            setTimeout(() => {
-                console.log(`Active subscriptions after termination:`, this.binanceClient.websockets.subscriptions());
-            }, 1000);
+            await this.binanceClient.futuresTerminate(endpoint);
 
             return true;
         } catch (error) {

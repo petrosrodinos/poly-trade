@@ -31,7 +31,7 @@ export const createBot = async (bot: BotFormData): Promise<Bot> => {
 
 export const startBot = async (id: string): Promise<Bot> => {
     try {
-        const response = await axiosInstance.post(ApiRoutes.bot.start, { id });
+        const response = await axiosInstance.post(`${ApiRoutes.bot.prefix}/start/${id}`);
         return response.data;
     } catch (error) {
         throw error;
@@ -40,7 +40,7 @@ export const startBot = async (id: string): Promise<Bot> => {
 
 export const stopBot = async (id: string): Promise<Bot> => {
     try {
-        const response = await axiosInstance.post(ApiRoutes.bot.stop, { id });
+        const response = await axiosInstance.post(`${ApiRoutes.bot.prefix}/stop/${id}`);
         return response.data;
     } catch (error) {
         throw error;

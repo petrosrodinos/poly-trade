@@ -131,5 +131,10 @@ export interface FuturesTradeAndProfit {
     trades: FuturesTrade[];
 }
 
+export interface BinanceExchangeInfo {
+    minQty: number;
+    stepSize: number;
+}
+
 export type BinanceOrderSide = 'BUY' | 'SELL';
 export type BinanceOrderType = 'MARKET' | 'LIMIT';

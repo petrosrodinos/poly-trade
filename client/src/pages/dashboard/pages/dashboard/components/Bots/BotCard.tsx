@@ -52,12 +52,9 @@ export const BotCard = ({ bot }: BotCardProps) => {
           <div className="flex items-center gap-2">
             <Badge variant={active ? "default" : "secondary"} className={`text-sm px-3 py-1 font-medium ${active ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}`}>
               {active && <div className={`w-3 h-3 rounded-full flex items-center justify-center ${active ? "bg-green-500 shadow-green-500/50 shadow-lg animate-pulse" : "bg-gray-400"}`}>{active && <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>}</div>}
-              {active ? "Active" : "Stopped"}
+              {active ? "Active" : "Inactive"}
             </Badge>
           </div>
-          {/* <Badge variant={getStatusBadgeVariant(bot.active)} className={`${getStatusColor(bot.active)} ${bot.active ? "animate-pulse" : ""}`}>
-            {bot.active ? "Active" : "Inactive"}
-          </Badge> */}
         </div>
       </CardHeader>
 
@@ -82,7 +79,7 @@ export const BotCard = ({ bot }: BotCardProps) => {
 
           <div className="flex items-center space-x-2">
             <Clock className="w-4 h-4 text-purple-500" />
-            <span className="font-semibold">{bot.interval}</span>
+            <span className="font-semibold">{bot.timeframe}</span>
           </div>
 
           <div className="flex items-center space-x-2">

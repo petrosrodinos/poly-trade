@@ -17,6 +17,8 @@ export class BinanceTradingBotController {
 
     createBot = async (req: Request, res: Response): Promise<void> => {
         try {
+
+
             const validatedData = validateRequest(BotFormDataSchema, req.body);
 
             const bot = await this.tradingBotService.createBot(validatedData);
@@ -28,7 +30,7 @@ export class BinanceTradingBotController {
                 return;
             }
 
-            console.error(`Failed to create bot:`, error);
+            console.error(`Failed to create bot:`, error.message);
             res.status(500).json({
                 message: `Failed to create bot`,
                 error: error.message || 'Unknown error occurred'
@@ -38,10 +40,18 @@ export class BinanceTradingBotController {
 
     startBot = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { symbol } = validateRequest(SymbolParamSchema, req.params);
 
-            await this.tradingBotService.startBot(symbol);
-            res.status(200).json({ message: `Binance trading bot started for ${symbol}` });
+            const id = req.params.id;
+            const bot = await this.tradingBotService.getBot(id);
+
+            if (!bot) {
+                res.status(404).json({ message: `Bot not found` });
+                return;
+            }
+
+
+            await this.tradingBotService.startBot(bot);
+            res.status(200).json({ message: `Binance trading bot started for ${bot.id}` });
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 handleValidationError(error, res);
@@ -71,10 +81,16 @@ export class BinanceTradingBotController {
 
     stopBot = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { symbol } = validateRequest(SymbolParamSchema, req.params);
+            const id = req.params.id;
+            const bot = await this.tradingBotService.getBot(id);
 
-            await this.tradingBotService.stopBot(symbol);
-            res.status(200).json({ message: `Binance trading bot stopped for ${symbol}` });
+            if (!bot) {
+                res.status(404).json({ message: `Bot not found` });
+                return;
+            }
+
+            await this.tradingBotService.stopBot(bot);
+            res.status(200).json({ message: `Binance trading bot stopped for ${bot.symbol}` });
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 handleValidationError(error, res);

@@ -12,7 +12,7 @@ interface CreateBotModalProps {
 
 const CRYPTO_PAIRS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT", "SOLUSDT", "DOGEUSDT", "DOTUSDT", "AVAXUSDT", "MATICUSDT", "LTCUSDT", "ATOMUSDT", "LINKUSDT", "UNIUSDT", "ALGOUSDT", "VETUSDT", "FILUSDT", "TRXUSDT", "ETCUSDT", "XLMUSDT"];
 
-const INTERVALS = [
+const TIMEFRAMES = [
   { value: "1m", label: "1 minute" },
   { value: "3m", label: "3 minutes" },
   { value: "5m", label: "5 minutes" },
@@ -29,7 +29,7 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
   const [formData, setFormData] = useState<BotFormData>({
     symbol: "BTCUSDT",
     amount: 100,
-    interval: "5m",
+    timeframe: "3m",
     leverage: 1,
     active: true,
   });
@@ -65,7 +65,7 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
     setFormData({
       symbol: "BTCUSDT",
       amount: 100,
-      interval: "5m",
+      timeframe: "3m",
       leverage: 1,
       active: true,
     });
@@ -107,10 +107,10 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Time Interval</label>
-            <select value={formData.interval} onChange={(e) => handleInputChange("interval", e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-              {INTERVALS.map((interval) => (
-                <option key={interval.value} value={interval.value}>
-                  {interval.label}
+            <select value={formData.timeframe} onChange={(e) => handleInputChange("timeframe", e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+              {TIMEFRAMES.map((timeframe) => (
+                <option key={timeframe.value} value={timeframe.value}>
+                  {timeframe.label}
                 </option>
               ))}
             </select>
