@@ -5,8 +5,7 @@ export class AccountUtils {
 
     constructor() { }
 
-    calculateTotalProfit(trades: FuturesTrade[]): TradeProfitSummary {
-
+    calculateTradesSummary(trades: FuturesTrade[]): TradeProfitSummary & { winRate: number; loseRate: number } {
         if (trades.length === 0) {
             return {
                 grossProfit: 0,
@@ -14,30 +13,46 @@ export class AccountUtils {
                 netProfit: 0,
                 averageProfit: 0,
                 averageCommission: 0,
-                trades: 0
+                trades: 0,
+                winRate: 0,
+                loseRate: 0
             };
         }
 
         let grossProfit = 0;
         let commission = 0;
+        let wins = 0;
+        let losses = 0;
 
         for (const trade of trades) {
-            grossProfit += parseFloat(trade.realizedPnl);
+            const pnl = parseFloat(trade.realizedPnl);
+            grossProfit += pnl;
             commission += parseFloat(trade.commission);
+
+            if (pnl > 0) {
+                wins++;
+            } else if (pnl < 0) {
+                losses++;
+            }
         }
+
+        const totalTrades = trades.length;
+        const winRate = wins / totalTrades;
+        const loseRate = losses / totalTrades;
 
         return {
             grossProfit,
             commission,
             netProfit: grossProfit - commission,
-            averageProfit: grossProfit / trades.length,
-            averageCommission: commission / trades.length,
-            trades: trades.length
+            averageProfit: grossProfit / totalTrades,
+            averageCommission: commission / totalTrades,
+            trades: totalTrades,
+            winRate,
+            loseRate
         };
     }
 
-    calculateIncomeSummary(incomes: FuturesIncome[]): TradeProfitSummary {
-
+    calculateIncomeSummary(incomes: FuturesIncome[]): TradeProfitSummary & { winRate: number; loseRate: number } {
         if (incomes.length === 0) {
             return {
                 grossProfit: 0,
@@ -45,32 +60,47 @@ export class AccountUtils {
                 netProfit: 0,
                 averageProfit: 0,
                 averageCommission: 0,
-                trades: 0
+                trades: 0,
+                winRate: 0,
+                loseRate: 0
             };
         }
 
         let grossProfit = 0;
         let commission = 0;
+        let wins = 0;
+        let losses = 0;
 
         for (const income of incomes) {
             if (income.incomeType === "REALIZED_PNL") {
-                grossProfit += parseFloat(income.income);
+                const pnl = parseFloat(income.income);
+                grossProfit += pnl;
+
+                if (pnl > 0) {
+                    wins++;
+                } else if (pnl < 0) {
+                    losses++;
+                }
             } else if (income.incomeType === "COMMISSION") {
                 commission += Math.abs(parseFloat(income.income));
             }
         }
 
+        const totalTrades = incomes.length;
+        const winRate = wins / totalTrades;
+        const loseRate = losses / totalTrades;
+
         return {
             grossProfit,
             commission,
             netProfit: grossProfit - commission,
-            averageProfit: grossProfit / incomes.length,
-            averageCommission: commission / incomes.length,
-            trades: incomes.length
-
+            averageProfit: grossProfit / totalTrades,
+            averageCommission: commission / totalTrades,
+            trades: totalTrades,
+            winRate,
+            loseRate
         };
     }
-
 
 
     sortTrades(trades: FuturesTrade[]): FuturesTrade[] {

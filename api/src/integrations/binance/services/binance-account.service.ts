@@ -101,7 +101,7 @@ export class BinanceAccountService {
                 }
             }
 
-            const profit = this.accountUtils.calculateTotalProfit(trades).netProfit;
+            const profit = this.accountUtils.calculateTradesSummary(trades).netProfit;
             return {
                 profit,
                 trades

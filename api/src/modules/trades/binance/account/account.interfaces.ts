@@ -5,6 +5,8 @@ export interface TradeProfitSummary {
     averageProfit: number;
     averageCommission: number;
     trades: number;
+    winRate: number;
+    loseRate: number;
 }
 
 export interface AccountSummary {

@@ -171,17 +171,21 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
     return (
       <Card className={`group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-br from-background to-muted/20 ${className}`}>
         <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Activity className="w-5 h-5 text-chart-1" />
-                {title}
-              </CardTitle>
-              <TimeframeSelect value={selectedTimeframe} onValueChange={setSelectedTimeframe} size="sm" />
+          <div className="space-y-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <CardTitle className="text-lg font-semibold flex items-center gap-2 min-w-0">
+                  <Activity className="w-5 h-5 text-chart-1 flex-shrink-0" />
+                  <span className="break-words leading-tight">{title}</span>
+                </CardTitle>
+                <div className="flex-shrink-0">
+                  <TimeframeSelect value={selectedTimeframe} onValueChange={setSelectedTimeframe} size="sm" />
+                </div>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => refetch()} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground flex-shrink-0">
+                <RotateCcw className="w-4 h-4" />
+              </Button>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => refetch()} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
-              <RotateCcw className="w-4 h-4" />
-            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -200,17 +204,21 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
     return (
       <Card className={`group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-br from-background to-muted/20 ${className}`}>
         <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Activity className="w-5 h-5 text-destructive" />
-                {title}
-              </CardTitle>
-              <TimeframeSelect value={selectedTimeframe} onValueChange={setSelectedTimeframe} size="sm" />
+          <div className="space-y-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <CardTitle className="text-lg font-semibold flex items-center gap-2 min-w-0">
+                  <Activity className="w-5 h-5 text-destructive flex-shrink-0" />
+                  <span className="break-words leading-tight">{title}</span>
+                </CardTitle>
+                <div className="flex-shrink-0">
+                  <TimeframeSelect value={selectedTimeframe} onValueChange={setSelectedTimeframe} size="sm" />
+                </div>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => refetch()} disabled={isRefetching} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground flex-shrink-0">
+                <RotateCcw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
+              </Button>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => refetch()} disabled={isRefetching} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
-              <RotateCcw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
-            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -231,17 +239,21 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
     return (
       <Card className={`group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-br from-background to-muted/20 ${className}`}>
         <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Activity className="w-5 h-5 text-muted-foreground" />
-                {title}
-              </CardTitle>
-              <TimeframeSelect value={selectedTimeframe} onValueChange={setSelectedTimeframe} size="sm" />
+          <div className="space-y-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <CardTitle className="text-lg font-semibold flex items-center gap-2 min-w-0">
+                  <Activity className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                  <span className="break-words leading-tight">{title}</span>
+                </CardTitle>
+                <div className="flex-shrink-0">
+                  <TimeframeSelect value={selectedTimeframe} onValueChange={setSelectedTimeframe} size="sm" />
+                </div>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => refetch()} disabled={isRefetching} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground flex-shrink-0">
+                <RotateCcw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
+              </Button>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => refetch()} disabled={isRefetching} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
-              <RotateCcw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
-            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -261,38 +273,46 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
   return (
     <Card className={`group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-br from-background to-muted/20 backdrop-blur-sm ${className}`}>
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <Activity className="w-5 h-5 text-chart-1" />
-              {title}
-            </CardTitle>
-            <TimeframeSelect value={selectedTimeframe} onValueChange={setSelectedTimeframe} size="sm" />
-          </div>
-          <div className="flex items-center gap-4">
-            {stats && (
-              <div className="text-right">
-                <p className="text-2xl font-bold text-foreground">${stats.latest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                <div className={`flex items-center gap-1 text-sm font-medium ${stats.trend >= 0 ? "text-emerald-600" : "text-red-500"}`}>
-                  {stats.trend >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                  {Math.abs(stats.trend).toFixed(1)}%
-                </div>
+        <div className="space-y-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <CardTitle className="text-lg font-semibold flex items-center gap-2 min-w-0">
+                <Activity className="w-5 h-5 text-chart-1 flex-shrink-0" />
+                <span className="break-words leading-tight">{title}</span>
+              </CardTitle>
+              <div className="flex-shrink-0">
+                <TimeframeSelect value={selectedTimeframe} onValueChange={setSelectedTimeframe} size="sm" />
               </div>
-            )}
-            <Button variant="ghost" size="sm" onClick={() => refetch()} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
-              <RotateCcw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
-            </Button>
+            </div>
+            <div className="flex items-center justify-between sm:justify-end gap-4">
+              {stats && (
+                <div className="text-left sm:text-right">
+                  <p className="text-xl sm:text-2xl font-bold text-foreground break-all sm:break-normal" title={`$${stats.latest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}>
+                    ${stats.latest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
+                  <div className={`flex items-center gap-1 text-sm font-medium ${stats.trend >= 0 ? "text-emerald-600" : "text-red-500"}`}>
+                    {stats.trend >= 0 ? <TrendingUp className="w-4 h-4 flex-shrink-0" /> : <TrendingDown className="w-4 h-4 flex-shrink-0" />}
+                    <span>{Math.abs(stats.trend).toFixed(1)}%</span>
+                  </div>
+                </div>
+              )}
+              <Button variant="ghost" size="sm" onClick={() => refetch()} className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground flex-shrink-0">
+                <RotateCcw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
+              </Button>
+            </div>
           </div>
         </div>
         {stats && (
-          <div className="flex items-center gap-6 mt-3 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-chart-1"></div>
-              <span>Total: ${stats.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-6 mt-3 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-2 h-2 rounded-full bg-chart-1 flex-shrink-0"></div>
+              <span className="truncate" title={`Total: $${stats.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}>
+                Total: ${stats.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-chart-2"></div>
-              <span>{incomeData.length} data points</span>
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-2 h-2 rounded-full bg-chart-2 flex-shrink-0"></div>
+              <span className="truncate">{incomeData.length} data points</span>
             </div>
           </div>
         )}

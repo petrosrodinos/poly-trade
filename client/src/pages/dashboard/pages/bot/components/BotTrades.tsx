@@ -153,10 +153,19 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
                       {trade.side}
                     </Badge>
                   </div>
-                  <div className="flex justify-between sm:block sm:text-right">
-                    <div className="text-sm font-medium">{formatCurrency(parseFloat(trade.price))}</div>
-                    <div className={`text-xs ${parseFloat(trade.realizedPnl) >= 0 ? "text-green-600" : "text-red-600"}`}>{formatCurrency(parseFloat(trade.realizedPnl))}</div>
-                    <div className="text-xs text-slate-500">Commission: {formatCurrency(parseFloat(trade.commission))}</div>
+                  <div className="flex flex-col gap-1 sm:block sm:text-right">
+                    <div className="flex justify-between sm:block">
+                      <span className="text-xs text-slate-500 sm:hidden">Price:</span>
+                      <div className="text-sm font-medium">{formatCurrency(parseFloat(trade.price))}</div>
+                    </div>
+                    <div className="flex justify-between sm:block">
+                      <span className="text-xs text-slate-500 sm:hidden">P&L:</span>
+                      <div className={`text-xs ${parseFloat(trade.realizedPnl) >= 0 ? "text-green-600" : "text-red-600"}`}>{formatCurrency(parseFloat(trade.realizedPnl))}</div>
+                    </div>
+                    <div className="flex justify-between sm:block">
+                      <span className="text-xs text-slate-500 sm:hidden">Commission:</span>
+                      <div className="text-xs text-slate-500">{formatCurrency(parseFloat(trade.commission))}</div>
+                    </div>
                   </div>
                 </div>
               ))}

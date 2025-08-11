@@ -19,7 +19,7 @@ export class BinanceAccountServiceClass {
             const trades = await this.getFuturesUserTrades();
             const income = await this.getFuturesIncome();
 
-            const tradesSummary = this.accountUtils.calculateTotalProfit(trades);
+            const tradesSummary = this.accountUtils.calculateTradesSummary(trades);
             const incomeSummary = this.accountUtils.calculateIncomeSummary(income);
 
 
