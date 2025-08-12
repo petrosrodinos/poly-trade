@@ -20,7 +20,7 @@ app.use(morgan('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/users', usersRouter);
+app.use('/api/auth', usersRouter);
 app.use('/api/alpaca', alpacaRouter);
 app.use('/api/binance', binanceRouter);
 
