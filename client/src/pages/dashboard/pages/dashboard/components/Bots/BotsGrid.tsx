@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BotCard } from "./BotCard";
 import { CreateBotModal } from "./CreateBotModal";
@@ -9,9 +9,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 interface BotsGridProps {
   bots: Bot[];
   isLoading: boolean;
+  isRefetching: boolean;
+  refetch: () => void;
 }
 
-export const BotsGrid = ({ bots, isLoading }: BotsGridProps) => {
+export const BotsGrid = ({ bots, isLoading, isRefetching, refetch }: BotsGridProps) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const activeBots = bots?.filter((bot) => bot.active).length;
   const totalProfit = bots?.reduce((sum, bot) => sum + (bot.profit || 0), 0) || 0;
@@ -33,10 +35,15 @@ export const BotsGrid = ({ bots, isLoading }: BotsGridProps) => {
           </p>
         </div>
 
-        <Button onClick={() => setIsCreateModalOpen(true)}>
-          <Plus size={20} />
-          Create New Bot
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="icon" onClick={refetch} disabled={isRefetching} className="shrink-0">
+            <RefreshCw size={20} className={isRefetching ? "animate-spin" : ""} />
+          </Button>
+          <Button onClick={() => setIsCreateModalOpen(true)}>
+            <Plus size={20} />
+            Create New Bot
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (

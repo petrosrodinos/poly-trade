@@ -7,7 +7,7 @@ import { useBots } from "@/features/bot/hooks/use-bot";
 
 const DashboardPage = () => {
   const { data: accountStatus, isLoading: isAccountLoading, isRefetching: isRefetchingAccount, refetch: refetchAccount } = useAccountStatus();
-  const { data: bots, isLoading: isLoading } = useBots();
+  const { data: bots, isLoading: isLoading, refetch, isRefetching: isRefetchingBots } = useBots();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-6">
@@ -25,7 +25,7 @@ const DashboardPage = () => {
           <IncomeChart title="Income Performance" height={350} />
         </div>
 
-        <BotsGrid bots={bots || []} isLoading={isLoading} />
+        <BotsGrid bots={bots || []} isLoading={isLoading} isRefetching={isRefetchingBots} refetch={refetch} />
       </div>
     </div>
   );
