@@ -21,7 +21,7 @@ model User {
   password  String
   role      Role   @default(USER)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @updatedAt @default(now())
 
   bots      Bot[]
   subscriptions BotSubscription[]
@@ -35,7 +35,7 @@ model Bot {
   timeframe String
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @updatedAt @default(now())
 
   subscriptions BotSubscription[]
   user      User     @relation(fields: [user_id], references: [id])
@@ -47,10 +47,10 @@ model BotSubscription {
   user_id    Int
   bot_id    Int
   amount    Int
-  leverage  Int
-  active    Boolean  @default(false)
+  leverage  Int @default(1)
+  active    Boolean  @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @updatedAt @default(now())
 
   bot       Bot      @relation(fields: [bot_id], references: [id])
   user      User     @relation(fields: [user_id], references: [id])

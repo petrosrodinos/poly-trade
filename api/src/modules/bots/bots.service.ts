@@ -92,7 +92,6 @@ export class BotsService {
             },
             data: {
                 ...data,
-                updatedAt: new Date()
             }
         });
 
