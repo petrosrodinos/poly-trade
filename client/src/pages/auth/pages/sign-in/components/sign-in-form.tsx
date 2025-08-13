@@ -2,10 +2,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 import { SignInSchema, type SignInFormValues } from "../../../validation-schemas/auth";
 import { useSignin } from "@/features/auth/hooks/use-auth";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface UserAuthFormProps {
   className?: string;
@@ -54,13 +54,13 @@ export function SignInForm({ className, ...props }: UserAuthFormProps) {
                     <FormLabel>Password</FormLabel>
                   </div>
                   <FormControl>
-                    <Input placeholder="********" {...field} />
+                    <Input placeholder="********" {...field} type="password" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button className="mt-2" disabled={isPending}>
+            <Button className="mt-2" disabled={isPending} loading={isPending}>
               Login
             </Button>
           </div>

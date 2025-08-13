@@ -5,6 +5,7 @@ import BotPage from "@/pages/dashboard/pages/bot";
 import SignIn from "@/pages/auth/pages/sign-in";
 import ProtectedRoute from "./protected-route";
 import AuthLayout from "@/pages/auth/layout";
+import { NavBar } from "@/components/layout/NavBar";
 
 export default function AppRoutes() {
   return (
@@ -26,7 +27,10 @@ export default function AppRoutes() {
         path="/dashboard"
         element={
           <ProtectedRoute loggedIn={true}>
-            <Outlet />
+            <div className="min-h-screen bg-background">
+              <NavBar />
+              <Outlet />
+            </div>
           </ProtectedRoute>
         }
       >
