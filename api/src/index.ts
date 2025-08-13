@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { usersRouter } from './modules/users/users.routes';
 import { alpacaRouter } from './modules/trades/alpaca/alpaca.routes';
 import { binanceRouter } from './modules/trades/binance/binance.routes';
+import botsRouter from './modules/bots/bots.routes';
 import { logger } from './shared/utils/logger';
 import { BinanceTradingBotService } from './modules/trades/binance/bot/trading-bot.service';
 
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', usersRouter);
 app.use('/api/alpaca', alpacaRouter);
 app.use('/api/binance', binanceRouter);
+app.use('/api/bots', botsRouter);
 
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
