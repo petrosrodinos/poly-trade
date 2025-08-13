@@ -2,8 +2,8 @@ import { useAccountStatus } from "@/features/account/hooks/use-account";
 import { DashboardHeader, BotsStatus, BotsGrid } from "./components";
 import { StatCards } from "./components/Stats/StatCards";
 import { PerformanceOverview } from "./components/PerformanceOverview";
-import { IncomeChart } from "@/pages/dashboard/pages/dashboard/components/IncomeChart";
 import { useBots } from "@/features/bot/hooks/use-bot";
+import { IncomeChart } from "./components/IncomeChart";
 
 const DashboardPage = () => {
   const { data: accountStatus, isLoading: isAccountLoading, isRefetching: isRefetchingAccount, refetch: refetchAccount } = useAccountStatus();

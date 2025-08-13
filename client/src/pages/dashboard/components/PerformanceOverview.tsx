@@ -3,7 +3,7 @@ import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
 import { BarChart3, Target, DollarSign } from "lucide-react";
 import type { AccountSummary } from "@/features/account/interfaces/account.interfaces";
-import { useFormatters } from "../../../hooks";
+import { useFormatters } from "../hooks";
 
 interface PerformanceOverviewProps {
   accountStatus?: AccountSummary;

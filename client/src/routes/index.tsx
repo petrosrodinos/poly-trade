@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-import DashboardPage from "@/pages/dashboard/pages/dashboard";
-import BotPage from "@/pages/dashboard/pages/bot";
+import DashboardPage from "@/pages/dashboard";
+import BotPage from "@/pages/bot";
 // import SignUp from "@/pages/auth/pages/sign-up";
 import SignIn from "@/pages/auth/pages/sign-in";
 import ProtectedRoute from "./protected-route";

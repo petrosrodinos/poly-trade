@@ -1,7 +1,7 @@
 import { StatCard } from "./StatCard";
 import type { AccountSummary } from "@/features/account/interfaces/account.interfaces";
 import { TrendingUp, TrendingDown, Activity, Wallet, PieChart } from "lucide-react";
-import { useFormatters, useProfitCalculations } from "../../../../hooks";
+import { useFormatters, useProfitCalculations } from "../../hooks";
 
 interface StatCardsProps {
   accountStatus: AccountSummary;

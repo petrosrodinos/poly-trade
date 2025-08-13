@@ -2,10 +2,10 @@ import React from "react";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { useIncomeChart } from "@/features/account/hooks/use-account";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
-import { Button } from "../../../../../components/ui/button";
-import { Spinner } from "../../../../../components/ui/spinner";
-import { TimeframeSelect } from "../../../../../components/ui/timeframe-select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { TimeframeSelect } from "@/components/ui/timeframe-select";
 import { TrendingUp, TrendingDown, Activity, RotateCcw } from "lucide-react";
 import type { Timeframe } from "@/features/account/interfaces/account.interfaces";
 
