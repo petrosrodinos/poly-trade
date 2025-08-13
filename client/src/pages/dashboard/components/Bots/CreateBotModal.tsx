@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import type { BotFormData } from "@/features/bot/interfaces/bot.interface";
 import { useCreateBot } from "@/features/bot/hooks/use-bot";
 import { Spinner } from "@/components/ui/spinner";
@@ -18,9 +21,7 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
 
   const [formData, setFormData] = useState<BotFormData>({
     symbol: "BTCUSDT",
-    amount: 100,
     timeframe: "3m",
-    leverage: 1,
     active: true,
   });
 
@@ -30,14 +31,6 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
     e.preventDefault();
 
     const newErrors: Partial<BotFormData> = {};
-
-    if (formData.amount <= 0) {
-      newErrors.amount = 10;
-    }
-
-    if (formData.leverage < 1 || formData.leverage > 50) {
-      newErrors.leverage = 1;
-    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -54,9 +47,7 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
   const handleClose = () => {
     setFormData({
       symbol: "BTCUSDT",
-      amount: 100,
       timeframe: "3m",
-      leverage: 1,
       active: true,
     });
     setErrors({});
@@ -78,46 +69,30 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Trading Pair</label>
-            <select value={formData.symbol} onChange={(e) => handleInputChange("symbol", e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-              {CRYPTO_PAIRS.map((pair) => (
-                <option key={pair} value={pair}>
-                  {pair}
-                </option>
-              ))}
-            </select>
+          <div className="space-y-2">
+            <Label htmlFor="symbol">Trading Pair</Label>
+            <Select value={formData.symbol} onValueChange={(value) => handleInputChange("symbol", value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select trading pair" />
+              </SelectTrigger>
+              <SelectContent>
+                {CRYPTO_PAIRS.map((pair) => (
+                  <SelectItem key={pair} value={pair}>
+                    {pair}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount (USDT)</label>
-            <input type="number" min="10" step="10" value={formData.amount} onChange={(e) => handleInputChange("amount", parseFloat(e.target.value) || 0)} className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${errors.amount ? "border-red-500 dark:border-red-500" : "border-gray-300 dark:border-gray-600"}`} placeholder="Enter amount" />
-            {errors.amount && <p className="text-red-500 text-sm mt-1">Minimum amount is $10</p>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Timeframe</label>
+          <div className="space-y-2">
+            <Label htmlFor="timeframe">Timeframe</Label>
             <TimeframeSelect<string> value={formData.timeframe} onValueChange={(value) => handleInputChange("timeframe", value)} type="bot" className="w-full" />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Leverage: {formData.leverage}x</label>
-            <div className="relative">
-              <input type="range" min="1" max="50" value={formData.leverage} onChange={(e) => handleInputChange("leverage", parseInt(e.target.value))} className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider" />
-              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-                <span>1x</span>
-                <span>25x</span>
-                <span>50x</span>
-              </div>
-            </div>
-            {errors.leverage && <p className="text-red-500 text-sm mt-1">Leverage must be between 1x and 50x</p>}
-          </div>
-
           <div className="flex items-center justify-between">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Bot Immediately</label>
-            <button type="button" onClick={() => handleInputChange("active", !formData.active)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${formData.active ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-600"}`}>
-              <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.active ? "translate-x-6" : "translate-x-1"}`} />
-            </button>
+            <Label htmlFor="active">Active</Label>
+            <Switch id="active" checked={formData.active} onCheckedChange={(checked) => handleInputChange("active", checked)} />
           </div>
         </form>
 

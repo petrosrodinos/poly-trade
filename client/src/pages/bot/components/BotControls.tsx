@@ -98,19 +98,19 @@ export const BotControls = ({ bot, isLoading, refetch, isRefetching }: BotContro
 
   if (isLoading) {
     return (
-      <Card className="p-4 bg-gradient-to-r from-slate-50 to-gray-50 border shadow-sm">
+      <Card className="p-4 bg-gradient-to-r from-muted/20 to-muted/40 border shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-gray-200 animate-pulse"></div>
-              <div className="h-6 w-20 bg-gray-200 rounded animate-pulse"></div>
+              <div className="w-3 h-3 rounded-full bg-muted animate-pulse"></div>
+              <div className="h-6 w-20 bg-muted rounded animate-pulse"></div>
             </div>
             <Separator orientation="vertical" className="h-6 hidden sm:block" />
-            <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-4 w-24 bg-muted rounded animate-pulse"></div>
           </div>
           <div className="flex items-center justify-center gap-3">
             <Spinner size="sm" />
-            <span className="text-sm text-gray-500">Loading bot controls...</span>
+            <span className="text-sm text-muted-foreground">Loading bot controls...</span>
           </div>
         </div>
       </Card>
@@ -118,20 +118,20 @@ export const BotControls = ({ bot, isLoading, refetch, isRefetching }: BotContro
   }
 
   return (
-    <Card className="p-4 bg-gradient-to-r from-slate-50 to-gray-50 border shadow-sm">
+    <Card className="p-4 bg-gradient-to-r from-muted/20 to-muted/40 border shadow-sm">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full flex items-center justify-center ${active ? "bg-green-500 shadow-green-500/50 shadow-lg animate-pulse" : "bg-gray-400"}`}>{active && <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>}</div>
-            <Badge variant={active ? "default" : "secondary"} className={`text-sm px-3 py-1 font-medium ${active ? "bg-green-100 text-green-800 border-green-200" : "bg-gray-100 text-gray-600 border-gray-200"}`}>
+            <div className={`w-3 h-3 rounded-full flex items-center justify-center ${active ? "bg-green-500 shadow-green-500/50 shadow-lg animate-pulse" : "bg-muted-foreground"}`}>{active && <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>}</div>
+            <Badge variant={active ? "default" : "secondary"} className={`text-sm px-3 py-1 font-medium ${active ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800" : ""}`}>
               {active ? "Active" : "Inactive"}
             </Badge>
           </div>
 
           <Separator orientation="vertical" className="h-6 hidden sm:block" />
 
-          <div className="text-sm text-gray-600">
-            Symbol: <span className={`font-medium ${active ? "text-green-700" : "text-gray-500"}`}>{symbol}</span>
+          <div className="text-sm text-muted-foreground">
+            Symbol: <span className={`font-medium ${active ? "text-green-700" : "text-muted-foreground"}`}>{symbol}</span>
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../../core/prisma/prisma-client';
-import { CreateBotDto, UpdateBotDto, BotQueryDto, BotResponse, PaginatedBotsResponse } from './dto/bot.dto';
+import { CreateBotDto, UpdateBotDto, BotQueryDto, BotResponse } from './dto/bot.dto';
 
 export class BotsService {
     private prisma: any;
@@ -23,12 +23,8 @@ export class BotsService {
         return bot;
     }
 
-    async getAllBots(query: BotQueryDto, user_id: number): Promise<PaginatedBotsResponse> {
+    async getAllBots(query: BotQueryDto): Promise<BotResponse> {
         const where: any = {};
-
-        if (user_id) {
-            where.user_id = user_id;
-        }
 
         if (query.symbol) {
             where.symbol = {
@@ -45,13 +41,10 @@ export class BotsService {
             where.timeframe = query.timeframe;
         }
 
-        const skip = (query.page - 1) * query.limit;
 
-        const [bots, total] = await Promise.all([
+        const [bots] = await Promise.all([
             this.prisma.bot.findMany({
                 where,
-                skip,
-                take: query.limit,
                 orderBy: {
                     createdAt: 'desc'
                 }
@@ -59,15 +52,8 @@ export class BotsService {
             this.prisma.bot.count({ where })
         ]);
 
-        const total_pages = Math.ceil(total / query.limit);
 
-        return {
-            bots,
-            total,
-            page: query.page,
-            limit: query.limit,
-            total_pages
-        };
+        return bots;
     }
 
     async getBotByUuid(uuid: string, user_id: number): Promise<BotResponse | null> {

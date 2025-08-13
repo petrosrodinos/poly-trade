@@ -46,14 +46,10 @@ export class BotsController {
             };
 
             const validatedQuery = BotQuerySchema.parse(queryParams);
-            const user_id = req.user!.user_id;
 
-            const result = await this.botsService.getAllBots(validatedQuery, user_id);
+            const result = await this.botsService.getAllBots(validatedQuery);
 
-            res.status(200).json({
-                message: 'Bots retrieved successfully',
-                data: result
-            });
+            res.status(200).json(result);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 handleValidationError(error, res);

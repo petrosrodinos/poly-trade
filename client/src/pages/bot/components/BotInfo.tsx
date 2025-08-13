@@ -19,13 +19,13 @@ export const BotInfo = ({ bot, isLoading }: BotInfoProps) => {
         {[...Array(4)].map((_, index) => (
           <Card key={index}>
             <CardHeader className="pb-2">
-              <CardDescription className="h-4 bg-gray-200 rounded animate-pulse"></CardDescription>
+              <CardDescription className="h-4 bg-muted rounded animate-pulse"></CardDescription>
               <div className="flex items-center justify-center h-8">
                 <Spinner size="sm" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="h-3 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-3 bg-muted rounded animate-pulse"></div>
             </CardContent>
           </Card>
         ))}
@@ -38,7 +38,7 @@ export const BotInfo = ({ bot, isLoading }: BotInfoProps) => {
       <Card>
         <CardHeader className="pb-2">
           <CardDescription>Total Profit</CardDescription>
-          <CardTitle className={`text-xl sm:text-2xl ${profit && profit >= 0 ? "text-green-600" : "text-red-600"}`}>{formatCurrency(profit || 0)}</CardTitle>
+          <CardTitle className={`text-xl sm:text-2xl ${profit && profit >= 0 ? "text-green-600" : "text-destructive"}`}>{formatCurrency(profit || 0)}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">All time</p>

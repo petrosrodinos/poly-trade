@@ -35,10 +35,3 @@ export interface BotResponse {
     updatedAt: Date;
 }
 
-export interface PaginatedBotsResponse {
-    bots: BotResponse[];
-    total: number;
-    page: number;
-    limit: number;
-    total_pages: number;
-}

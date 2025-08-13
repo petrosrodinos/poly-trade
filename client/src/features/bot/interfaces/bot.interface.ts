@@ -15,8 +15,6 @@ export interface Bot {
 
 export interface BotFormData {
     symbol: string;
-    amount: number;
     timeframe: string;
-    leverage: number;
     active: boolean;
 }

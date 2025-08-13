@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bot as BotIcon, Calendar, Clock, DollarSign, Hash, Scale, TrendingUp } from "lucide-react";
+import { Bot as BotIcon, Clock, DollarSign, Hash, Scale, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Routes } from "@/routes/routes";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
@@ -27,22 +27,14 @@ export const BotCard = ({ bot }: BotCardProps) => {
     }).format(value);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
   const getProfitColor = (profit: number) => {
     if (profit > 0) return "text-green-600";
-    if (profit < 0) return "text-red-600";
-    return "text-gray-500";
+    if (profit < 0) return "text-destructive";
+    return "text-muted-foreground";
   };
 
   return (
-    <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:scale-[1.02] hover:bg-gray-50/50" onClick={handleCardClick}>
+    <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:scale-[1.02] hover:bg-muted/10" onClick={handleCardClick}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center text-lg">
@@ -50,7 +42,7 @@ export const BotCard = ({ bot }: BotCardProps) => {
             {symbol}
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Badge variant={active ? "default" : "secondary"} className={`text-sm px-3 py-1 font-medium ${active ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}`}>
+            <Badge variant={active ? "default" : "secondary"} className={`text-sm px-3 py-1 font-medium ${active ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800" : "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"}`}>
               {active && <div className={`w-3 h-3 rounded-full flex items-center justify-center ${active ? "bg-green-500 shadow-green-500/50 shadow-lg animate-pulse" : "bg-gray-400"}`}>{active && <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>}</div>}
               {active ? "Active" : "Inactive"}
             </Badge>
@@ -67,14 +59,14 @@ export const BotCard = ({ bot }: BotCardProps) => {
 
           <div className="flex items-center space-x-2">
             <DollarSign className="w-4 h-4 text-green-500" />
-            <span className="font-semibold">{formatCurrency(bot.amount)}</span>
+            <span className="font-semibold">{formatCurrency(bot?.amount || 0)}</span>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-center space-x-2">
             <Hash className="w-4 h-4 text-indigo-500" />
-            <span className="font-semibold">{bot.quantity?.toLocaleString() || "-"}</span>
+            <span className="font-semibold">{bot?.quantity?.toLocaleString() || "-"}</span>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -84,12 +76,7 @@ export const BotCard = ({ bot }: BotCardProps) => {
 
           <div className="flex items-center space-x-2">
             <Scale className="w-4 h-4 text-orange-500" />
-            <span className="font-semibold">{bot.leverage}x</span>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Calendar className="w-4 h-4 text-orange-500" />
-            <span className="font-semibold">{formatDate(bot.created_at)}</span>
+            <span className="font-semibold">{bot?.leverage || "-"}</span>
           </div>
         </div>
       </CardContent>

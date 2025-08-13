@@ -27,7 +27,7 @@ app.use('/api/auth', usersRouter);
 app.use('/api/alpaca', alpacaRouter);
 app.use('/api/binance', binanceRouter);
 app.use('/api/bots', botsRouter);
-app.use('/api/bot-subscriptions', botSubscriptionsRouter);
+app.use('/api/bot/subscriptions', botSubscriptionsRouter);
 app.use('/api/webhooks', tradingviewRouter);
 
 app.get('/health', (req, res) => {

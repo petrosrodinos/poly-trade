@@ -40,18 +40,18 @@ export const BotsStatus = ({ bots }: BotsStatusProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-3 gap-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+        <div className="grid grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">{runningBots}</div>
-            <div className="text-sm text-slate-600 dark:text-slate-400">Running</div>
+            <div className="text-sm text-muted-foreground">Running</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold">{totalBots}</div>
-            <div className="text-sm text-slate-600 dark:text-slate-400">Total Bots</div>
+            <div className="text-sm text-muted-foreground">Total Bots</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-blue-600">{totalActiveSymbols}</div>
-            <div className="text-sm text-slate-600 dark:text-slate-400">Active Symbols</div>
+            <div className="text-sm text-muted-foreground">Active Symbols</div>
           </div>
         </div>
 

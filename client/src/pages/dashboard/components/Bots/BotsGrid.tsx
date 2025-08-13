@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { Plus, RefreshCw } from "lucide-react";
+import { BotIcon, Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { BotCard } from "./BotCard";
-import { CreateBotModal } from "./CreateBotModal";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuthStore } from "@/stores/auth.store";
+import { RoleTypes } from "@/features/user/interfaces/user.interface";
+import { CreateBotModal } from "./CreateBotModal";
 
 interface BotsGridProps {
   bots: Bot[];
@@ -14,6 +17,7 @@ interface BotsGridProps {
 }
 
 export const BotsGrid = ({ bots, isLoading, isRefetching, refetch }: BotsGridProps) => {
+  const { role } = useAuthStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const activeBots = bots?.filter((bot) => bot.active).length;
   const totalProfit = bots?.reduce((sum, bot) => sum + (bot.profit || 0), 0) || 0;
@@ -39,10 +43,12 @@ export const BotsGrid = ({ bots, isLoading, isRefetching, refetch }: BotsGridPro
           <Button variant="outline" size="icon" onClick={refetch} disabled={isRefetching} className="shrink-0">
             <RefreshCw size={20} className={isRefetching ? "animate-spin" : ""} />
           </Button>
-          <Button onClick={() => setIsCreateModalOpen(true)}>
-            <Plus size={20} />
-            Create New Bot
-          </Button>
+          {role === RoleTypes.admin && (
+            <Button onClick={() => setIsCreateModalOpen(true)}>
+              <Plus size={20} />
+              Create New Bot
+            </Button>
+          )}
         </div>
       </div>
 
@@ -59,17 +65,20 @@ export const BotsGrid = ({ bots, isLoading, isRefetching, refetch }: BotsGridPro
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 border border-gray-200 dark:border-gray-700 rounded-lg">
-          <div className="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
-            <Plus size={32} className="text-gray-400" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No trading bots yet</h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">Get started by creating your first trading bot to automate your trades.</p>
-          <Button onClick={() => setIsCreateModalOpen(true)}>
-            <Plus size={20} />
-            Create Your First Bot
-          </Button>
-        </div>
+        <Card className="text-center py-12">
+          <CardContent className="pt-6">
+            <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
+              <BotIcon size={32} className="text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-medium mb-2">No trading bots yet</h3>
+            {role === RoleTypes.admin && (
+              <Button onClick={() => setIsCreateModalOpen(true)}>
+                <Plus size={20} />
+                Create Your First Bot
+              </Button>
+            )}
+          </CardContent>
+        </Card>
       )}
 
       <CreateBotModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
