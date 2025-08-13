@@ -10,6 +10,7 @@ import botsRouter from './modules/bots/bots.routes';
 import botSubscriptionsRouter from './modules/bot-subscriptions/bot-subscriptions.routes';
 import { logger } from './shared/utils/logger';
 import { BinanceTradingBotService } from './modules/trades/binance/bot/trading-bot.service';
+import { tradingviewRouter } from './webhooks/tradingview/tradingview.routes';
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use('/api/alpaca', alpacaRouter);
 app.use('/api/binance', binanceRouter);
 app.use('/api/bots', botsRouter);
 app.use('/api/bot-subscriptions', botSubscriptionsRouter);
+app.use('/api/webhooks', tradingviewRouter);
 
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });

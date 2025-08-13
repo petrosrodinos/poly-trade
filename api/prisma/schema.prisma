@@ -59,6 +59,7 @@ model BotSubscription {
 enum Role {
   USER
   ADMIN
+  WEBHOOK
 }
 
 

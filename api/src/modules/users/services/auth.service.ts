@@ -14,7 +14,7 @@ export class AuthService {
     constructor() {
         this.usersService = new UsersService();
         this.jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
-        this.jwtExpiresIn = process.env.JWT_EXPIRES_IN || '24h';
+        this.jwtExpiresIn = process.env.JWT_EXPIRES_IN || '1y';
         this.prisma = prisma;
     }
 

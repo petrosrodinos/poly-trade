@@ -50,6 +50,7 @@ export class AuthMiddleware {
 
     requireAdmin = this.requireRole(['ADMIN']);
     requireUser = this.requireRole(['USER', 'ADMIN']);
+    requireWebhook = this.requireRole(['WEBHOOK', 'ADMIN']);
 }
 
 export const authMiddleware = new AuthMiddleware();
