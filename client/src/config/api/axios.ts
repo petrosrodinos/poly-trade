@@ -20,8 +20,8 @@ axiosInstance.interceptors.request.use((config) => {
         return Promise.reject(new Error('Token expired'));
     }
 
-    if (authState.access_token) {
-        config.headers.Authorization = `Bearer ${authState.access_token}`;
+    if (authState.token) {
+        config.headers.Authorization = `Bearer ${authState.token}`;
     }
 
     return config;

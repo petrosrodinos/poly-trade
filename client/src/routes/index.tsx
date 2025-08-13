@@ -1,23 +1,42 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import DashboardPage from "@/pages/dashboard/pages/dashboard";
 import BotPage from "@/pages/dashboard/pages/bot";
+// import SignUp from "@/pages/auth/pages/sign-up";
+import SignIn from "@/pages/auth/pages/sign-in";
+import ProtectedRoute from "./protected-route";
+import AuthLayout from "@/pages/auth/layout";
 
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/auth">
-        {/* <Route path="sign-in" element={<SignIn />} /> */}
+      <Route
+        path="/auth"
+        element={
+          <ProtectedRoute loggedIn={false}>
+            <AuthLayout />
+          </ProtectedRoute>
+        }
+      >
+        {/* <Route path="sign-up" element={<SignUp />} /> */}
+        <Route path="sign-in" element={<SignIn />} />
         <Route index element={<Navigate to="/auth/sign-in" replace />} />
       </Route>
 
-      <Route path="/dashboard">
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute loggedIn={true}>
+            <Outlet />
+          </ProtectedRoute>
+        }
+      >
         <Route index element={<DashboardPage />} />
         <Route path="bot/:id" element={<BotPage />} />
       </Route>
 
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/" element={<Navigate to="/auth/sign-in" replace />} />
 
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/auth/sign-in" replace />} />
     </Routes>
   );
 }

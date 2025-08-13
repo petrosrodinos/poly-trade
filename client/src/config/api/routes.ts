@@ -1,6 +1,10 @@
 export const API_URL = import.meta.env.VITE_API_URL;
 
 export const ApiRoutes = {
+    auth: {
+        login: "/auth/login",
+        register: "/auth/register",
+    },
     users: {
         prefix: "/users",
         me: "/users/me",
