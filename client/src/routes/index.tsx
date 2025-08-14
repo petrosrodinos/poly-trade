@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import DashboardPage from "@/pages/dashboard";
 import BotPage from "@/pages/bot";
-// import SignUp from "@/pages/auth/pages/sign-up";
+import SignUp from "@/pages/auth/pages/sign-up";
 import SignIn from "@/pages/auth/pages/sign-in";
 import ProtectedRoute from "./protected-route";
 import AuthLayout from "@/pages/auth/layout";
@@ -18,7 +18,7 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        {/* <Route path="sign-up" element={<SignUp />} /> */}
+        <Route path="sign-up" element={<SignUp />} />
         <Route path="sign-in" element={<SignIn />} />
         <Route index element={<Navigate to="/auth/sign-in" replace />} />
       </Route>
@@ -35,7 +35,7 @@ export default function AppRoutes() {
         }
       >
         <Route index element={<DashboardPage />} />
-        <Route path="bot/:id" element={<BotPage />} />
+        <Route path="bot/:uuid" element={<BotPage />} />
       </Route>
 
       <Route path="/" element={<Navigate to="/auth/sign-in" replace />} />

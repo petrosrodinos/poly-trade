@@ -14,7 +14,7 @@ export const Skeleton = ({ className, height, width, radius, items }: SkeletonPr
   return (
     <div className={cn("animate-pulse rounded-md bg-gray-200 dark:bg-gray-800", className)} style={{ height, width, borderRadius: radius }}>
       {itemsArray.map((_, index) => (
-        <div key={index} className={cn("animate-pulse rounded-md bg-gray-200 dark:bg-gray-800", className)} style={{ height, width, borderRadius: radius }} />
+        <div key={index} className={cn("animate-pulse rounded-md bg-gray-200 dark:bg-gray-800 mb-1", className)} style={{ height, width, borderRadius: radius }} />
       ))}
     </div>
   );

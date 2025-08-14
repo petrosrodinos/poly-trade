@@ -15,9 +15,9 @@ export class BotsController {
     createBot = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
             const validatedData = CreateBotSchema.parse(req.body);
-            const user_id = req.user!.user_id;
+            const uuid = req.user!.uuid;
 
-            const bot = await this.botsService.createBot(validatedData, user_id);
+            const bot = await this.botsService.createBot(validatedData, uuid);
 
             res.status(201).json({
                 message: 'Bot created successfully',
@@ -65,9 +65,8 @@ export class BotsController {
     getBotByUuid = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
             const { uuid } = req.params;
-            const user_id = req.user!.user_id;
 
-            const bot = await this.botsService.getBotByUuid(uuid, user_id);
+            const bot = await this.botsService.getBotByUuid(uuid);
 
             if (!bot) {
                 res.status(404).json({
@@ -76,10 +75,7 @@ export class BotsController {
                 return;
             }
 
-            res.status(200).json({
-                message: 'Bot retrieved successfully',
-                data: bot
-            });
+            res.status(200).json(bot);
         } catch (error: any) {
             res.status(500).json({
                 message: 'Failed to retrieve bot',
@@ -90,11 +86,11 @@ export class BotsController {
 
     updateBot = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
-            const { uuid } = req.params;
+            const { uuid: botUuid } = req.params;
             const validatedData = UpdateBotSchema.parse(req.body);
-            const user_id = req.user!.user_id;
+            const uuid = req.user!.uuid;
 
-            const updatedBot = await this.botsService.updateBot(uuid, validatedData, user_id);
+            const updatedBot = await this.botsService.updateBot(botUuid, validatedData, uuid);
 
             if (!updatedBot) {
                 res.status(404).json({
@@ -103,10 +99,7 @@ export class BotsController {
                 return;
             }
 
-            res.status(200).json({
-                message: 'Bot updated successfully',
-                data: updatedBot
-            });
+            res.status(200).json(updatedBot);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 handleValidationError(error, res);
@@ -121,10 +114,10 @@ export class BotsController {
 
     deleteBot = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
-            const { uuid } = req.params;
-            const user_id = req.user!.user_id;
+            const { uuid: botUuid } = req.params;
+            const uuid = req.user!.uuid;
 
-            const deleted = await this.botsService.deleteBot(uuid, user_id);
+            const deleted = await this.botsService.deleteBot(botUuid, uuid);
 
             if (!deleted) {
                 res.status(404).json({
@@ -144,6 +137,22 @@ export class BotsController {
         }
     };
 
+
+    getBotSubscriptionForUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        try {
+            const { uuid: botUuid } = req.params;
+            const userUuid = req.user!.uuid;
+
+            const subscription = await this.botsService.getBotSubscriptionForUser(botUuid, userUuid);
+
+            res.status(200).json(subscription);
+        } catch (error: any) {
+            res.status(500).json({
+                message: 'Failed to get bot subscription',
+                error: error.message
+            });
+        }
+    };
 
 
 }

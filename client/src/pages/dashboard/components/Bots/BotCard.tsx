@@ -16,7 +16,7 @@ export const BotCard = ({ bot }: BotCardProps) => {
   const { symbol, active } = bot;
 
   const handleCardClick = () => {
-    navigate(Routes.dashboard.bot(bot.id));
+    navigate(Routes.dashboard.bot(bot.uuid));
   };
 
   const formatCurrency = (value: number) => {

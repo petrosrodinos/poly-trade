@@ -20,5 +20,27 @@ export class UsersService {
     });
   }
 
+  async deleteUser(uuid: string): Promise<boolean> {
+    try {
+      await this.prisma.user.delete({
+        where: {
+          uuid: uuid
+        }
+      });
+      return true;
+    } catch (error) {
+      throw new Error('Failed to delete user');
+    }
+  }
+
+  async deleteAllUsers(): Promise<boolean> {
+    try {
+      await this.prisma.user.deleteMany();
+      return true;
+    } catch (error) {
+      throw new Error('Failed to delete all users');
+    }
+  }
+
 
 } 

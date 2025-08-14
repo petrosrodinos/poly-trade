@@ -20,6 +20,8 @@ model User {
   username     String   @unique
   password  String
   role      Role   @default(USER)
+  enabled   Boolean  @default(false)
+  verified  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
 
@@ -30,7 +32,8 @@ model User {
 model Bot {
   id        Int      @id @default(autoincrement())
   uuid      String   @unique
-  user_id    Int
+  user_uuid    String
+  strategy    String @default("")
   symbol    String
   timeframe String
   active    Boolean  @default(true)
@@ -38,22 +41,27 @@ model Bot {
   updatedAt DateTime @updatedAt @default(now())
 
   subscriptions BotSubscription[]
-  user      User     @relation(fields: [user_id], references: [id])
+  user      User     @relation(fields: [user_uuid], references: [uuid], onDelete: Cascade)
+
+  @@unique([strategy, symbol, timeframe])
 }
 
 model BotSubscription {
   id        Int      @id @default(autoincrement())
   uuid      String   @unique
-  user_id    Int
-  bot_id    Int
+  user_uuid    String
+  bot_uuid    String
   amount    Int
   leverage  Int @default(1)
   active    Boolean  @default(true)
+  enabled   Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
 
-  bot       Bot      @relation(fields: [bot_id], references: [id])
-  user      User     @relation(fields: [user_id], references: [id])
+  bot       Bot      @relation(fields: [bot_uuid], references: [uuid], onDelete: Cascade)
+  user      User     @relation(fields: [user_uuid], references: [uuid])
+
+  @@unique([bot_uuid, user_uuid])
 }
 
 enum Role {

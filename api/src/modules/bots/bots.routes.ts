@@ -15,4 +15,7 @@ router.put('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, b
 
 router.delete('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.deleteBot);
 
+router.get('/:uuid/user/subscription', authMiddleware.authenticate, authMiddleware.requireUser, botsController.getBotSubscriptionForUser);
+
+
 export default router;

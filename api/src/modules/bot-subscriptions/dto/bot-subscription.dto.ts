@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const CreateBotSubscriptionSchema = z.object({
-    bot_id: z.number().min(1, 'Bot ID is required'),
+    bot_uuid: z.string().min(1, 'Bot ID is required'),
     amount: z.number().min(1, 'Amount must be greater than 0'),
     leverage: z.number().min(1, 'Leverage must be greater than 0'),
     active: z.boolean().optional().default(false)
@@ -16,7 +16,7 @@ export const UpdateBotSubscriptionSchema = z.object({
 export const BotSubscriptionQuerySchema = z.object({
     page: z.number().min(1).optional().default(1),
     limit: z.number().min(1).max(100).optional().default(10),
-    bot_id: z.number().optional(),
+    bot_uuid: z.string().optional(),
     active: z.boolean().optional(),
     user_id: z.number().optional()
 });
@@ -29,7 +29,7 @@ export interface BotSubscriptionResponse {
     id: number;
     uuid: string;
     user_id: number;
-    bot_id: number;
+    bot_uuid: string;
     amount: number;
     leverage: number;
     active: boolean;

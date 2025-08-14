@@ -42,18 +42,26 @@ export class UsersController {
     }
   };
 
-
-
-  adminOnlyEndpoint = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  deleteUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
-      res.status(200).json({
-        message: 'This is an admin-only endpoint',
-        user: req.user
-      });
+      const uuid = req.user!.uuid;
+      const result = await this.usersService.deleteUser(uuid);
+      res.status(200).json(result);
     } catch (error: any) {
-      res.status(500).json({ message: 'Server error', error: error.message });
+      res.status(500).json({ message: 'Failed to delete user', error: error.message });
     }
   };
+
+  deleteAllUsers = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const result = await this.usersService.deleteAllUsers();
+      res.status(200).json(result);
+    } catch (error: any) {
+      res.status(500).json({ message: 'Failed to delete all users', error: error.message });
+    }
+  };
+
+
 
 
 } 

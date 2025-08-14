@@ -2,14 +2,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Spinner } from "@/components/ui/spinner";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
 import { useFormatters } from "@/pages/dashboard/hooks";
+import type { BotSubscription } from "@/features/bot-subscription/interfaces/bot-subscription.interface";
 
 interface BotInfoProps {
   bot: Bot;
+  bot_subscription: BotSubscription;
   isLoading: boolean;
 }
 
-export const BotInfo = ({ bot, isLoading }: BotInfoProps) => {
-  const { amount, timeframe, profit, leverage } = bot;
+export const BotInfo = ({ bot, bot_subscription, isLoading }: BotInfoProps) => {
+  const { timeframe } = bot;
+  const { amount, leverage, profit } = bot_subscription;
 
   const { formatCurrency } = useFormatters();
 

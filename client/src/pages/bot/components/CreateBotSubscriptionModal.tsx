@@ -10,17 +10,17 @@ import { useCreateBotSubscription } from "@/features/bot-subscription/hooks/use-
 import { Spinner } from "@/components/ui/spinner";
 import { useParams } from "react-router-dom";
 
-interface CreateBotModalProps {
+interface CreateBotSubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose }) => {
-  const { mutate: createBot, isPending: isCreatingBot } = useCreateBotSubscription();
-  const { id } = useParams();
+export const CreateBotSubscriptionModal: React.FC<CreateBotSubscriptionModalProps> = ({ isOpen, onClose }) => {
+  const { uuid } = useParams();
+  const { mutate: createBot, isPending: isCreatingBot } = useCreateBotSubscription(uuid as string);
 
   const [formData, setFormData] = useState<BotSubscriptionFormData>({
-    bot_id: id as string,
+    bot_uuid: uuid as string,
     amount: 100,
     leverage: 1,
     active: true,
@@ -55,7 +55,7 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
 
   const handleClose = () => {
     setFormData({
-      bot_id: id as string,
+      bot_uuid: uuid as string,
       amount: 100,
       leverage: 1,
       active: true,

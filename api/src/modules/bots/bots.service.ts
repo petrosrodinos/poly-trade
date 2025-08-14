@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../../core/prisma/prisma-client';
 import { CreateBotDto, UpdateBotDto, BotQueryDto, BotResponse } from './dto/bot.dto';
+import { BotSubscriptionResponse } from '../bot-subscriptions/dto/bot-subscription.dto';
+import { UserBotSubscription } from './interfaces/bot.interface';
 
 export class BotsService {
     private prisma: any;
@@ -9,14 +11,15 @@ export class BotsService {
         this.prisma = prisma;
     }
 
-    async createBot(data: CreateBotDto, user_id: number): Promise<BotResponse> {
+    async createBot(data: CreateBotDto, user_uuid: string): Promise<BotResponse> {
         const bot = await this.prisma.bot.create({
             data: {
                 uuid: uuidv4(),
                 symbol: data.symbol,
                 timeframe: data.timeframe,
                 active: data.active ?? true,
-                user_id: user_id
+                strategy: data.strategy ?? 'default',
+                user_uuid: user_uuid
             }
         });
 
@@ -56,48 +59,118 @@ export class BotsService {
         return bots;
     }
 
-    async getBotByUuid(uuid: string, user_id: number): Promise<BotResponse | null> {
-        return await this.prisma.bot.findFirst({
-            where: {
-                uuid: uuid,
-                user_id: user_id
-            }
-        });
-    }
-
-    async updateBot(uuid: string, data: UpdateBotDto, user_id: number): Promise<BotResponse | null> {
-        const existingBot = await this.getBotByUuid(uuid, user_id);
-
-        if (!existingBot) {
+    async getBotByUuid(uuid: string): Promise<BotResponse | null> {
+        try {
+            return await this.prisma.bot.findFirst({
+                where: {
+                    uuid: uuid,
+                }
+            });
+        } catch (error) {
             return null;
         }
-
-        const updatedBot = await this.prisma.bot.update({
-            where: {
-                uuid: uuid
-            },
-            data: {
-                ...data,
-            }
-        });
-
-        return updatedBot;
     }
 
-    async deleteBot(uuid: string, user_id: number): Promise<boolean> {
-        const existingBot = await this.getBotByUuid(uuid, user_id);
+    async updateBot(uuid: string, data: UpdateBotDto, user_uuid: string): Promise<BotResponse | null> {
+        try {
+            const existingBot = await this.prisma.bot.findFirst({
+                where: {
+                    uuid: uuid,
+                    user_uuid: user_uuid
+                }
+            });
 
-        if (!existingBot) {
+            if (!existingBot) {
+                return null;
+            }
+
+            const updatedBot = await this.prisma.bot.update({
+                where: {
+                    uuid: uuid
+                },
+                data: {
+                    ...data,
+                }
+            });
+
+            return updatedBot;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    async deleteBot(uuid: string, user_uuid: string): Promise<boolean> {
+        try {
+            const existingBot = await this.prisma.bot.findFirst({
+                where: {
+                    uuid: uuid,
+                    user_uuid: user_uuid
+                }
+            });
+
+            if (!existingBot) {
+                return false;
+            }
+
+            await this.prisma.bot.delete({
+                where: {
+                    uuid: uuid
+                }
+            });
+
+            return true;
+        } catch (error) {
             return false;
         }
+    }
 
-        await this.prisma.bot.delete({
+
+    async getBotSubscriptionForUser(uuid: string, user_uuid: string): Promise<UserBotSubscription | null> {
+
+        const bot = await this.prisma.bot.findFirst({
             where: {
-                uuid: uuid
+                uuid: uuid,
+            },
+            include: {
+                subscriptions: {
+                    select: {
+                        uuid: true,
+                        bot_uuid: true,
+                        amount: true,
+                        leverage: true,
+                        active: true,
+                        createdAt: true,
+                    },
+                    where: {
+                        user_uuid: user_uuid
+                    },
+                    take: 1
+                }
             }
         });
 
-        return true;
+        if (!bot) {
+            throw new Error('Bot subscription not found');
+        }
+
+        const subscription = bot.subscriptions[0] || null;
+
+        return {
+            id: bot.id,
+            uuid: bot.uuid,
+            symbol: bot.symbol,
+            timeframe: bot.timeframe,
+            active: bot.active,
+            createdAt: bot.createdAt,
+            updatedAt: bot.updatedAt,
+            bot_subscription: subscription ? {
+                uuid: subscription.uuid,
+                bot_uuid: subscription.bot_uuid,
+                amount: subscription.amount,
+                leverage: subscription.leverage,
+                active: subscription.active
+            } : undefined
+        };
     }
 
 

@@ -2,12 +2,14 @@ import { z } from 'zod';
 
 export const CreateBotSchema = z.object({
     symbol: z.string().min(1, 'Symbol is required'),
+    strategy: z.string().min(1, 'Strategy is required').optional(),
     timeframe: z.string().min(1, 'Timeframe is required'),
     active: z.boolean().optional().default(true)
 });
 
 export const UpdateBotSchema = z.object({
     symbol: z.string().min(1, 'Symbol is required').optional(),
+    strategy: z.string().min(1, 'Strategy is required').optional(),
     timeframe: z.string().min(1, 'Timeframe is required').optional(),
     active: z.boolean().optional()
 });

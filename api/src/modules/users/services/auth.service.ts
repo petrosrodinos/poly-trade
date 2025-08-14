@@ -39,7 +39,6 @@ export class AuthService {
         });
 
         const token = this.generateToken({
-            user_id: newUser.id,
             uuid: newUser.uuid,
             username: newUser.username,
             role: newUser.role
@@ -47,7 +46,6 @@ export class AuthService {
 
         return {
             user: {
-                id: newUser.id,
                 uuid: newUser.uuid,
                 username: newUser.username,
                 role: newUser.role
@@ -73,7 +71,6 @@ export class AuthService {
         }
 
         const token = this.generateToken({
-            user_id: user.id,
             uuid: user.uuid,
             username: user.username,
             role: user.role
@@ -81,7 +78,6 @@ export class AuthService {
 
         return {
             user: {
-                id: user.id,
                 uuid: user.uuid,
                 username: user.username,
                 role: user.role

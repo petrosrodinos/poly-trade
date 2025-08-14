@@ -4,22 +4,25 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { useStartBot, useStopBot, useDeleteBot } from "@/features/bot/hooks/use-bot";
+import { useDeleteBotSubscription, useUpdateBotSubscription } from "@/features/bot-subscription/hooks/use-bot-subscription";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import type { Bot } from "@/features/bot/interfaces/bot.interface";
 import { RefreshCw } from "lucide-react";
+import type { BotSubscription } from "@/features/bot-subscription/interfaces/bot-subscription.interface";
+import type { Bot } from "@/features/bot/interfaces/bot.interface";
 
 interface BotControlsProps {
+  bot_subscription: BotSubscription;
   bot: Bot;
   isLoading: boolean;
   isRefetching: boolean;
   refetch: () => void;
 }
 
-export const BotControls = ({ bot, isLoading, refetch, isRefetching }: BotControlsProps) => {
+export const BotControls = ({ bot_subscription, bot, isLoading, refetch, isRefetching }: BotControlsProps) => {
   const navigate = useNavigate();
-  const { active, symbol, id } = bot;
+  const { active, uuid } = bot_subscription;
+  const { symbol, uuid: bot_uuid } = bot;
 
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
@@ -37,9 +40,8 @@ export const BotControls = ({ bot, isLoading, refetch, isRefetching }: BotContro
     variant: "default",
   });
 
-  const startBotMutation = useStartBot(id);
-  const stopBotMutation = useStopBot(id);
-  const deleteBotMutation = useDeleteBot();
+  const updateBotSubscriptionMutation = useUpdateBotSubscription(bot_uuid);
+  const deleteBotMutation = useDeleteBotSubscription(bot_uuid);
 
   const handleStartStopClick = () => {
     if (active) {
@@ -77,13 +79,19 @@ export const BotControls = ({ bot, isLoading, refetch, isRefetching }: BotContro
   const handleConfirmAction = () => {
     switch (confirmDialog.type) {
       case "start":
-        startBotMutation.mutate(id);
+        updateBotSubscriptionMutation.mutate({
+          uuid,
+          active: true,
+        });
         break;
       case "stop":
-        stopBotMutation.mutate(id);
+        updateBotSubscriptionMutation.mutate({
+          uuid,
+          active: false,
+        });
         break;
       case "delete":
-        deleteBotMutation.mutate(id, {
+        deleteBotMutation.mutate(uuid, {
           onSuccess: () => {
             navigate("/dashboard");
           },
@@ -143,9 +151,9 @@ export const BotControls = ({ bot, isLoading, refetch, isRefetching }: BotContro
             </Button>
           </div>
 
-          <Button variant={active ? "destructive" : "default"} size="sm" onClick={handleStartStopClick} disabled={startBotMutation.isPending || stopBotMutation.isPending} className={`w-full sm:w-auto sm:min-w-[100px] font-medium transition-all duration-200 ${active ? "bg-red-500 hover:bg-red-600 shadow-red-500/20 shadow-lg" : "bg-green-500 hover:bg-green-600 text-white shadow-green-500/20 shadow-lg"}`}>
+          <Button variant={active ? "destructive" : "default"} size="sm" onClick={handleStartStopClick} disabled={updateBotSubscriptionMutation.isPending} className={`w-full sm:w-auto sm:min-w-[100px] font-medium transition-all duration-200 ${active ? "bg-red-500 hover:bg-red-600 shadow-red-500/20 shadow-lg" : "bg-green-500 hover:bg-green-600 text-white shadow-green-500/20 shadow-lg"}`}>
             <div className="flex items-center justify-center gap-2 min-w-0">
-              {startBotMutation.isPending || stopBotMutation.isPending ? (
+              {updateBotSubscriptionMutation.isPending ? (
                 <>
                   <Spinner size="sm" />
                   <span className="hidden sm:inline truncate">{active ? "Stopping..." : "Starting..."}</span>
@@ -189,7 +197,7 @@ export const BotControls = ({ bot, isLoading, refetch, isRefetching }: BotContro
         </div>
       </div>
 
-      <ConfirmationDialog isOpen={confirmDialog.isOpen} onClose={closeDialog} onConfirm={handleConfirmAction} title={confirmDialog.title} description={confirmDialog.description} confirmText={confirmDialog.confirmText} variant={confirmDialog.variant} isLoading={startBotMutation.isPending || stopBotMutation.isPending || deleteBotMutation.isPending} />
+      <ConfirmationDialog isOpen={confirmDialog.isOpen} onClose={closeDialog} onConfirm={handleConfirmAction} title={confirmDialog.title} description={confirmDialog.description} confirmText={confirmDialog.confirmText} variant={confirmDialog.variant} isLoading={updateBotSubscriptionMutation.isPending || deleteBotMutation.isPending} />
     </Card>
   );
 };

@@ -17,3 +17,21 @@ export interface PaginatedBots {
     limit: number;
     total_pages: number;
 }
+
+export interface UserBotSubscription {
+    id: number;
+    uuid: string;
+    symbol: string;
+    timeframe: string;
+    active: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    bot_subscription?: {
+        uuid: string;
+        bot_uuid: string;
+        amount: number;
+        leverage: number;
+
+        active: boolean;
+    };
+}

@@ -1,24 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
-import { getBotSubscriptions, createBotSubscription, startBotSubscription, stopBotSubscription, deleteBotSubscription, updateBotSubscription, startAllBotSubscriptions, stopAllBotSubscriptions, getBotSubscription } from "../services/bot-subscription.service";
+import { createBotSubscription, deleteBotSubscription, updateBotSubscription, startAllBotSubscriptions, stopAllBotSubscriptions, getBotSubscriptionByBotUuid } from "../services/bot-subscription.service";
 
-export const useBotSubscriptions = () => {
-    return useQuery({
-        queryKey: ["bot-subscriptions"],
-        queryFn: getBotSubscriptions,
-    });
-};
 
-export const useCreateBotSubscription = () => {
+export const useCreateBotSubscription = (bot_uuid: string) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: createBotSubscription,
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["bot-subscription", bot_uuid] });
+            queryClient.invalidateQueries({ queryKey: ["bot", bot_uuid] });
             toast({
                 title: "Bot subscription created successfully",
                 description: "Bot subscription created successfully",
             });
-            queryClient.invalidateQueries({ queryKey: ["bot-subscriptions"] });
+
         },
         onError: (error: any) => {
             toast({
@@ -30,66 +26,27 @@ export const useCreateBotSubscription = () => {
     });
 };
 
-export const useBotSubscription = (id: string) => {
+
+export const useBotSubscriptionByBotUuid = (bot_uuid: string) => {
     return useQuery({
-        queryKey: ["bot-subscription", id],
-        queryFn: () => getBotSubscription(id),
-        enabled: !!id,
+        queryKey: ["bot-subscription", bot_uuid],
+        queryFn: () => getBotSubscriptionByBotUuid(bot_uuid),
+        enabled: !!bot_uuid,
+        retry: false,
     });
 }
 
-export const useStartBot = (id: string) => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: startBotSubscription,
-        onSuccess: () => {
-            toast({
-                title: "Bot subscription started successfully",
-                description: "Bot subscription started successfully",
-            });
-            queryClient.invalidateQueries({ queryKey: ["bot-subscription", id] });
-        },
-        onError: () => {
-            toast({
-                title: "Error",
-                description: "Failed to start bot subscription",
-                variant: "error",
-            });
-        },
-    });
-};
 
-export const useStopBot = (id: string) => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: stopBotSubscription,
-        onSuccess: () => {
-            toast({
-                title: "Bot subscription stopped successfully",
-                description: "Bot subscription stopped successfully",
-            });
-            queryClient.invalidateQueries({ queryKey: ["bot-subscription", id] });
-        },
-        onError: () => {
-            toast({
-                title: "Error",
-                description: "Failed to stop bot subscription",
-                variant: "error",
-            });
-        },
-    });
-};
-
-export const useUpdateBot = (id: string) => {
+export const useUpdateBotSubscription = (bot_uuid: string) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: updateBotSubscription,
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["bot-subscription", bot_uuid] });
             toast({
                 title: "Bot subscription updated successfully",
                 description: "Bot subscription updated successfully",
             });
-            queryClient.invalidateQueries({ queryKey: ["bot-subscription", id] });
         },
         onError: () => {
             toast({
@@ -101,16 +58,16 @@ export const useUpdateBot = (id: string) => {
     });
 }
 
-export const useDeleteBot = () => {
+export const useDeleteBotSubscription = (bot_uuid: string) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: deleteBotSubscription,
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["bot-subscription", bot_uuid] });
             toast({
                 title: "Bot subscription deleted successfully",
                 description: "Bot subscription deleted successfully",
             });
-            queryClient.invalidateQueries({ queryKey: ["bot-subscriptions"] });
         },
         onError: () => {
             toast({

@@ -8,6 +8,9 @@ const usersController = new UsersController();
 router.post('/register', usersController.register);
 router.post('/login', usersController.login);
 
-router.get('/admin-only', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.adminOnlyEndpoint);
+router.delete('/', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.deleteAllUsers);
+router.delete('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.deleteUser);
+
+
 
 export { router as usersRouter }; 

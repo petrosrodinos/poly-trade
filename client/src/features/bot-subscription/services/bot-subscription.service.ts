@@ -1,6 +1,6 @@
 import axiosInstance from "@/config/api/axios";
 import { ApiRoutes } from "@/config/api/routes";
-import type { BotSubscription, BotSubscriptionFormData } from "../interfaces/bot-subscription.interface";
+import type { BotSubscription, BotSubscriptionFormData, BotSubscriptionUpdateFormData } from "../interfaces/bot-subscription.interface";
 
 export const getBotSubscriptions = async (): Promise<BotSubscription[]> => {
     try {
@@ -11,9 +11,18 @@ export const getBotSubscriptions = async (): Promise<BotSubscription[]> => {
     }
 };
 
-export const getBotSubscription = async (id: string): Promise<BotSubscription> => {
+export const getBotSubscription = async (uuid: string): Promise<BotSubscription> => {
     try {
-        const response = await axiosInstance.get(`${ApiRoutes.bot_subscription.prefix}/${id}`);
+        const response = await axiosInstance.get(`${ApiRoutes.bot_subscription.prefix}/${uuid}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getBotSubscriptionByBotUuid = async (bot_uuid: string): Promise<BotSubscription> => {
+    try {
+        const response = await axiosInstance.get(`${ApiRoutes.bot_subscription.prefix}/bot/${bot_uuid}`);
         return response.data;
     } catch (error) {
         throw error;
@@ -29,36 +38,19 @@ export const createBotSubscription = async (bot: BotSubscriptionFormData): Promi
     }
 };
 
-export const startBotSubscription = async (id: string): Promise<BotSubscription> => {
+
+export const deleteBotSubscription = async (uuid: string): Promise<BotSubscription> => {
     try {
-        const response = await axiosInstance.post(`${ApiRoutes.bot_subscription.prefix}/start/${id}`);
+        const response = await axiosInstance.delete(`${ApiRoutes.bot_subscription.prefix}/${uuid}`);
         return response.data;
     } catch (error) {
         throw error;
     }
 };
 
-export const stopBotSubscription = async (id: string): Promise<BotSubscription> => {
+export const updateBotSubscription = async (bot: BotSubscriptionUpdateFormData): Promise<BotSubscription> => {
     try {
-        const response = await axiosInstance.post(`${ApiRoutes.bot_subscription.prefix}/stop/${id}`);
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-};
-
-export const deleteBotSubscription = async (id: string): Promise<BotSubscription> => {
-    try {
-        const response = await axiosInstance.delete(`${ApiRoutes.bot_subscription.prefix}/${id}`);
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-};
-
-export const updateBotSubscription = async (bot: BotSubscription): Promise<BotSubscription> => {
-    try {
-        const response = await axiosInstance.put(`${ApiRoutes.bot_subscription.prefix}/${bot.id}`, bot);
+        const response = await axiosInstance.put(`${ApiRoutes.bot_subscription.prefix}/${bot.uuid}`, bot);
         return response.data;
     } catch (error) {
         throw error;

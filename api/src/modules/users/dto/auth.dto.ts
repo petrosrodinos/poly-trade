@@ -14,7 +14,6 @@ export type LoginDto = z.infer<typeof LoginSchema>;
 export type RegisterDto = z.infer<typeof RegisterSchema>;
 
 export interface JwtPayload {
-    user_id: number;
     uuid: string;
     username: string;
     role: string;
@@ -22,7 +21,6 @@ export interface JwtPayload {
 
 export interface AuthResponse {
     user: {
-        id: number;
         uuid: string;
         username: string;
         role: string;

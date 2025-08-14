@@ -15,9 +15,9 @@ export class BotSubscriptionsService {
         this.prisma = prisma;
     }
 
-    async createBotSubscription(data: CreateBotSubscriptionDto, user_id: number): Promise<BotSubscriptionResponse> {
+    async createBotSubscription(data: CreateBotSubscriptionDto, user_uuid: string): Promise<BotSubscriptionResponse> {
         const botExists = await this.prisma.bot.findFirst({
-            where: { id: data.bot_id }
+            where: { uuid: data.bot_uuid }
         });
 
         if (!botExists) {
@@ -26,8 +26,8 @@ export class BotSubscriptionsService {
 
         const existingSubscription = await this.prisma.botSubscription.findFirst({
             where: {
-                user_id: user_id,
-                bot_id: data.bot_id
+                user_uuid: user_uuid,
+                bot_uuid: data.bot_uuid
             }
         });
 
@@ -38,8 +38,8 @@ export class BotSubscriptionsService {
         const subscription = await this.prisma.botSubscription.create({
             data: {
                 uuid: uuidv4(),
-                user_id: user_id,
-                bot_id: data.bot_id,
+                user_uuid: user_uuid,
+                bot_uuid: data.bot_uuid,
                 amount: data.amount,
                 leverage: data.leverage,
                 active: data.active ?? false
@@ -60,32 +60,22 @@ export class BotSubscriptionsService {
         return subscription;
     }
 
-    async getAllBotSubscriptions(query: BotSubscriptionQueryDto, user_id?: number): Promise<PaginatedBotSubscriptionsResponse> {
+    async getAllBotSubscriptions(query: BotSubscriptionQueryDto, user_uuid: string): Promise<PaginatedBotSubscriptionsResponse> {
         const where: any = {};
 
-        if (user_id) {
-            where.user_id = user_id;
-        }
+        where.user_uuid = user_uuid;
 
-        if (query.bot_id) {
-            where.bot_id = query.bot_id;
+        if (query.bot_uuid) {
+            where.bot_uuid = query.bot_uuid;
         }
 
         if (query.active !== undefined) {
             where.active = query.active;
         }
 
-        if (query.user_id) {
-            where.user_id = query.user_id;
-        }
-
-        const skip = (query.page - 1) * query.limit;
-
-        const [subscriptions, total] = await Promise.all([
+        const [subscriptions] = await Promise.all([
             this.prisma.botSubscription.findMany({
                 where,
-                skip,
-                take: query.limit,
                 include: {
                     bot: {
                         select: {
@@ -101,29 +91,20 @@ export class BotSubscriptionsService {
                     createdAt: 'desc'
                 }
             }),
-            this.prisma.botSubscription.count({ where })
         ]);
 
-        const total_pages = Math.ceil(total / query.limit);
-
-        return {
-            bot_subscriptions: subscriptions,
-            total,
-            page: query.page,
-            limit: query.limit,
-            total_pages
-        };
+        return subscriptions
     }
 
 
-    async updateBotSubscription(uuid: string, data: UpdateBotSubscriptionDto, user_id?: number): Promise<BotSubscriptionResponse> {
-        const where: any = { uuid };
+    async updateBotSubscription(uuid: string, data: UpdateBotSubscriptionDto, user_uuid: string): Promise<BotSubscriptionResponse> {
 
-        if (user_id) {
-            where.user_id = user_id;
-        }
-
-        const existingSubscription = await this.prisma.botSubscription.findFirst({ where });
+        const existingSubscription = await this.prisma.botSubscription.findFirst({
+            where: {
+                uuid,
+                user_uuid
+            }
+        });
 
         if (!existingSubscription) {
             throw new Error('Bot subscription not found');
@@ -150,14 +131,14 @@ export class BotSubscriptionsService {
         return subscription;
     }
 
-    async deleteBotSubscription(uuid: string, user_id?: number): Promise<boolean> {
-        const where: any = { uuid };
+    async deleteBotSubscription(uuid: string, user_uuid: string): Promise<boolean> {
 
-        if (user_id) {
-            where.user_id = user_id;
-        }
-
-        const existingSubscription = await this.prisma.botSubscription.findFirst({ where });
+        const existingSubscription = await this.prisma.botSubscription.findFirst({
+            where: {
+                uuid,
+                user_uuid
+            }
+        });
 
         if (!existingSubscription) {
             throw new Error('Bot subscription not found');
@@ -170,19 +151,16 @@ export class BotSubscriptionsService {
         return true;
     }
 
-    async getBotSubscriptionByUuid(uuid: string, user_id?: number): Promise<BotSubscriptionResponse> {
-        const where: any = { uuid };
-
-        if (user_id) {
-            where.user_id = user_id;
-        }
+    async getBotSubscriptionByUuid(uuid: string, user_uuid: string): Promise<BotSubscriptionResponse> {
 
         const subscription = await this.prisma.botSubscription.findFirst({
-            where,
+            where: {
+                uuid,
+                user_uuid
+            },
             include: {
                 bot: {
                     select: {
-                        id: true,
                         uuid: true,
                         symbol: true,
                         timeframe: true,
@@ -198,4 +176,27 @@ export class BotSubscriptionsService {
 
         return subscription;
     }
+
+
+    async getBotSubscriptionByBotUuid(bot_uuid: string, user_uuid: string): Promise<BotSubscriptionResponse> {
+        try {
+            const subscription = await this.prisma.botSubscription.findFirst({
+                where: {
+                    bot_uuid,
+                    user_uuid
+                }
+            });
+
+            if (!subscription) {
+                throw new Error('Bot subscription not found');
+            }
+
+            return subscription;
+        } catch (error) {
+            throw new Error('Bot subscription not found');
+        }
+    }
+
+
+
 }

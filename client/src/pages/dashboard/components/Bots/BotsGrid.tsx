@@ -19,24 +19,12 @@ interface BotsGridProps {
 export const BotsGrid = ({ bots, isLoading, isRefetching, refetch }: BotsGridProps) => {
   const { role } = useAuthStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const activeBots = bots?.filter((bot) => bot.active).length;
-  const totalProfit = bots?.reduce((sum, bot) => sum + (bot.profit || 0), 0) || 0;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Trading Bots</h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            {activeBots} of {bots?.length} bots active • Total Profit:{" "}
-            <span className={totalProfit >= 0 ? "text-green-600" : "text-red-600"}>
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-                minimumFractionDigits: 2,
-              }).format(totalProfit || 0)}
-            </span>
-          </p>
         </div>
 
         <div className="flex gap-2">

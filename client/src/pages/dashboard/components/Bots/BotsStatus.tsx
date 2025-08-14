@@ -8,9 +8,10 @@ import { useStartAllBots, useStopAllBots } from "@/features/bot/hooks/use-bot";
 
 interface BotsStatusProps {
   bots: Bot[];
+  className?: string;
 }
 
-export const BotsStatus = ({ bots }: BotsStatusProps) => {
+export const BotsStatus = ({ bots, className }: BotsStatusProps) => {
   const { mutate: startAllBots, isPending: isStartingAllBots } = useStartAllBots();
   const { mutate: stopAllBots, isPending: isStoppingAllBots } = useStopAllBots();
 
@@ -32,7 +33,7 @@ export const BotsStatus = ({ bots }: BotsStatusProps) => {
   };
 
   return (
-    <Card className="border-0 shadow-lg">
+    <Card className={`border-0 shadow-lg ${className}`}>
       <CardHeader>
         <CardTitle className="flex items-center">
           <BotIcon className="w-5 h-5 mr-2" />

@@ -22,6 +22,7 @@ export const ApiRoutes = {
         stop: "/bots/stop",
         start_all: "/bots/start-all",
         stop_all: "/bots/stop-all",
+        bot_subscription: (uuid: string) => `/bots/${uuid}/user/subscription`,
         // prefix: "/binance/bot",
         // get: "/binance/bots",
         // start: "/binance/bot/start",
@@ -31,8 +32,6 @@ export const ApiRoutes = {
     },
     bot_subscription: {
         prefix: "/bot/subscriptions",
-        start: "/bot/subscriptions/start",
-        stop: "/bot/subscriptions/stop",
         start_all: "/bot/subscriptions/start-all",
         stop_all: "/bot/subscriptions/stop-all",
     },

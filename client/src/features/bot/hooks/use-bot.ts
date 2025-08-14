@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getBots, createBot, startBot, stopBot, deleteBot, startAllBots, stopAllBots, updateBot, getBot } from "../services/bot.service";
+import { getBots, createBot, deleteBot, startAllBots, stopAllBots, updateBot, getBot, getBotSubscriptionForUser } from "../services/bot.service";
 import { toast } from "@/hooks/use-toast";
 
 export const useBots = () => {
@@ -30,66 +30,24 @@ export const useCreateBot = () => {
     });
 };
 
-export const useBot = (id: string) => {
+export const useBot = (uuid: string) => {
     return useQuery({
-        queryKey: ["bot", id],
-        queryFn: () => getBot(id),
-        enabled: !!id,
+        queryKey: ["bot", uuid],
+        queryFn: () => getBot(uuid),
+        enabled: !!uuid,
     });
 }
 
-export const useStartBot = (id: string) => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: startBot,
-        onSuccess: () => {
-            toast({
-                title: "Bot started successfully",
-                description: "Bot started successfully",
-            });
-            queryClient.invalidateQueries({ queryKey: ["bot", id] });
-        },
-        onError: () => {
-            toast({
-                title: "Error",
-                description: "Failed to start bot",
-                variant: "error",
-            });
-        },
-    });
-};
-
-export const useStopBot = (id: string) => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: stopBot,
-        onSuccess: () => {
-            toast({
-                title: "Bot stopped successfully",
-                description: "Bot stopped successfully",
-            });
-            queryClient.invalidateQueries({ queryKey: ["bot", id] });
-        },
-        onError: () => {
-            toast({
-                title: "Error",
-                description: "Failed to stop bot",
-                variant: "error",
-            });
-        },
-    });
-};
-
-export const useUpdateBot = (id: string) => {
+export const useUpdateBot = (uuid: string) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: updateBot,
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["bot", uuid] });
             toast({
                 title: "Bot updated successfully",
                 description: "Bot updated successfully",
             });
-            queryClient.invalidateQueries({ queryKey: ["bot", id] });
         },
         onError: () => {
             toast({
@@ -161,5 +119,13 @@ export const useStopAllBots = () => {
                 variant: "error",
             });
         },
+    });
+}
+
+export const useGetBotSubscriptionForUser = (uuid: string) => {
+    return useQuery({
+        queryKey: ["bot-subscription", uuid],
+        queryFn: () => getBotSubscriptionForUser(uuid),
+        enabled: !!uuid,
     });
 }
