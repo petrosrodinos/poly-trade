@@ -1,9 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bot as BotIcon, Clock, DollarSign, Hash, Scale, TrendingUp } from "lucide-react";
+import { Bot as BotIcon, Clock, Key } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Routes } from "@/routes/routes";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
+import { useAuthStore } from "@/stores/auth.store";
+import { RoleTypes } from "@/features/user/interfaces/user.interface";
 
 interface BotCardProps {
   bot: Bot;
@@ -12,26 +14,22 @@ interface BotCardProps {
 
 export const BotCard = ({ bot }: BotCardProps) => {
   const navigate = useNavigate();
+  const { role } = useAuthStore();
 
-  const { symbol, active } = bot;
+  const { symbol, active, uuid } = bot;
+  const isAdmin = role === RoleTypes.admin;
 
   const handleCardClick = () => {
     navigate(Routes.bots.bot(bot.uuid));
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
-
-  const getProfitColor = (profit: number) => {
-    if (profit > 0) return "text-green-600";
-    if (profit < 0) return "text-destructive";
-    return "text-muted-foreground";
-  };
+  // const formatCurrency = (value: number) => {
+  //   return new Intl.NumberFormat("en-US", {
+  //     style: "currency",
+  //     currency: "USD",
+  //     minimumFractionDigits: 2,
+  //   }).format(value);
+  // };
 
   return (
     <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:scale-[1.02] hover:bg-muted/10" onClick={handleCardClick}>
@@ -52,32 +50,19 @@ export const BotCard = ({ bot }: BotCardProps) => {
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-center space-x-2">
-            <TrendingUp className="w-4 h-4 text-emerald-500" />
-            <span className={`font-semibold ${getProfitColor(bot.profit || 0)}`}>{formatCurrency(bot.profit || 0)}</span>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <DollarSign className="w-4 h-4 text-green-500" />
-            <span className="font-semibold">{formatCurrency(bot?.amount || 0)}</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="flex items-center space-x-2">
-            <Hash className="w-4 h-4 text-indigo-500" />
-            <span className="font-semibold">{bot?.quantity?.toLocaleString() || "-"}</span>
-          </div>
-
-          <div className="flex items-center space-x-2">
             <Clock className="w-4 h-4 text-purple-500" />
             <span className="font-semibold">{bot.timeframe}</span>
           </div>
-
-          <div className="flex items-center space-x-2">
-            <Scale className="w-4 h-4 text-orange-500" />
-            <span className="font-semibold">{bot?.leverage || "-"}</span>
-          </div>
         </div>
+
+        {isAdmin && (
+          <div className="border-t pt-3 mt-3">
+            <div className="flex items-center space-x-2 text-xs">
+              <Key className="w-3 h-3 text-slate-500" />
+              <span className="text-slate-500 font-mono">{uuid}</span>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
