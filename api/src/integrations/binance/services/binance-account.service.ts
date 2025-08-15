@@ -38,7 +38,7 @@ export class BinanceAccountService {
 
             let income = await this.binanceClient.futuresIncome();
 
-            if (income.length === 0) {
+            if (!income || income.length === 0) {
                 return []
             }
 

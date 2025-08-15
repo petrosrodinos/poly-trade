@@ -18,7 +18,6 @@ export class BinanceTradingBotController {
     createBot = async (req: Request, res: Response): Promise<void> => {
         try {
 
-
             const validatedData = validateRequest(BotFormDataSchema, req.body);
 
             const bot = await this.tradingBotService.createBot(validatedData);

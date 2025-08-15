@@ -7,12 +7,16 @@ import {
     BotSubscriptionResponse,
     PaginatedBotSubscriptionsResponse
 } from './dto/bot-subscription.dto';
+import { BinanceAccountService } from '../../integrations/binance/services/binance-account.service';
 
 export class BotSubscriptionsService {
     private prisma: any;
+    private binanceAccountService: BinanceAccountService;
 
     constructor() {
         this.prisma = prisma;
+        this.binanceAccountService = new BinanceAccountService();
+
     }
 
     async createBotSubscription(data: CreateBotSubscriptionDto, user_uuid: string): Promise<BotSubscriptionResponse> {
@@ -184,6 +188,13 @@ export class BotSubscriptionsService {
                 where: {
                     bot_uuid,
                     user_uuid
+                },
+                include: {
+                    bot: {
+                        select: {
+                            symbol: true
+                        }
+                    }
                 }
             });
 
@@ -191,7 +202,14 @@ export class BotSubscriptionsService {
                 throw new Error('Bot subscription not found');
             }
 
-            return subscription;
+
+            const { trades, profit } = await this.binanceAccountService.getFuturesUserTradesAndProfit(subscription.bot.symbol);
+
+            return {
+                ...subscription,
+                trades,
+                profit
+            };
         } catch (error) {
             throw new Error('Bot subscription not found');
         }

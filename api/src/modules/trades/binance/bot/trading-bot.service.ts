@@ -103,8 +103,8 @@ export class BinanceTradingBotService {
         let bot = this.bots.get(id) || null;
 
         if (bot?.id) {
-            const { profit } = await this.binanceAccountService.getFuturesIncomeTradesAndProfit(bot.symbol);
             const { trades } = await this.binanceAccountService.getFuturesUserTradesAndProfit(bot.symbol);
+            const { profit } = await this.binanceAccountService.getFuturesIncomeTradesAndProfit(bot.symbol);
             bot.trades = trades;
             bot.profit = profit;
         }

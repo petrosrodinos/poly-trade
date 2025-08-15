@@ -10,6 +10,7 @@ import { useState } from "react";
 import { RefreshCw } from "lucide-react";
 import type { BotSubscription } from "@/features/bot-subscription/interfaces/bot-subscription.interface";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
+import { Routes } from "@/routes/routes";
 
 interface BotControlsProps {
   bot_subscription: BotSubscription;
@@ -93,7 +94,7 @@ export const BotControls = ({ bot_subscription, bot, isLoading, refetch, isRefet
       case "delete":
         deleteBotMutation.mutate(uuid, {
           onSuccess: () => {
-            navigate("/dashboard");
+            navigate(Routes.bots.root);
           },
         });
         break;

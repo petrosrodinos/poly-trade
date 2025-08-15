@@ -1,3 +1,4 @@
+import { TradeProfitSummary } from '@/modules/trades/binance/account/account.interfaces';
 import { z } from 'zod';
 
 export const CreateBotSubscriptionSchema = z.object({
@@ -33,21 +34,10 @@ export interface BotSubscriptionResponse {
     amount: number;
     leverage: number;
     active: boolean;
+    trades: TradeProfitSummary;
+    profit: number;
     createdAt: Date;
     updatedAt: Date;
-    bot?: {
-        id: number;
-        uuid: string;
-        symbol: string;
-        timeframe: string;
-        active: boolean;
-    };
-    user?: {
-        id: number;
-        email: string;
-        firstName: string;
-        lastName: string;
-    };
 }
 
 export interface PaginatedBotSubscriptionsResponse {

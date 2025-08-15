@@ -17,16 +17,16 @@ export class BinanceAccountServiceClass {
         try {
             const account = await this.getAccountFutures();
             const trades = await this.getFuturesUserTrades();
-            const income = await this.getFuturesIncome();
+            // const income = await this.getFuturesIncome();
 
             const tradesSummary = this.accountUtils.calculateTradesSummary(trades);
-            const incomeSummary = this.accountUtils.calculateIncomeSummary(income);
+            // const incomeSummary = this.accountUtils.calculateIncomeSummary(income);
 
 
             return {
                 totalWalletBalance: parseFloat(account.totalWalletBalance),
                 availableBalance: parseFloat(account.availableBalance),
-                trades: incomeSummary,
+                // trades: incomeSummary,
                 income: tradesSummary,
             };
         } catch (error: any) {

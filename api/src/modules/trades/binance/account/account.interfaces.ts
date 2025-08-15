@@ -12,7 +12,7 @@ export interface TradeProfitSummary {
 export interface AccountSummary {
     totalWalletBalance: number;
     availableBalance: number;
-    trades: TradeProfitSummary;
+    trades?: TradeProfitSummary;
     income: TradeProfitSummary;
 }
 
