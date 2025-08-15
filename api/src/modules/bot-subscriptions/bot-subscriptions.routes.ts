@@ -9,10 +9,17 @@ router.post('/', authMiddleware.authenticate, authMiddleware.requireUser, botSub
 
 router.get('/', authMiddleware.authenticate, authMiddleware.requireUser, botSubscriptionsController.getAllBotSubscriptions);
 
+router.put('/start-all', authMiddleware.authenticate, authMiddleware.requireUser, botSubscriptionsController.startAllBotSubscriptions);
+
+router.put('/stop-all', authMiddleware.authenticate, authMiddleware.requireUser, botSubscriptionsController.stopAllBotSubscriptions);
+
 router.put('/:uuid', authMiddleware.authenticate, authMiddleware.requireUser, botSubscriptionsController.updateBotSubscription);
 
 router.delete('/:uuid', authMiddleware.authenticate, authMiddleware.requireUser, botSubscriptionsController.deleteBotSubscription);
 
 router.get('/bot/:bot_uuid', authMiddleware.authenticate, authMiddleware.requireUser, botSubscriptionsController.getBotSubscriptionByBotUuid);
+
+
+
 
 export default router;

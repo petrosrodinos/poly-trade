@@ -1,28 +1,38 @@
-import { FuturesIncome, FuturesTrade } from "@/integrations/binance/binance.interfaces";
-
 export class BotModel {
-    id: string;
+    uuid: string;
     symbol: string;
-    amount: number;
+    strategy?: string;
     timeframe: string;
-    leverage: number;
     active: boolean;
-    quantity?: number;
-    trades?: FuturesTrade[];
-    income?: FuturesIncome[];
-    profit?: number;
     created_at: string;
+    subscriptions: Map<string, BotSubscriptionModel>;
 
     constructor(bot: BotModel) {
-        this.id = bot.id;
+        this.uuid = bot.uuid;
         this.symbol = bot.symbol;
+        this.strategy = bot.strategy;
+        this.timeframe = bot.timeframe;
+        this.active = bot.active;
+        this.created_at = bot.created_at || new Date().toISOString();
+        this.subscriptions = bot.subscriptions || new Map();
+    }
+}
+
+export class BotSubscriptionModel {
+    uuid: string;
+    user_uuid: string;
+    amount: number;
+    quantity: number;
+    leverage: number;
+    active: boolean;
+    created_at: string;
+
+    constructor(bot: BotSubscriptionModel) {
+        this.uuid = bot.uuid;
+        this.user_uuid = bot.user_uuid;
         this.amount = bot.amount;
-        this.timeframe = bot.timeframe || '3m';
         this.leverage = bot.leverage || 1;
         this.active = bot.active;
-        this.profit = bot.profit || 0;
-        // this.income = bot.income || [];
-        this.trades = bot.trades || [];
         this.quantity = bot.quantity || 0;
         this.created_at = bot.created_at || new Date().toISOString();
     }

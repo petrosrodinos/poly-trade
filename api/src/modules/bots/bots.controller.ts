@@ -19,10 +19,7 @@ export class BotsController {
 
             const bot = await this.botsService.createBot(validatedData, uuid);
 
-            res.status(201).json({
-                message: 'Bot created successfully',
-                data: bot
-            });
+            res.status(201).json(bot);
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 handleValidationError(error, res);
@@ -181,6 +178,18 @@ export class BotsController {
         } catch (error: any) {
             res.status(500).json({
                 message: 'Failed to get bot subscription',
+                error: error.message
+            });
+        }
+    };
+
+    getInternalBots = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        try {
+            const bots = await this.botsService.getInternalBots();
+            res.status(200).json(bots);
+        } catch (error: any) {
+            res.status(500).json({
+                message: 'Failed to get internal bots',
                 error: error.message
             });
         }

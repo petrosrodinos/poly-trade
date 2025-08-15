@@ -9,7 +9,7 @@ import { binanceRouter } from './modules/trades/binance/binance.routes';
 import botsRouter from './modules/bots/bots.routes';
 import botSubscriptionsRouter from './modules/bot-subscriptions/bot-subscriptions.routes';
 import { logger } from './shared/utils/logger';
-import { BinanceTradingBotService } from './modules/trades/binance/bot/trading-bot.service';
+// import { BinanceTradingBotService } from './modules/trades/binance/bot/trading-bot.service';
 import { tradingviewRouter } from './webhooks/tradingview/tradingview.routes';
 
 dotenv.config();
@@ -41,8 +41,8 @@ app.use('*', (req, res) => {
 const shutdown = async (signal: string) => {
     logger.debug(`Received ${signal}, shutting down gracefully...`);
     try {
-        const botService = new BinanceTradingBotService();
-        await botService.stopAllBots();
+        // const botService = new BinanceTradingBotService();
+        // await botService.stopAllBots();
     } catch (error: any) {
         logger.error("Could not stop all bots", error?.message);
     }

@@ -148,4 +148,42 @@ export class BotSubscriptionsController {
             }
         }
     };
+
+    startAllBotSubscriptions = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        try {
+            const user_uuid = req.user!.uuid;
+
+            const result = await this.botSubscriptionsService.startAllBotSubscriptions(user_uuid);
+
+            res.status(200).json({
+                message: 'All bot subscriptions started successfully',
+                result
+            });
+        } catch (error: any) {
+            res.status(400).json({
+                message: 'Failed to start all bot subscriptions',
+                error: error.message
+            });
+        }
+    };
+
+    stopAllBotSubscriptions = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        try {
+            const user_uuid = req.user!.uuid;
+
+            const result = await this.botSubscriptionsService.stopAllBotSubscriptions(user_uuid);
+
+            res.status(200).json({
+                message: 'All bot subscriptions stopped successfully',
+                result
+            });
+        } catch (error: any) {
+            res.status(400).json({
+                message: 'Failed to stop all bot subscriptions',
+                error: error.message
+            });
+        }
+    };
+
+
 }

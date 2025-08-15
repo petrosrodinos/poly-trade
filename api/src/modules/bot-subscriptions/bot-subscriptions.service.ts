@@ -8,18 +8,28 @@ import {
     PaginatedBotSubscriptionsResponse
 } from './dto/bot-subscription.dto';
 import { BinanceAccountService } from '../../integrations/binance/services/binance-account.service';
+import { CryptoSubscriptionService } from '../../services/trades/crypto/crypto-subscription.service';
+import { CryptoBotService } from '../../services/trades/crypto/crypto-bot.service';
+import CryptoBotSingleton from '../../services/trades/crypto/crypto-bot-singleton.service';
+import { TradesUtils } from '../../integrations/binance/utils/trades.utils';
 
 export class BotSubscriptionsService {
     private prisma: any;
     private binanceAccountService: BinanceAccountService;
+    private tradesUtils: TradesUtils;
+    private cryptoSubscriptionService: CryptoSubscriptionService;
+    private cryptoBotService: CryptoBotService;
 
     constructor() {
         this.prisma = prisma;
         this.binanceAccountService = new BinanceAccountService();
-
+        this.tradesUtils = new TradesUtils();
+        this.cryptoBotService = CryptoBotSingleton.getInstance();
+        this.cryptoSubscriptionService = new CryptoSubscriptionService(this.cryptoBotService);
     }
 
     async createBotSubscription(data: CreateBotSubscriptionDto, user_uuid: string): Promise<BotSubscriptionResponse> {
+
         const botExists = await this.prisma.bot.findFirst({
             where: { uuid: data.bot_uuid }
         });
@@ -39,6 +49,18 @@ export class BotSubscriptionsService {
             throw new Error('User already subscribed to this bot');
         }
 
+        const balance = await this.binanceAccountService.getAccountBalance("USDT");
+
+        if (balance < data.amount) {
+            throw new Error('Insufficient balance to create bot');
+        }
+
+        const { quantity, minQty, price } = await this.tradesUtils.getTradeQuantity(botExists.symbol, data.amount);
+
+        if (quantity === 0) {
+            throw new Error(`Minimum amount required is ${minQty * (price || 0)} USDT`);
+        }
+
         const subscription = await this.prisma.botSubscription.create({
             data: {
                 uuid: uuidv4(),
@@ -46,9 +68,14 @@ export class BotSubscriptionsService {
                 bot_uuid: data.bot_uuid,
                 amount: data.amount,
                 leverage: data.leverage,
-                active: data.active ?? false
+                active: data.active ?? false,
+                quantity: quantity,
             }
         });
+
+        await this.cryptoBotService.createBot(botExists);
+
+        await this.cryptoSubscriptionService.createSubscription(botExists, subscription);
 
         return subscription;
     }
@@ -108,18 +135,9 @@ export class BotSubscriptionsService {
             data: {
                 ...data,
             },
-            include: {
-                bot: {
-                    select: {
-                        id: true,
-                        uuid: true,
-                        symbol: true,
-                        timeframe: true,
-                        active: true
-                    }
-                }
-            }
         });
+
+        await this.cryptoSubscriptionService.updateSubscription(existingSubscription.bot_uuid, subscription);
 
         return subscription;
     }
@@ -141,7 +159,45 @@ export class BotSubscriptionsService {
             where: { uuid }
         });
 
+        await this.cryptoSubscriptionService.deleteSubscription(existingSubscription.bot_uuid, existingSubscription);
+
         return true;
+    }
+
+    async startAllBotSubscriptions(user_uuid: string): Promise<boolean> {
+        const subscriptions = await this.prisma.botSubscription.findMany({
+            where: { user_uuid }
+        });
+
+        if (subscriptions.length > 0) {
+            await this.prisma.botSubscription.updateMany({
+                where: { user_uuid },
+                data: { active: true }
+            });
+        }
+
+        // TODO: Start all user subscriptions
+
+        return true;
+
+    }
+
+    async stopAllBotSubscriptions(user_uuid: string): Promise<boolean> {
+        const subscriptions = await this.prisma.botSubscription.findMany({
+            where: { user_uuid }
+        });
+
+        if (subscriptions.length > 0) {
+            await this.prisma.botSubscription.updateMany({
+                where: { user_uuid },
+                data: { active: false }
+            });
+        }
+
+        // TODO: Stop all user subscriptions
+
+        return true;
+
     }
 
 

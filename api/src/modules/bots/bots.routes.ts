@@ -9,8 +9,9 @@ router.post('/', authMiddleware.authenticate, authMiddleware.requireAdmin, botsC
 
 router.get('/', authMiddleware.authenticate, authMiddleware.requireUser, botsController.getAllBots);
 
-router.get('/:uuid', authMiddleware.authenticate, authMiddleware.requireUser, botsController.getBotByUuid);
+router.get('/internal', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.getInternalBots);
 
+router.get('/:uuid', authMiddleware.authenticate, authMiddleware.requireUser, botsController.getBotByUuid);
 
 router.delete('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.deleteBot);
 
@@ -21,6 +22,7 @@ router.put('/stop-all', authMiddleware.authenticate, authMiddleware.requireAdmin
 router.put('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.updateBot);
 
 router.get('/:uuid/user/subscription', authMiddleware.authenticate, authMiddleware.requireUser, botsController.getBotSubscriptionForUser);
+
 
 
 export default router;

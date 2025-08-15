@@ -1,29 +1,39 @@
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../../core/prisma/prisma-client';
 import { CreateBotDto, UpdateBotDto, BotQueryDto, BotResponse } from './dto/bot.dto';
-import { BotSubscriptionResponse } from '../bot-subscriptions/dto/bot-subscription.dto';
 import { UserBotSubscription } from './interfaces/bot.interface';
+import CryptoBotSingleton from '../../services/trades/crypto/crypto-bot-singleton.service';
+import { BotModel } from '../../services/trades/models/bot.model';
+import { CryptoBotService } from '../../services/trades/crypto/crypto-bot.service';
 
 export class BotsService {
     private prisma: any;
+    private cryptoBotService: CryptoBotService;
 
     constructor() {
         this.prisma = prisma;
+        this.cryptoBotService = CryptoBotSingleton.getInstance();
     }
 
     async createBot(data: CreateBotDto, user_uuid: string): Promise<BotResponse> {
-        const bot = await this.prisma.bot.create({
-            data: {
-                uuid: uuidv4(),
-                symbol: data.symbol,
-                timeframe: data.timeframe,
-                active: data.active ?? true,
-                strategy: data.strategy ?? 'default',
-                user_uuid: user_uuid
-            }
-        });
+        try {
+            const bot = await this.prisma.bot.create({
+                data: {
+                    uuid: uuidv4(),
+                    symbol: data.symbol,
+                    timeframe: data.timeframe,
+                    active: data.active ?? true,
+                    strategy: data.strategy ?? 'default',
+                    user_uuid: user_uuid
+                }
+            });
 
-        return bot;
+            await this.cryptoBotService.createBot(bot);
+
+            return bot;
+        } catch (error) {
+            throw error;
+        }
     }
 
     async getAllBots(query: BotQueryDto): Promise<BotResponse> {
@@ -84,15 +94,15 @@ export class BotsService {
                 return null;
             }
 
-            if (existingBot.active && !data.active) {
+            if (existingBot.active !== data.active) {
                 const [, updatedBot] = await Promise.all([
                     this.prisma.botSubscription.updateMany({
                         where: {
                             bot_uuid: uuid,
-                            active: true
+                            active: !data.active
                         },
                         data: {
-                            active: false
+                            active: data.active
                         }
                     }),
                     this.prisma.bot.update({
@@ -104,6 +114,15 @@ export class BotsService {
                         }
                     })
                 ]);
+
+                if (data.active) {
+                    await this.cryptoBotService.startBot(uuid);
+                } else {
+                    await this.cryptoBotService.stopBot(uuid);
+                }
+
+                await this.cryptoBotService.updateBot(uuid, data);
+
                 return updatedBot;
 
             } else {
@@ -145,6 +164,8 @@ export class BotsService {
                 }
             });
 
+            await this.cryptoBotService.deleteBot(uuid);
+
             return true;
         } catch (error) {
             return false;
@@ -155,6 +176,8 @@ export class BotsService {
         try {
 
             const result = await this.startOrStopBots(user_uuid, false);
+
+            await this.cryptoBotService.stopAllBots();
 
             return result;
 
@@ -167,6 +190,8 @@ export class BotsService {
 
         try {
             const result = await this.startOrStopBots(user_uuid, true);
+
+            await this.cryptoBotService.startAllBots();
 
             return result;
         } catch (error) {
@@ -264,6 +289,10 @@ export class BotsService {
         } catch (error) {
             return false;
         }
+    }
+
+    async getInternalBots(): Promise<any[]> {
+        return await this.cryptoBotService.getBotsWithSubscriptions();
     }
 
 

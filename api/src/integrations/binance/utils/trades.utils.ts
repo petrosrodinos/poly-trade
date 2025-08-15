@@ -5,7 +5,8 @@ export class TradesUtils {
     private binanceClient: any;
 
     constructor() {
-        this.binanceClient = new BinanceClient();
+        this.binanceClient = BinanceClient.getClient();
+
     }
 
     async getTradeQuantity(symbol: string, amount: number): Promise<TradeQuantity> {
