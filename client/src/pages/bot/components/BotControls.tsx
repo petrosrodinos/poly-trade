@@ -11,6 +11,7 @@ import { RefreshCw } from "lucide-react";
 import type { BotSubscription } from "@/features/bot-subscription/interfaces/bot-subscription.interface";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
 import { Routes } from "@/routes/routes";
+import { useParams } from "react-router-dom";
 
 interface BotControlsProps {
   bot_subscription: BotSubscription;
@@ -22,8 +23,9 @@ interface BotControlsProps {
 
 export const BotControls = ({ bot_subscription, bot, isLoading, refetch, isRefetching }: BotControlsProps) => {
   const navigate = useNavigate();
+  const { uuid: bot_uuid } = useParams();
   const { active, uuid } = bot_subscription;
-  const { symbol, uuid: bot_uuid, active: bot_active } = bot;
+  const { symbol, active: bot_active } = bot;
 
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
@@ -41,8 +43,8 @@ export const BotControls = ({ bot_subscription, bot, isLoading, refetch, isRefet
     variant: "default",
   });
 
-  const updateBotSubscriptionMutation = useUpdateBotSubscription(bot_uuid);
-  const deleteBotMutation = useDeleteBotSubscription(bot_uuid);
+  const updateBotSubscriptionMutation = useUpdateBotSubscription(bot_uuid || "");
+  const deleteBotMutation = useDeleteBotSubscription(bot_uuid || "");
 
   const handleStartStopClick = () => {
     if (active) {

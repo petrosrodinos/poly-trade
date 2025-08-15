@@ -45,6 +45,8 @@ export const useUpdateBot = (uuid: string) => {
         mutationFn: updateBot,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["bot", uuid] });
+            queryClient.invalidateQueries({ queryKey: ["bot-subscription", uuid] });
+
             toast({
                 title: "Bot updated successfully",
                 description: "Bot updated successfully",

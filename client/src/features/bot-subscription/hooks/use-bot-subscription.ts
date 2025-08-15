@@ -9,7 +9,7 @@ export const useCreateBotSubscription = (bot_uuid: string) => {
         mutationFn: createBotSubscription,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["bot-subscription", bot_uuid] });
-            queryClient.invalidateQueries({ queryKey: ["bot", bot_uuid] });
+            // queryClient.invalidateQueries({ queryKey: ["bot", bot_uuid] });
             toast({
                 title: "Bot subscription created successfully",
                 description: "Bot subscription created successfully",

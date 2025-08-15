@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
 import { Shield } from "lucide-react";
+import { Routes } from "@/routes/routes";
 
 interface AdminBotControlsProps {
   bot: Bot;
@@ -87,7 +88,7 @@ export const AdminBotControls = ({ bot, isLoading }: AdminBotControlsProps) => {
       case "delete":
         deleteBotMutation.mutate(uuid, {
           onSuccess: () => {
-            navigate("/dashboard");
+            navigate(Routes.bots.root);
           },
         });
         break;
