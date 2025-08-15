@@ -22,7 +22,7 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
   const [formData, setFormData] = useState<BotFormData>({
     symbol: "BTCUSDT",
     timeframe: "3m",
-    active: true,
+    active: false,
   });
 
   const [errors, setErrors] = useState<Partial<BotFormData>>({});
@@ -48,7 +48,7 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
     setFormData({
       symbol: "BTCUSDT",
       timeframe: "3m",
-      active: true,
+      active: false,
     });
     setErrors({});
     onClose();

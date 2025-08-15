@@ -61,23 +61,23 @@ const AnimatedValue = ({ value, isLoading }: { value: string; isLoading: boolean
 
 export const StatCard = ({ title, value, subtitle, icon: Icon, gradientFrom, gradientTo, isLoading = false }: StatCardProps) => {
   return (
-    <Card className={`border-0 shadow-lg bg-gradient-to-br ${gradientFrom} ${gradientTo} text-white`}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium opacity-90">{title}</CardTitle>
-        <Icon className="h-4 w-4 opacity-90" />
+    <Card className={`border-0 shadow-lg bg-gradient-to-br ${gradientFrom} ${gradientTo} text-white rounded-xl`}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-2 sm:px-3 pt-2 sm:pt-3">
+        <CardTitle className="text-[10px] sm:text-xs font-medium opacity-90 truncate leading-tight">{title}</CardTitle>
+        <Icon className="h-3 w-3 sm:h-4 sm:w-4 opacity-90 flex-shrink-0" />
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold flex items-center gap-2 min-h-[2rem]">
+      <CardContent className="px-2 sm:px-3 pb-2 sm:pb-3">
+        <div className="text-sm sm:text-lg font-bold flex items-center gap-1 min-h-[1.2rem] sm:min-h-[1.5rem]">
           {isLoading ? (
             <>
               <Spinner size="sm" className="text-white" />
-              <span className="text-lg">Loading...</span>
+              <span className="text-xs sm:text-sm">Loading...</span>
             </>
           ) : (
             <AnimatedValue value={value} isLoading={isLoading} />
           )}
         </div>
-        <p className="text-xs opacity-90 mt-1 transition-opacity duration-300">{subtitle}</p>
+        <p className="text-[9px] sm:text-xs opacity-90 mt-0.5 sm:mt-1 transition-opacity duration-300 truncate leading-tight">{subtitle}</p>
       </CardContent>
     </Card>
   );

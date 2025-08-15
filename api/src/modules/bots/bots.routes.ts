@@ -11,9 +11,14 @@ router.get('/', authMiddleware.authenticate, authMiddleware.requireUser, botsCon
 
 router.get('/:uuid', authMiddleware.authenticate, authMiddleware.requireUser, botsController.getBotByUuid);
 
-router.put('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.updateBot);
 
 router.delete('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.deleteBot);
+
+router.put('/start-all', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.startAllBots);
+
+router.put('/stop-all', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.stopAllBots);
+
+router.put('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.updateBot);
 
 router.get('/:uuid/user/subscription', authMiddleware.authenticate, authMiddleware.requireUser, botsController.getBotSubscriptionForUser);
 

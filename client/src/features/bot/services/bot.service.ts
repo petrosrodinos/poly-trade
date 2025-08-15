@@ -50,7 +50,7 @@ export const updateBot = async (bot: UpdateBotFormData): Promise<Bot> => {
 
 export const startAllBots = async (): Promise<Bot[]> => {
     try {
-        const response = await axiosInstance.post(ApiRoutes.bot.start_all);
+        const response = await axiosInstance.put(ApiRoutes.bot.start_all);
         return response.data;
     } catch (error) {
         throw error;
@@ -59,7 +59,7 @@ export const startAllBots = async (): Promise<Bot[]> => {
 
 export const stopAllBots = async (): Promise<Bot[]> => {
     try {
-        const response = await axiosInstance.post(ApiRoutes.bot.stop_all);
+        const response = await axiosInstance.put(ApiRoutes.bot.stop_all);
         return response.data;
     } catch (error) {
         throw error;

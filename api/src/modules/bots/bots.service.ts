@@ -84,16 +84,43 @@ export class BotsService {
                 return null;
             }
 
-            const updatedBot = await this.prisma.bot.update({
-                where: {
-                    uuid: uuid
-                },
-                data: {
-                    ...data,
-                }
-            });
+            if (existingBot.active && !data.active) {
+                const [, updatedBot] = await Promise.all([
+                    this.prisma.botSubscription.updateMany({
+                        where: {
+                            bot_uuid: uuid,
+                            active: true
+                        },
+                        data: {
+                            active: false
+                        }
+                    }),
+                    this.prisma.bot.update({
+                        where: {
+                            uuid: uuid
+                        },
+                        data: {
+                            ...data,
+                        }
+                    })
+                ]);
+                return updatedBot;
 
-            return updatedBot;
+            } else {
+                const updatedBot = await this.prisma.bot.update({
+                    where: {
+                        uuid: uuid
+                    },
+                    data: {
+                        ...data,
+                    }
+                });
+
+                return updatedBot;
+            }
+
+
+
         } catch (error) {
             return null;
         }
@@ -119,6 +146,29 @@ export class BotsService {
             });
 
             return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    async stopAllBots(user_uuid: string): Promise<boolean> {
+        try {
+
+            const result = await this.startOrStopBots(user_uuid, false);
+
+            return result;
+
+        } catch (error) {
+            return false;
+        }
+    }
+
+    async startAllBots(user_uuid: string): Promise<boolean> {
+
+        try {
+            const result = await this.startOrStopBots(user_uuid, true);
+
+            return result;
         } catch (error) {
             return false;
         }
@@ -171,6 +221,49 @@ export class BotsService {
                 active: subscription.active
             } : undefined
         };
+    }
+
+    async startOrStopBots(user_uuid: string, active: boolean): Promise<boolean> {
+        try {
+            const bots = await this.prisma.bot.findMany({
+                where: {
+                    user_uuid: user_uuid,
+                    active: !active
+                }
+            });
+
+            if (bots.length === 0) {
+                return false;
+            }
+
+            await this.prisma.bot.updateMany({
+                where: {
+                    user_uuid: user_uuid,
+                    active: !active
+                },
+                data: {
+                    active: active
+                }
+            })
+
+            await Promise.all(
+                bots.map((bot: { uuid: string; }) =>
+                    this.prisma.botSubscription.updateMany({
+                        where: {
+                            bot_uuid: bot.uuid,
+                            active: !active
+                        },
+                        data: {
+                            active: active
+                        }
+                    })
+                )
+            );
+
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
 

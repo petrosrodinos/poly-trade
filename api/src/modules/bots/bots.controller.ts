@@ -137,6 +137,38 @@ export class BotsController {
         }
     };
 
+    startAllBots = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        try {
+            const uuid = req.user!.uuid;
+            const result = await this.botsService.startAllBots(uuid);
+            res.status(200).json({
+                message: 'Bots started successfully',
+                data: result
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                message: 'Failed to start bots',
+                error: error.message
+            });
+        }
+    };
+
+    stopAllBots = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        try {
+            const uuid = req.user!.uuid;
+            const result = await this.botsService.stopAllBots(uuid);
+            res.status(200).json({
+                message: 'Bots stopped successfully',
+                data: result
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                message: 'Failed to stop bots',
+                error: error.message
+            });
+        }
+    };
+
 
     getBotSubscriptionForUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
