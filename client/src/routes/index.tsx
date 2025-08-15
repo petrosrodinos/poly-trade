@@ -1,11 +1,13 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import DashboardPage from "@/pages/dashboard";
 import BotPage from "@/pages/bot";
+import BotsPage from "@/pages/bots";
 import SignUp from "@/pages/auth/pages/sign-up";
 import SignIn from "@/pages/auth/pages/sign-in";
 import ProtectedRoute from "./protected-route";
 import AuthLayout from "@/pages/auth/layout";
-import { NavBar } from "@/components/layout/NavBar";
+import { NavBar } from "@/components/layout/nav-bar";
+import BottomNavigation from "@/components/layout/bottom-navigation";
 
 export default function AppRoutes() {
   return (
@@ -30,12 +32,14 @@ export default function AppRoutes() {
             <div className="min-h-screen bg-background">
               <NavBar />
               <Outlet />
+              <BottomNavigation />
             </div>
           </ProtectedRoute>
         }
       >
         <Route index element={<DashboardPage />} />
-        <Route path="bot/:uuid" element={<BotPage />} />
+        <Route path="bots" element={<BotsPage />} />
+        <Route path="bots/:uuid" element={<BotPage />} />
       </Route>
 
       <Route path="/" element={<Navigate to="/auth/sign-in" replace />} />

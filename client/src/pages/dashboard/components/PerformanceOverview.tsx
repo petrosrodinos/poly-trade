@@ -46,9 +46,9 @@ export const PerformanceOverview = ({ accountStatus, isLoading, className }: Per
                 <span>Profit Margin</span>
                 <span className={isProfit ? "text-green-600" : "text-red-600"}>{profitPercentage.toFixed(2)}%</span>
               </div>
-              <Progress value={Math.abs(profitPercentage)} className="h-2" />
+              <Progress value={profitPercentage < 0 ? 0 : profitPercentage} className="h-2" />
             </div>
-            <div className="grid grid-cols-2 gap-4 pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
               <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
                 <Target className="w-8 h-8 mx-auto mb-2 text-blue-500" />
                 <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{formatNumber(accountStatus?.income.trades || 0)}</div>

@@ -16,7 +16,7 @@ export const BotCard = ({ bot }: BotCardProps) => {
   const { symbol, active } = bot;
 
   const handleCardClick = () => {
-    navigate(Routes.dashboard.bot(bot.uuid));
+    navigate(Routes.bots.bot(bot.uuid));
   };
 
   const formatCurrency = (value: number) => {
@@ -36,15 +36,14 @@ export const BotCard = ({ bot }: BotCardProps) => {
   return (
     <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:scale-[1.02] hover:bg-muted/10" onClick={handleCardClick}>
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
           <CardTitle className="flex items-center text-lg">
             <BotIcon className="w-5 h-5 mr-2" />
             {symbol}
           </CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge variant={active ? "default" : "secondary"} className={`text-sm px-3 py-1 font-medium ${active ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800" : "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"}`}>
-              {active && <div className={`w-3 h-3 rounded-full flex items-center justify-center ${active ? "bg-green-500 shadow-green-500/50 shadow-lg animate-pulse" : "bg-gray-400"}`}>{active && <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>}</div>}
-              {active ? "Active" : "Inactive"}
+          <div className="flex justify-start sm:justify-end">
+            <Badge variant={active ? "default" : "secondary"} className={`text-xs sm:text-sm px-2 sm:px-3 py-1 font-medium ${active ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800" : "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"}`}>
+              {active ? "Enabled" : "Disabled"}
             </Badge>
           </div>
         </div>
