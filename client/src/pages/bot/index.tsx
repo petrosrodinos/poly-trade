@@ -8,7 +8,7 @@ import { BotNotFound } from "./components/bot-not-found";
 import { Button } from "@/components/ui/button";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
 import { useBot } from "@/features/bot/hooks/use-bot";
-import { ActiveBotPrompt } from "./components/active-bot-prompt";
+import { ActiveBotPrompt } from "./components/activate-bot";
 import { useAuthStore } from "@/stores/auth.store";
 import { RoleTypes } from "@/features/user/interfaces/user.interface";
 import { useBotSubscriptionByBotUuid } from "@/features/bot-subscription/hooks/use-bot-subscription";
@@ -19,7 +19,7 @@ const BotPage = () => {
   const { uuid } = useParams();
   const { role } = useAuthStore();
 
-  const { data: bot, isLoading: isBotLoading, refetch: refetchBot, error } = useBot(uuid || "");
+  const { data: bot, isLoading: isBotLoading, refetch: refetchBot, error, isRefetching: isRefetchingBot } = useBot(uuid || "");
   const { data: botSubscription, isLoading: isBotSubscriptionLoading, refetch: refetchBotSubscription, isRefetching: isRefetchingBotSubscription } = useBotSubscriptionByBotUuid(uuid || "");
 
   const isAdmin = role === RoleTypes.admin;
@@ -35,6 +35,8 @@ const BotPage = () => {
 
   const isLoading = isBotLoading || isBotSubscriptionLoading;
 
+  const isRefetching = isRefetchingBotSubscription || isRefetchingBot;
+
   return (
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
       <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="mb-2">
@@ -42,14 +44,14 @@ const BotPage = () => {
         Back to Dashboard
       </Button>
 
-      {bot && (
+      {bot && !isLoading && (
         <>
-          {!isLoading && !botSubscription?.enabled ? (
+          {isAdmin && <AdminBotControls bot={bot || ({} as Bot)} isLoading={isLoading} />}
+          {!botSubscription ? (
             <ActiveBotPrompt bot={bot!} />
           ) : (
             <>
-              <BotControls bot_subscription={botSubscription || ({} as BotSubscription)} bot={bot || ({} as Bot)} isLoading={isLoading} refetch={handleRefetch} isRefetching={isRefetchingBotSubscription} />
-              {isAdmin && <AdminBotControls bot={bot || ({} as Bot)} isLoading={isLoading} />}
+              <BotControls bot_subscription={botSubscription || ({} as BotSubscription)} bot={bot || ({} as Bot)} isLoading={isLoading} refetch={handleRefetch} isRefetching={isRefetching} />
               <BotInfo bot={bot || ({} as Bot)} bot_subscription={botSubscription || ({} as BotSubscription)} isLoading={isLoading} />
               <BotTrades trades={botSubscription?.trades || []} isLoading={isLoading} />
             </>

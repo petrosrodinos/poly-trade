@@ -96,6 +96,21 @@ export const CreateBotSubscriptionModal: React.FC<CreateBotSubscriptionModalProp
               </div>
             </div>
             {errors.leverage && <p className="text-sm text-destructive">Leverage must be between 1x and 50x</p>}
+            {formData.leverage > 1 && (
+              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 mt-2">
+                <div className="flex items-start gap-2">
+                  <svg className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                  <div className="text-sm text-yellow-600 dark:text-yellow-400">
+                    <p className="font-medium">High Leverage Warning</p>
+                    <p className="text-xs mt-1 text-yellow-600/80 dark:text-yellow-400/80">
+                      Higher leverage multiplies both potential profits and losses. An {formData.leverage}x leverage means a {Math.round((1 / formData.leverage) * 100)}% price movement against your position could result in significant losses.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between">

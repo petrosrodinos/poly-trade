@@ -22,7 +22,7 @@ interface BotControlsProps {
 export const BotControls = ({ bot_subscription, bot, isLoading, refetch, isRefetching }: BotControlsProps) => {
   const navigate = useNavigate();
   const { active, uuid } = bot_subscription;
-  const { symbol, uuid: bot_uuid } = bot;
+  const { symbol, uuid: bot_uuid, active: bot_active } = bot;
 
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
@@ -144,6 +144,8 @@ export const BotControls = ({ bot_subscription, bot, isLoading, refetch, isRefet
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 min-w-0">
+          {!bot_active && <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md border">Bot disabled by admin temporarily</div>}
+
           <div className="flex items-center gap-4">
             <Button variant="outline" size="sm" onClick={refetch} disabled={isRefetching} className="flex items-center gap-2">
               <RefreshCw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
@@ -151,7 +153,7 @@ export const BotControls = ({ bot_subscription, bot, isLoading, refetch, isRefet
             </Button>
           </div>
 
-          <Button variant={active ? "destructive" : "default"} size="sm" onClick={handleStartStopClick} disabled={updateBotSubscriptionMutation.isPending} className={`w-full sm:w-auto sm:min-w-[100px] font-medium transition-all duration-200 ${active ? "bg-red-500 hover:bg-red-600 shadow-red-500/20 shadow-lg" : "bg-green-500 hover:bg-green-600 text-white shadow-green-500/20 shadow-lg"}`}>
+          <Button variant={active ? "destructive" : "default"} size="sm" onClick={handleStartStopClick} disabled={updateBotSubscriptionMutation.isPending || !bot_active} className={`w-full sm:w-auto sm:min-w-[100px] font-medium transition-all duration-200 ${active ? "bg-red-500 hover:bg-red-600 shadow-red-500/20 shadow-lg" : "bg-green-500 hover:bg-green-600 text-white shadow-green-500/20 shadow-lg"} ${!bot_active ? "opacity-50 cursor-not-allowed" : ""}`}>
             <div className="flex items-center justify-center gap-2 min-w-0">
               {updateBotSubscriptionMutation.isPending ? (
                 <>
@@ -175,7 +177,7 @@ export const BotControls = ({ bot_subscription, bot, isLoading, refetch, isRefet
             </div>
           </Button>
 
-          <Button variant="outline" size="sm" onClick={handleDeleteClick} disabled={deleteBotMutation.isPending} className="w-full sm:w-auto sm:min-w-[100px] border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all duration-200 disabled:opacity-50">
+          <Button variant="outline" size="sm" onClick={handleDeleteClick} disabled={deleteBotMutation.isPending || !bot_active} className={`w-full sm:w-auto sm:min-w-[100px] border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all duration-200 disabled:opacity-50 ${!bot_active ? "cursor-not-allowed" : ""}`}>
             <div className="flex items-center justify-center gap-2 min-w-0">
               {deleteBotMutation.isPending ? (
                 <>

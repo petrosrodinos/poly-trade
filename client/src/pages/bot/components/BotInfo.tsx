@@ -70,21 +70,21 @@ export const BotInfo = ({ bot, bot_subscription, isLoading }: BotInfoProps) => {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardDescription>Timeframe</CardDescription>
-          <CardTitle className="text-xl sm:text-2xl">{timeframe}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">Trading frequency</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="pb-2">
           <CardDescription>Leverage</CardDescription>
           <CardTitle className="text-xl sm:text-2xl">{leverage}x</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">Leverage used</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardDescription>Timeframe</CardDescription>
+          <CardTitle className="text-xl sm:text-2xl">{timeframe}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">Trading frequency</p>
         </CardContent>
       </Card>
     </div>

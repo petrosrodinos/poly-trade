@@ -35,6 +35,7 @@ export const useBot = (uuid: string) => {
         queryKey: ["bot", uuid],
         queryFn: () => getBot(uuid),
         enabled: !!uuid,
+        retry: false,
     });
 }
 
