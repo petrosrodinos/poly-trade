@@ -1,24 +1,16 @@
-import { BinanceTradesService } from "../../../../integrations/binance/services/binance-trades.service";
-import { BinanceAccountService } from "../../../../integrations/binance/services/binance-account.service";
-import { logger } from "../../../../shared/utils/logger";
-import { BotModel } from "../../../../services/trades/models/bot.model";
-import { AccountUtils } from "../../../../integrations/binance/utils/account.utils";
-import { BotManagerService } from "./bot-manager.service";
-import { TradesUtils } from "../../../../integrations/binance/utils/trades.utils";
+import { logger } from "../../../shared/utils/logger";
+import { BinanceAccountService } from "../../../integrations/binance/services/binance-account.service";
+import { BotModel } from "../models/bot.model";
+import { TradesUtils } from "../../../integrations/binance/utils/trades.utils";
 
-export class BinanceTradingBotService {
-    binanceTradesService: BinanceTradesService;
-    binanceAccountService: BinanceAccountService;
-    binanceAccountUtils: AccountUtils;
-    botManagerService: BotManagerService;
-    tradesUtils: TradesUtils;
+export class CryptoTradesService {
+    private binanceAccountService: BinanceAccountService;
+    private tradesUtils: TradesUtils;
+
     private bots: Map<string, BotModel> = new Map();
 
     constructor() {
-        this.binanceTradesService = new BinanceTradesService();
         this.binanceAccountService = new BinanceAccountService();
-        this.binanceAccountUtils = new AccountUtils();
-        this.botManagerService = new BotManagerService();
         this.tradesUtils = new TradesUtils();
     }
 
@@ -43,7 +35,6 @@ export class BinanceTradingBotService {
             }
 
             const bot: BotModel = {
-                // id: `bot_${botData.symbol}_${Date.now()}`,
                 id: `${this.bots.size + 1}`,
                 symbol: botData.symbol,
                 amount: botData.amount,
@@ -74,7 +65,7 @@ export class BinanceTradingBotService {
 
             bot.active = true;
             this.bots.set(bot.id, new BotModel(bot));
-            this.botManagerService.startBot(bot);
+            // this.botManagerService.startBot(bot);
 
         } catch (error) {
             console.error(`Error starting bot for ${bot.id}:`, error);
@@ -88,49 +79,13 @@ export class BinanceTradingBotService {
         try {
             bot.active = false;
             this.bots.set(bot.id, new BotModel(bot));
-            this.botManagerService.stopBot(bot);
+            // this.botManagerService.stopBot(bot);
         } catch (error) {
             logger.error(`Error stopping bot: ${bot.symbol} for ${bot.id}:`, error);
             throw error;
         }
     }
 
-
-    async getBot(id: string): Promise<BotModel | null> {
-        let bot = this.bots.get(id) || null;
-
-        if (bot?.id) {
-            const { trades } = await this.binanceAccountService.getFuturesUserTradesAndProfit(bot.symbol);
-            const { profit } = await this.binanceAccountService.getFuturesIncomeTradesAndProfit(bot.symbol);
-            bot.trades = trades;
-            bot.profit = profit;
-        }
-
-        return bot;
-    }
-
-    async getBots(): Promise<BotModel[]> {
-        try {
-            const bots = Array.from(this.bots.values());
-            const botsWithData = await Promise.all(
-                bots.map(async (bot) => {
-                    try {
-                        const { profit } = await this.binanceAccountService.getFuturesIncomeTradesAndProfit(bot.symbol);
-                        // const { trades } = await this.binanceAccountService.getFuturesUserTradesAndProfit(bot.symbol);
-                        bot.trades = [];
-                        bot.profit = profit;
-                        return bot;
-                    } catch (error) {
-                        return bot;
-                    }
-                })
-            );
-
-            return botsWithData;
-        } catch (error) {
-            throw new Error(`Failed to get bots: ${error}`);
-        }
-    }
 
     updateBot(id: string, bot: Partial<BotModel>): BotModel | null {
         try {

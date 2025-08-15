@@ -9,8 +9,6 @@ router.post('/', authMiddleware.authenticate, authMiddleware.requireUser, botSub
 
 router.get('/', authMiddleware.authenticate, authMiddleware.requireUser, botSubscriptionsController.getAllBotSubscriptions);
 
-router.get('/:uuid', authMiddleware.authenticate, authMiddleware.requireUser, botSubscriptionsController.getBotSubscriptionByUuid);
-
 router.put('/:uuid', authMiddleware.authenticate, authMiddleware.requireUser, botSubscriptionsController.updateBotSubscription);
 
 router.delete('/:uuid', authMiddleware.authenticate, authMiddleware.requireUser, botSubscriptionsController.deleteBotSubscription);

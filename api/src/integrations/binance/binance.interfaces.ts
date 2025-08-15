@@ -136,5 +136,12 @@ export interface BinanceExchangeInfo {
     stepSize: number;
 }
 
+export interface TradeQuantity {
+    quantity: number;
+    price: number;
+    minQty: number;
+    stepSize: number;
+}
+
 export type BinanceOrderSide = 'BUY' | 'SELL';
 export type BinanceOrderType = 'MARKET' | 'LIMIT';

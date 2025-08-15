@@ -2,8 +2,7 @@ import { Request, Response } from 'express';
 import { BinanceTradesService } from "../../../../integrations/binance/services/binance-trades.service";
 import { BinanceTradingBotService } from './trading-bot.service';
 import { logger } from '../../../../shared/utils/logger';
-import { BotFormDataSchema, SymbolParamSchema } from './dto/bot.dto';
-import { handleValidationError, validateRequest } from '../../../../shared/utils/validation';
+import { handleValidationError } from '../../../../shared/utils/validation';
 import { z } from 'zod';
 
 export class BinanceTradingBotController {
@@ -18,11 +17,10 @@ export class BinanceTradingBotController {
     createBot = async (req: Request, res: Response): Promise<void> => {
         try {
 
-            const validatedData = validateRequest(BotFormDataSchema, req.body);
 
-            const bot = await this.tradingBotService.createBot(validatedData);
+            const bot = await this.tradingBotService.createBot(req.body);
 
-            res.status(200).json({ message: `Binance trading bot created for ${validatedData.symbol}`, bot });
+            res.status(200).json({ message: `Binance trading bot created`, bot });
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 handleValidationError(error, res);
@@ -151,13 +149,12 @@ export class BinanceTradingBotController {
     updateBot = async (req: Request, res: Response): Promise<void> => {
         try {
             const id = req.params.id;
-            const validatedData = validateRequest(BotFormDataSchema, req.body);
             if (!id) {
                 res.status(400).json({ message: `Bot ID is required` });
                 return;
             }
 
-            const bot = this.tradingBotService.updateBot(id, validatedData);
+            const bot = this.tradingBotService.updateBot(id, req.body);
             res.status(200).json(bot);
         } catch (error: any) {
             console.error(`Failed to update bot:`, error);
@@ -210,10 +207,8 @@ export class BinanceTradingBotController {
 
     cancelOrder = async (req: Request, res: Response) => {
         try {
-            const { symbol } = validateRequest(SymbolParamSchema, req.params);
-
-            const orders = await this.binanceTradesService.closePosition(symbol);
-            logger.success(`Cancelled order for ${symbol}`);
+            const orders = await this.binanceTradesService.closePosition(req.params.symbol);
+            logger.success(`Cancelled order for ${req.params.symbol}`);
             res.status(200).json({
                 message: 'Order cancelled',
                 orders: orders

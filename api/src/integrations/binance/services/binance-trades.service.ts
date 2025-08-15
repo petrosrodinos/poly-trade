@@ -1,16 +1,13 @@
 import { TradesConfig } from "../../../shared/constants/trades";
 import { BinanceClient } from "../binance.client";
-import { BinancePosition, BinanceOrderResponse, BinanceOrderSide, BinanceExchangeInfo } from "../binance.interfaces";
-import { BinanceAccountService } from "./binance-account.service";
+import { BinancePosition, BinanceOrderResponse, BinanceOrderSide } from "../binance.interfaces";
 import { logger } from "../../../shared/utils/logger";
 
 export class BinanceTradesService {
     private binanceClient: any;
-    private binanceAccountService: BinanceAccountService;
 
     constructor() {
         this.binanceClient = BinanceClient.getClient();
-        this.binanceAccountService = new BinanceAccountService();
     }
 
     async getPosition(symbol: string): Promise<BinancePosition | null> {
@@ -152,29 +149,5 @@ export class BinanceTradesService {
         }
     }
 
-
-    async getExchangeInfo(symbol: string): Promise<BinanceExchangeInfo> {
-        try {
-            const info = await this.binanceClient.futuresExchangeInfo();
-            const symbolInfo = info.symbols.find((s: any) => s.symbol === symbol);
-            const lotSizeFilter = symbolInfo.filters.find((f: any) => f.filterType === "LOT_SIZE");
-
-            return {
-                minQty: parseFloat(lotSizeFilter.minQty),
-                stepSize: parseFloat(lotSizeFilter.stepSize)
-            };
-        } catch (error) {
-            throw new Error(`Failed to get exchange info for ${symbol}: ${error}`);
-        }
-    }
-
-    async getFuturesPrices(symbol: string): Promise<number | null> {
-        try {
-            const prices = await this.binanceClient.futuresPrices();
-            return parseFloat(prices?.[symbol] || 0);
-        } catch (error) {
-            throw new Error(`Failed to get futures prices for ${symbol}: ${error}`);
-        }
-    }
 
 }

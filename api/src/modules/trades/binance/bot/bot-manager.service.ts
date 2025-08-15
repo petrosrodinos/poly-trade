@@ -1,9 +1,9 @@
-import { BinanceCandlestick, BinancePosition } from "../../../../integrations/binance/binance.interfaces";
+import { BinanceCandlestick } from "../../../../integrations/binance/binance.interfaces";
 import { BinanceTradesService } from "../../../../integrations/binance/services/binance-trades.service";
 import { BinanceStreamingService } from "../../../../integrations/binance/services/binance-streaming.service";
 import { logger } from "../../../../shared/utils/logger";
-import { BotModel } from "./models/bot.model";
-import { BotUtils } from "./utils/bot.utils";
+import { BotUtils } from "../../../../services/trades/utils/bot.utils";
+import { BotModel } from "../../../../services/trades/models/bot.model";
 
 interface Candle {
     open: number;

@@ -62,28 +62,6 @@ export class BotSubscriptionsController {
 
 
 
-    getBotSubscriptionByUuid = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-        try {
-            const uuid = req.params.uuid;
-            const user_uuid = req.user!.uuid;
-
-            const subscription = await this.botSubscriptionsService.getBotSubscriptionByUuid(uuid, user_uuid);
-
-            res.status(200).json(subscription);
-        } catch (error: any) {
-            if (error.message === 'Bot subscription not found') {
-                res.status(404).json({
-                    message: 'Bot subscription not found'
-                });
-            } else {
-                res.status(400).json({
-                    message: 'Failed to retrieve bot subscription',
-                    error: error.message
-                });
-            }
-        }
-    };
-
     updateBotSubscription = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
             const uuid = req.params.uuid;

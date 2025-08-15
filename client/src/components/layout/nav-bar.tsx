@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
 import { Routes } from "@/routes/routes";
 import { APP_NAME } from "@/constants";
-import { LogOut, User, Settings, ChevronDown, Moon, Sun } from "lucide-react";
+import { LogOut, Settings, ChevronDown, Moon, Sun } from "lucide-react";
 import { Button } from "../ui/button";
 import { useTheme } from "@/hooks/use-theme";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
@@ -25,16 +25,9 @@ export const NavBar = () => {
       <div className="container mx-auto px-3 sm:px-4 lg:px-8">
         <div className="flex h-12 sm:h-14 items-center justify-between">
           <div className="flex items-center min-w-0 flex-1">
-            {isLoggedIn ? (
-              <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-                <User className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
-                <span className="text-xs sm:text-sm font-medium truncate max-w-[100px] sm:max-w-[120px] md:max-w-none">{username || "User"}</span>
-              </div>
-            ) : (
-              <Link to="/" className="text-base sm:text-lg font-bold text-foreground hover:text-primary transition-colors truncate">
-                {APP_NAME}
-              </Link>
-            )}
+            <Link to="/" className="text-base sm:text-lg font-bold text-foreground hover:text-primary transition-colors truncate">
+              {APP_NAME}
+            </Link>
           </div>
 
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">

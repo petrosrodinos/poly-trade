@@ -243,19 +243,5 @@ export class AccountUtils {
         }));
     }
 
-    calculateQuantity(amount: number, price: number, minQty: number, stepSize: number) {
 
-        let qty = amount / price;
-
-        // If below minimum, set to 0 to skip
-        if (qty < minQty) {
-            return 0;
-        }
-
-        // Adjust to step size (truncate to valid increment)
-        qty = Math.floor(qty / stepSize) * stepSize;
-
-        // Ensure proper decimal precision
-        return parseFloat(qty.toFixed(8));
-    }
 }

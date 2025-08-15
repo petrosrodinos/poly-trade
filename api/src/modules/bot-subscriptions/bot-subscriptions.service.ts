@@ -47,17 +47,6 @@ export class BotSubscriptionsService {
                 amount: data.amount,
                 leverage: data.leverage,
                 active: data.active ?? false
-            },
-            include: {
-                bot: {
-                    select: {
-                        id: true,
-                        uuid: true,
-                        symbol: true,
-                        timeframe: true,
-                        active: true
-                    }
-                }
             }
         });
 
@@ -153,32 +142,6 @@ export class BotSubscriptionsService {
         });
 
         return true;
-    }
-
-    async getBotSubscriptionByUuid(uuid: string, user_uuid: string): Promise<BotSubscriptionResponse> {
-
-        const subscription = await this.prisma.botSubscription.findFirst({
-            where: {
-                uuid,
-                user_uuid
-            },
-            include: {
-                bot: {
-                    select: {
-                        uuid: true,
-                        symbol: true,
-                        timeframe: true,
-                        active: true
-                    }
-                }
-            }
-        });
-
-        if (!subscription) {
-            throw new Error('Bot subscription not found');
-        }
-
-        return subscription;
     }
 
 
