@@ -21,7 +21,6 @@ router.put('/stop-all', authMiddleware.authenticate, authMiddleware.requireAdmin
 
 router.put('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.updateBot);
 
-router.get('/:uuid/user/subscription', authMiddleware.authenticate, authMiddleware.requireUser, botsController.getBotSubscriptionForUser);
 
 
 

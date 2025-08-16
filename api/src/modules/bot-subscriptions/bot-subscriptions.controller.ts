@@ -25,7 +25,7 @@ export class BotSubscriptionsController {
                 handleValidationError(error, res);
             } else {
                 res.status(400).json({
-                    message: 'Failed to create bot subscription',
+                    message: error.message,
                     error: error.message
                 });
             }

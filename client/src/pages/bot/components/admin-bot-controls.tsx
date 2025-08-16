@@ -7,7 +7,7 @@ import { useDeleteBot, useUpdateBot } from "@/features/bot/hooks/use-bot";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
-import { Shield } from "lucide-react";
+import { Shield, Eye, EyeOff } from "lucide-react";
 import { Routes } from "@/routes/routes";
 
 interface AdminBotControlsProps {
@@ -17,11 +17,11 @@ interface AdminBotControlsProps {
 
 export const AdminBotControls = ({ bot, isLoading }: AdminBotControlsProps) => {
   const navigate = useNavigate();
-  const { active, symbol, uuid } = bot;
+  const { active, symbol, uuid, visible } = bot;
 
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
-    type: "enable" | "disable" | "delete";
+    type: "enable" | "disable" | "delete" | "show" | "hide";
     title: string;
     description: string;
     confirmText: string;
@@ -71,6 +71,28 @@ export const AdminBotControls = ({ bot, isLoading }: AdminBotControlsProps) => {
     });
   };
 
+  const handleVisibilityClick = () => {
+    if (visible) {
+      setConfirmDialog({
+        isOpen: true,
+        type: "hide",
+        title: "Hide Trading Bot",
+        description: `Are you sure you want to hide the ${symbol} trading bot? This will make the bot invisible to other users but will not affect its trading activities.`,
+        confirmText: "Hide Bot",
+        variant: "destructive",
+      });
+    } else {
+      setConfirmDialog({
+        isOpen: true,
+        type: "show",
+        title: "Show Trading Bot",
+        description: `Are you sure you want to make the ${symbol} trading bot visible? This will allow other users to see this bot.`,
+        confirmText: "Show Bot",
+        variant: "default",
+      });
+    }
+  };
+
   const handleConfirmAction = () => {
     switch (confirmDialog.type) {
       case "enable":
@@ -83,6 +105,18 @@ export const AdminBotControls = ({ bot, isLoading }: AdminBotControlsProps) => {
         updateBotMutation.mutate({
           uuid,
           active: false,
+        });
+        break;
+      case "show":
+        updateBotMutation.mutate({
+          uuid,
+          visible: true,
+        });
+        break;
+      case "hide":
+        updateBotMutation.mutate({
+          uuid,
+          visible: false,
         });
         break;
       case "delete":
@@ -148,6 +182,30 @@ export const AdminBotControls = ({ bot, isLoading }: AdminBotControlsProps) => {
                   <div className="w-0 h-0 border-l-[6px] border-l-white border-y-[4px] border-y-transparent flex-shrink-0"></div>
                   <span className="hidden sm:inline truncate">Enable Bot</span>
                   <span className="sm:hidden truncate">Enable</span>
+                </>
+              )}
+            </div>
+          </Button>
+
+          <Button variant={visible ? "destructive" : "default"} size="sm" onClick={handleVisibilityClick} disabled={updateBotMutation.isPending} className={`w-full sm:w-auto sm:min-w-[120px] font-medium transition-all duration-200 ${visible ? "bg-orange-500 hover:bg-orange-600 shadow-orange-500/20 shadow-lg" : "bg-blue-500 hover:bg-blue-600 text-white shadow-blue-500/20 shadow-lg"}`}>
+            <div className="flex items-center justify-center gap-2 min-w-0">
+              {updateBotMutation.isPending ? (
+                <>
+                  <Spinner size="sm" />
+                  <span className="hidden sm:inline truncate">{visible ? "Hiding..." : "Showing..."}</span>
+                  <span className="sm:hidden truncate">{visible ? "Hide..." : "Show..."}</span>
+                </>
+              ) : visible ? (
+                <>
+                  <EyeOff className="w-4 h-4 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Hide Bot</span>
+                  <span className="sm:hidden truncate">Hide</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="w-4 h-4 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Show Bot</span>
+                  <span className="sm:hidden truncate">Show</span>
                 </>
               )}
             </div>

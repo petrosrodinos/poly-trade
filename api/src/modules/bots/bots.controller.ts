@@ -34,15 +34,8 @@ export class BotsController {
 
     getAllBots = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
-            const queryParams = {
-                page: parseInt(req.query.page as string) || 1,
-                limit: parseInt(req.query.limit as string) || 10,
-                symbol: req.query.symbol as string,
-                active: req.query.active ? req.query.active === 'true' : undefined,
-                timeframe: req.query.timeframe as string
-            };
 
-            const validatedQuery = BotQuerySchema.parse(queryParams);
+            const validatedQuery = BotQuerySchema.parse(req.query);
 
             const result = await this.botsService.getAllBots(validatedQuery);
 
@@ -166,22 +159,6 @@ export class BotsController {
         }
     };
 
-
-    getBotSubscriptionForUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-        try {
-            const { uuid: botUuid } = req.params;
-            const userUuid = req.user!.uuid;
-
-            const subscription = await this.botsService.getBotSubscriptionForUser(botUuid, userUuid);
-
-            res.status(200).json(subscription);
-        } catch (error: any) {
-            res.status(500).json({
-                message: 'Failed to get bot subscription',
-                error: error.message
-            });
-        }
-    };
 
     getInternalBots = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {

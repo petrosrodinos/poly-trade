@@ -6,7 +6,7 @@ import { useAuthStore } from "@/stores/auth.store";
 const BotsPage = () => {
   const { role } = useAuthStore();
   const isUser = role === RoleTypes.user;
-  const { data: bots, isLoading: isLoading, refetch, isRefetching: isRefetchingBots } = useBots();
+  const { data: bots, isLoading: isLoading, refetch, isRefetching: isRefetchingBots } = useBots(isUser ? { visible: true } : undefined);
 
   return (
     <div className="space-y-6 p-4 pb-20">

@@ -3,10 +3,12 @@ export interface Bot {
     uuid: string;
     symbol: string;
     timeframe: string;
+    strategy: string;
     active: boolean;
-    user_id: number;
-    createdAt: Date;
-    updatedAt: Date;
+    visible: boolean;
+    user_uuid: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 
@@ -18,20 +20,19 @@ export interface PaginatedBots {
     total_pages: number;
 }
 
-export interface UserBotSubscription {
-    id: number;
-    uuid: string;
-    symbol: string;
-    timeframe: string;
-    active: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    bot_subscription?: {
-        uuid: string;
-        bot_uuid: string;
-        amount: number;
-        leverage: number;
+export interface UserBotSubscriptions extends Bot {
+    subscriptions: Subscription[];
+}
 
-        active: boolean;
-    };
+
+
+export interface Subscription {
+    uuid: string;
+    bot_uuid: string;
+    amount: number;
+    leverage: number;
+    quantity: number;
+    user_uuid: string;
+    createdAt: string;
+    active: boolean;
 }

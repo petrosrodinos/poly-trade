@@ -16,7 +16,7 @@ export const BotCard = ({ bot }: BotCardProps) => {
   const navigate = useNavigate();
   const { role } = useAuthStore();
 
-  const { symbol, active, uuid } = bot;
+  const { symbol, active, uuid, visible } = bot;
   const isAdmin = role === RoleTypes.admin;
 
   const handleCardClick = () => {
@@ -44,10 +44,15 @@ export const BotCard = ({ bot }: BotCardProps) => {
             <BotIcon className="w-5 h-5 mr-2" />
             {symbol}
           </CardTitle>
-          <div className="flex justify-start sm:justify-end">
+          <div className="flex justify-start sm:justify-end space-x-2">
             <Badge variant={active ? "default" : "secondary"} className={`text-xs sm:text-sm px-2 sm:px-3 py-1 font-medium ${active ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800" : "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"}`}>
               {active ? "Enabled" : "Disabled"}
             </Badge>
+            {!visible && isAdmin && (
+              <Badge variant="outline" className="text-xs sm:text-sm px-2 sm:px-3 py-1 font-medium bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-700">
+                Hidden
+              </Badge>
+            )}
           </div>
         </div>
       </CardHeader>

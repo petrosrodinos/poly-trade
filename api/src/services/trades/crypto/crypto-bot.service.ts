@@ -1,6 +1,8 @@
+import { Bot } from "@prisma/client";
 import { logger } from "../../../shared/utils/logger";
 import { BotModel, BotSubscriptionModel } from "../models/bot.model";
 import { CryptoSubscriptionService } from "./crypto-subscription.service";
+import { UserBotSubscriptions } from "@/modules/bots/interfaces/bot.interface";
 
 export class CryptoBotService {
 
@@ -11,37 +13,29 @@ export class CryptoBotService {
         this.cryptoSubscriptionService = new CryptoSubscriptionService(this);
     }
 
-    async createBot(bot: BotModel): Promise<BotModel> {
+    async createBot(bot: UserBotSubscriptions): Promise<BotModel | null> {
         try {
 
             const existingBot = Array.from(this.bots.values()).find((bot: BotModel) => bot.symbol === bot.symbol);
 
             if (!existingBot) {
-                let newBot: BotModel = {
+                let newBot = new BotModel({
                     uuid: bot.uuid,
                     symbol: bot.symbol,
                     timeframe: bot.timeframe,
                     strategy: bot.strategy,
                     active: bot.active,
-                    created_at: bot.created_at,
                     subscriptions: new Map(),
-                };
+                });
 
-                if (bot.subscriptions) {
-                    for (const [key, value] of bot.subscriptions) {
-                        newBot.subscriptions.set(key, new BotSubscriptionModel({
-                            uuid: value.uuid,
-                            user_uuid: value.user_uuid,
-                            amount: value.amount,
-                            quantity: value.quantity,
-                            leverage: value.leverage,
-                            active: value.active,
-                            created_at: value.created_at,
-                        }));
+                this.bots.set(newBot.uuid, newBot);
+
+                if (bot?.subscriptions?.length > 0) {
+                    for (const subscription of bot.subscriptions) {
+                        this.cryptoSubscriptionService.createSubscription(newBot, subscription);
                     }
                 }
 
-                this.bots.set(newBot.uuid, new BotModel(newBot));
 
                 logger.success(`Bot created for ${newBot.strategy}, ID: ${newBot.uuid}`);
 
@@ -51,7 +45,8 @@ export class CryptoBotService {
             return existingBot;
 
         } catch (error) {
-            throw error;
+            logger.error(`Error creating bot: ${error}`);
+            return null;
         }
     }
 
@@ -67,7 +62,6 @@ export class CryptoBotService {
 
         } catch (error) {
             console.error(`Error starting bot for ${bot_uuid}:`, error);
-            throw error;
         }
     }
 
@@ -85,7 +79,6 @@ export class CryptoBotService {
 
         } catch (error) {
             logger.error(`Error stopping bot: ${bot_uuid}:`, error);
-            throw error;
         }
     }
 
@@ -115,7 +108,7 @@ export class CryptoBotService {
         }
     }
 
-    async startAllBots(db_bots: BotModel[]): Promise<void> {
+    async startAllBots(db_bots: UserBotSubscriptions[]): Promise<void> {
         try {
             const bots = Array.from(this.bots.values());
 
@@ -123,11 +116,19 @@ export class CryptoBotService {
                 for (const bot of db_bots) {
                     await this.createBot(bot);
                 }
+
+                const createdBots = Array.from(this.bots.values());
+                for (const bot of createdBots) {
+                    await this.startBot(bot.uuid);
+                }
+            } else {
+                for (const bot of bots) {
+                    await this.startBot(bot.uuid);
+                }
             }
 
-            for (const bot of bots) {
-                await this.startBot(bot.uuid);
-            }
+
+
         } catch (error) {
             throw new Error(`Failed to start all bots: ${error}`);
         }
@@ -155,7 +156,7 @@ export class CryptoBotService {
             strategy: bot.strategy,
             timeframe: bot.timeframe,
             active: bot.active,
-            created_at: bot.created_at,
+            createdAt: bot.createdAt,
             subscriptions: Array.from(bot.subscriptions.values())
         }));
     }

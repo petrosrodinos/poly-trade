@@ -5,6 +5,7 @@ export interface Bot {
     uuid: string;
     strategy: string;
     active: boolean;
+    visible: boolean;
     symbol: string;
     timeframe: string;
     amount: number;
@@ -19,6 +20,7 @@ export interface BotFormData {
     symbol: string;
     timeframe: string;
     active: boolean;
+    visible: boolean;
     strategy?: string;
 }
 
@@ -27,23 +29,13 @@ export interface UpdateBotFormData {
     symbol?: string;
     timeframe?: string;
     active?: boolean;
+    visible?: boolean;
     strategy?: string;
 }
 
-export interface UserBotSubscription {
-    id: number;
-    uuid: string;
-    symbol: string;
-    timeframe: string;
-    active: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    bot_subscription?: {
-        uuid: string;
-        bot_uuid: string;
-        amount: number;
-        leverage: number;
-
-        active: boolean;
-    };
+export interface BotQuery {
+    active?: boolean;
+    visible?: boolean;
 }
+
+

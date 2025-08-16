@@ -23,6 +23,7 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
     symbol: "BTCUSDT",
     timeframe: "3m",
     active: false,
+    visible: true,
   });
 
   const [errors, setErrors] = useState<Partial<BotFormData>>({});
@@ -49,6 +50,7 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
       symbol: "BTCUSDT",
       timeframe: "3m",
       active: false,
+      visible: true,
     });
     setErrors({});
     onClose();
@@ -93,6 +95,11 @@ export const CreateBotModal: React.FC<CreateBotModalProps> = ({ isOpen, onClose 
           <div className="flex items-center justify-between">
             <Label htmlFor="active">Active</Label>
             <Switch id="active" checked={formData.active} onCheckedChange={(checked) => handleInputChange("active", checked)} />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="visible">Visible</Label>
+            <Switch id="visible" checked={formData.visible} onCheckedChange={(checked) => handleInputChange("visible", checked)} />
           </div>
         </form>
 

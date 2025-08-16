@@ -9,12 +9,12 @@ export class CryptoSubscriptionService {
         this.cryptoBotService = cryptoBotService;
     }
 
-    async createSubscription(bot: BotModel, subscription: any): Promise<BotModel> {
+    async createSubscription(bot: BotModel, subscription: BotSubscriptionModel): Promise<BotModel> {
         try {
 
             const existingBot = this.cryptoBotService.bots.get(bot.uuid);
             if (existingBot) {
-                existingBot.subscriptions.set(subscription.uuid, subscription);
+                existingBot.subscriptions.set(subscription.uuid, new BotSubscriptionModel(subscription));
                 this.cryptoBotService.bots.set(bot.uuid, new BotModel(existingBot));
                 logger.success(`Subscription created for ${bot.symbol}, ID: ${subscription.uuid}`);
 

@@ -65,6 +65,14 @@ process.on("unhandledRejection", async (err) => {
     await shutdown("unhandledRejection");
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     logger.debug(`Server running on port ${PORT}`);
+
+    try {
+        const botsService = new BotsService();
+        await botsService.startAllBots();
+        logger.debug('All bots started successfully');
+    } catch (error: any) {
+        logger.error('Failed to start all bots:', error?.message);
+    }
 });

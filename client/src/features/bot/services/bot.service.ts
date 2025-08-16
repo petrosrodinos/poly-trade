@@ -1,10 +1,10 @@
 import axiosInstance from "@/config/api/axios";
 import { ApiRoutes } from "@/config/api/routes";
-import type { Bot, BotFormData, UpdateBotFormData, UserBotSubscription } from "../interfaces/bot.interface";
+import type { Bot, BotFormData, BotQuery, UpdateBotFormData } from "../interfaces/bot.interface";
 
-export const getBots = async (): Promise<Bot[]> => {
+export const getBots = async (query?: BotQuery): Promise<Bot[]> => {
     try {
-        const response = await axiosInstance.get(ApiRoutes.bot.get);
+        const response = await axiosInstance.get(ApiRoutes.bot.get, { params: query });
         return response.data;
     } catch (error) {
         throw error;
@@ -66,11 +66,3 @@ export const stopAllBots = async (): Promise<Bot[]> => {
     }
 };
 
-export const getBotSubscriptionForUser = async (uuid: string): Promise<UserBotSubscription> => {
-    try {
-        const response = await axiosInstance.get(`${ApiRoutes.bot.bot_subscription(uuid)}`);
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-};

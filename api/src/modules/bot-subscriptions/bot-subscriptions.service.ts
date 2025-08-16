@@ -77,14 +77,14 @@ export class BotSubscriptionsService {
                 }
             });
 
-            await this.cryptoBotService.createBot(botExists);
+            // await this.cryptoBotService.createBot(botExists);
 
             await this.cryptoSubscriptionService.createSubscription(botExists, subscription);
 
             return subscription;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error creating bot subscription', error);
-            throw new Error('Failed to create bot subscription');
+            throw new Error(error.message);
         }
     }
 
@@ -160,8 +160,10 @@ export class BotSubscriptionsService {
 
             await this.cryptoSubscriptionService.updateSubscription(existingSubscription.bot_uuid, subscription);
 
-            if (data.active === false) {
-                await this.binanceTradesService.closePosition(existingSubscription.bot.symbol);
+            if (data.active !== existingSubscription.active) {
+                if (!data.active) {
+                    // await this.binanceTradesService.closePosition(existingSubscription.bot.symbol);
+                }
 
             }
 
@@ -199,7 +201,7 @@ export class BotSubscriptionsService {
 
             await this.cryptoSubscriptionService.deleteSubscription(existingSubscription.bot_uuid, existingSubscription);
 
-            await this.binanceTradesService.closePosition(existingSubscription.bot.symbol);
+            // await this.binanceTradesService.closePosition(existingSubscription.bot.symbol);
 
             return true;
         } catch (error) {
