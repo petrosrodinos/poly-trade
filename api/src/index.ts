@@ -11,12 +11,9 @@ import botSubscriptionsRouter from './modules/bot-subscriptions/bot-subscription
 import { logger } from './shared/utils/logger';
 import { tradingviewRouter } from './webhooks/tradingview/tradingview.routes';
 import { botService } from './modules/bots/bots.service';
+import prisma from './core/prisma/prisma-client';
 
 dotenv.config();
-
-["SIGTERM", "SIGINT", "SIGUSR2"].forEach(sig =>
-    process.on(sig, () => console.log(`⚡ Received ${sig}`))
-);
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -72,6 +69,7 @@ app.listen(PORT, async () => {
     logger.debug(`Server running on port ${PORT}`);
 
     try {
+        await prisma.$connect();
         await botService.startAllBots();
         logger.debug('All bots started successfully');
     } catch (error: any) {
