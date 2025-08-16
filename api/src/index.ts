@@ -14,6 +14,10 @@ import { botService } from './modules/bots/bots.service';
 
 dotenv.config();
 
+["SIGTERM", "SIGINT", "SIGUSR2"].forEach(sig =>
+    process.on(sig, () => console.log(`⚡ Received ${sig}`))
+);
+
 const app = express();
 const PORT = process.env.PORT || 3002;
 
