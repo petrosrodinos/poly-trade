@@ -26,7 +26,7 @@ export class BotsController {
             } else {
                 res.status(400).json({
                     message: 'Failed to create bot',
-                    error: error.message
+                    error: 'Failed to create bot'
                 });
             }
         }

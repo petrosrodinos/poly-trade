@@ -20,8 +20,8 @@ export const BotQuerySchema = z.object({
     page: z.number().min(1).optional().default(1),
     limit: z.number().min(1).max(100).optional().default(10),
     symbol: z.string().optional(),
-    active: z.boolean().optional(),
-    visible: z.boolean().optional(),
+    active: z.string().optional().transform(val => val === 'true' ? true : val === 'false' ? false : undefined),
+    visible: z.string().optional().transform(val => val === 'true' ? true : val === 'false' ? false : undefined),
     timeframe: z.string().optional()
 });
 

@@ -14,9 +14,12 @@ export class CryptoSubscriptionService {
 
             const existingBot = this.cryptoBotService.bots.get(bot.uuid);
             if (existingBot) {
-                existingBot.subscriptions.set(subscription.uuid, new BotSubscriptionModel(subscription));
-                this.cryptoBotService.bots.set(bot.uuid, new BotModel(existingBot));
-                logger.success(`Subscription created for ${bot.symbol}, ID: ${subscription.uuid}`);
+                const existingSubscription = existingBot.subscriptions.get(subscription.uuid);
+                if (!existingSubscription) {
+                    existingBot.subscriptions.set(subscription.uuid, new BotSubscriptionModel(subscription));
+                    this.cryptoBotService.bots.set(bot.uuid, new BotModel(existingBot));
+                    logger.success(`Subscription created for ${bot.symbol}, ID: ${subscription.uuid}`);
+                }
 
             } else {
                 console.log('Bot not found');

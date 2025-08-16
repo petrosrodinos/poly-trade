@@ -25,22 +25,28 @@ export class CryptoTradesService {
                 return;
             }
 
-            // const subscriptions = Array.from(bot.subscriptions.values());
+            const subscriptions = Array.from(bot.subscriptions.values());
 
-            // await Promise.all(
-            //     subscriptions
-            //         .filter(subscription => subscription.active)
-            //         .map(async subscription => {
-            //             await this.binanceTradesService.closePosition(bot.symbol);
-            //             this.binanceTradesService.openPosition(
-            //                 ticker,
-            //                 action,
-            //                 subscription.quantity,
-            //                 subscription.leverage
-            //             )
-            //         }
-            //         )
-            // );
+            await Promise.all(
+                subscriptions
+                    // .filter(subscription => subscription.active)
+                    .map(async subscription => {
+                        if (!subscription.active) {
+                            console.log('subscription is not active', subscription);
+                        } else {
+                            console.log('opening position', ticker, action, subscription.quantity, subscription.leverage);
+                            // await this.binanceTradesService.closePosition(bot.symbol);
+                            // this.binanceTradesService.openPosition(
+                            //     ticker,
+                            //     action,
+                            //     subscription.quantity,
+                            //     subscription.leverage
+                            // )
+                        }
+
+                    }
+                    )
+            );
         } catch (error) {
             console.error('Error handling alert webhook', error);
             throw error;

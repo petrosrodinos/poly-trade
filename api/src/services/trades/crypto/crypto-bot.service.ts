@@ -16,7 +16,7 @@ export class CryptoBotService {
     async createBot(bot: UserBotSubscriptions): Promise<BotModel | null> {
         try {
 
-            const existingBot = Array.from(this.bots.values()).find((bot: BotModel) => bot.symbol === bot.symbol);
+            const existingBot = Array.from(this.bots.values()).find((b: BotModel) => bot.uuid === b.uuid);
 
             if (!existingBot) {
                 let newBot = new BotModel({
@@ -36,10 +36,11 @@ export class CryptoBotService {
                     }
                 }
 
-
-                logger.success(`Bot created for ${newBot.strategy}, ID: ${newBot.uuid}`);
+                logger.success(`Bot created for ${newBot.symbol}, ID: ${newBot.uuid}`);
 
                 return newBot;
+            } else {
+                console.log('bot already exists', existingBot);
             }
 
             return existingBot;
@@ -150,6 +151,7 @@ export class CryptoBotService {
     }
 
     async getBotsWithSubscriptions(): Promise<any[]> {
+        console.log('getting bots with subscriptions', this.bots.size);
         return Array.from(this.bots.values()).map((bot: BotModel) => ({
             uuid: bot.uuid,
             symbol: bot.symbol,
