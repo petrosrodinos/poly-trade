@@ -9,8 +9,8 @@ import { binanceRouter } from './modules/trades/binance/binance.routes';
 import botsRouter from './modules/bots/bots.routes';
 import botSubscriptionsRouter from './modules/bot-subscriptions/bot-subscriptions.routes';
 import { logger } from './shared/utils/logger';
-import { BotsService } from './modules/bots/bots.service';
 import { tradingviewRouter } from './webhooks/tradingview/tradingview.routes';
+import { botService } from './modules/bots/bots.service';
 
 dotenv.config();
 
@@ -41,8 +41,7 @@ app.use('*', (req, res) => {
 const shutdown = async (signal: string) => {
     logger.debug(`Received ${signal}, shutting down gracefully...`);
     try {
-        const botsService = new BotsService();
-        await botsService.stopAllBots();
+        await botService.stopAllBots();
     } catch (error: any) {
         logger.error("Could not stop all bots", error?.message);
     }
@@ -69,8 +68,7 @@ app.listen(PORT, async () => {
     logger.debug(`Server running on port ${PORT}`);
 
     try {
-        const botsService = new BotsService();
-        await botsService.startAllBots();
+        await botService.startAllBots();
         logger.debug('All bots started successfully');
     } catch (error: any) {
         logger.error('Failed to start all bots:', error?.message);

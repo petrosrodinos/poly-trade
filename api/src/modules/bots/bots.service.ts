@@ -280,3 +280,5 @@ export class BotsService {
 
 
 }
+
+export const botService = new BotsService();
