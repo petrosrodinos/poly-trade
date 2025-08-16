@@ -25,15 +25,3 @@ export const BotQuerySchema = z.object({
 export type CreateBotDto = z.infer<typeof CreateBotSchema>;
 export type UpdateBotDto = z.infer<typeof UpdateBotSchema>;
 export type BotQueryDto = z.infer<typeof BotQuerySchema>;
-
-export interface BotResponse {
-    id: number;
-    uuid: string;
-    symbol: string;
-    timeframe: string;
-    active: boolean;
-    user_id: number;
-    createdAt: Date;
-    updatedAt: Date;
-}
-

@@ -135,16 +135,16 @@
 
 //         try {
 //             if (isCurrentGreen && isPrevGreen && isPrevPrevGreen && currentPosition !== 'long') {
-//                 if (currentPosition === 'short') {
-//                     await this.binanceTradesService.closePosition(bot.symbol);
-//                 }
-//                 const position = await this.binanceTradesService.openPosition(
-//                     bot.symbol,
-//                     'buy',
-//                     candle.close,
-//                     quantity,
-//                     bot.leverage
-//                 );
+// if (currentPosition === 'short') {
+//     await this.binanceTradesService.closePosition(bot.symbol);
+// }
+// const position = await this.binanceTradesService.openPosition(
+//     bot.symbol,
+//     'buy',
+//     candle.close,
+//     quantity,
+//     bot.leverage
+// );
 //                 this.positions.set(bot.id, 'long');
 //                 logger.long(`${bot.symbol}, ${candle.close}, ${quantity}, ID: ${bot.id}, ${position.orderId}`);
 //             }

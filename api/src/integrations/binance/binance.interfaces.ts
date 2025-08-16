@@ -27,7 +27,6 @@ export interface BinanceOrderResponse {
     orderId: number;
     clientOrderId: string;
     transactTime: number;
-    price: string;
     origQty: string;
     executedQty: string;
     status: string;

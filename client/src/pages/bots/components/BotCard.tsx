@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bot as BotIcon, Clock, Key } from "lucide-react";
+import { Bot as BotIcon, Clock, Key, Copy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Routes } from "@/routes/routes";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
@@ -21,6 +21,11 @@ export const BotCard = ({ bot }: BotCardProps) => {
 
   const handleCardClick = () => {
     navigate(Routes.bots.bot(bot.uuid));
+  };
+
+  const handleCopyUuid = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(uuid);
   };
 
   // const formatCurrency = (value: number) => {
@@ -57,9 +62,14 @@ export const BotCard = ({ bot }: BotCardProps) => {
 
         {isAdmin && (
           <div className="border-t pt-3 mt-3">
-            <div className="flex items-center space-x-2 text-xs">
-              <Key className="w-3 h-3 text-slate-500" />
-              <span className="text-slate-500 font-mono">{uuid}</span>
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center space-x-2">
+                <Key className="w-3 h-3 text-slate-500" />
+                <span className="text-slate-500 font-mono">{uuid}</span>
+              </div>
+              <button onClick={handleCopyUuid} className="flex items-center justify-center w-6 h-6 rounded hover:bg-muted/50 transition-colors" title="Copy UUID">
+                <Copy className="w-3 h-3 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300" />
+              </button>
             </div>
           </div>
         )}

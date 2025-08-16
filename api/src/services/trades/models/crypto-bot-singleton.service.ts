@@ -1,4 +1,4 @@
-import { CryptoBotService } from "./crypto-bot.service";
+import { CryptoBotService } from "../crypto/crypto-bot.service";
 
 class CryptoBotSingleton {
     private static instance: CryptoBotService;

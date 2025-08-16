@@ -38,7 +38,7 @@ export class BinanceTradesService {
         }
     }
 
-    async openPosition(symbol: string, side: 'buy' | 'sell', price: number, quantity?: number, leverage?: number): Promise<BinanceOrderResponse> {
+    async openPosition(symbol: string, side: 'buy' | 'sell', quantity?: number, leverage?: number): Promise<BinanceOrderResponse> {
         try {
             const orderSide: BinanceOrderSide = side.toUpperCase() as BinanceOrderSide;
 
@@ -60,7 +60,6 @@ export class BinanceTradesService {
                 orderId: order.orderId,
                 clientOrderId: order.clientOrderId,
                 transactTime: order.transactTime,
-                price: order.price || price.toString(),
                 origQty: order.origQty,
                 executedQty: order.executedQty,
                 status: order.status,
@@ -112,7 +111,6 @@ export class BinanceTradesService {
                 orderId: order.orderId,
                 clientOrderId: order.clientOrderId,
                 transactTime: order.transactTime,
-                price: order.price,
                 origQty: order.origQty,
                 executedQty: order.executedQty,
                 status: order.status,
@@ -123,6 +121,14 @@ export class BinanceTradesService {
         } catch (error) {
             console.error(`Error closing position for ${symbol}:`, error);
             throw new Error(`Failed to close position for ${symbol}: ${error}`);
+        }
+    }
+
+
+    async closeAllPositions(symbols: string[]): Promise<any> {
+        try {
+            await Promise.all(symbols.map(symbol => this.closePosition(symbol)));
+        } catch (error) {
         }
     }
 

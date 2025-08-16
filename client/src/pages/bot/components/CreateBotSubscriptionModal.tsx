@@ -9,6 +9,8 @@ import type { BotSubscriptionFormData } from "@/features/bot-subscription/interf
 import { useCreateBotSubscription } from "@/features/bot-subscription/hooks/use-bot-subscription";
 import { Spinner } from "@/components/ui/spinner";
 import { useParams } from "react-router-dom";
+import { useAuthStore } from "@/stores/auth.store";
+import { RoleTypes } from "@/features/user/interfaces/user.interface";
 
 interface CreateBotSubscriptionModalProps {
   isOpen: boolean;
@@ -18,6 +20,8 @@ interface CreateBotSubscriptionModalProps {
 export const CreateBotSubscriptionModal: React.FC<CreateBotSubscriptionModalProps> = ({ isOpen, onClose }) => {
   const { uuid } = useParams();
   const { mutate: createBot, isPending: isCreatingBot } = useCreateBotSubscription(uuid as string);
+  const { role } = useAuthStore();
+  const isAdmin = role === RoleTypes.admin;
 
   const [formData, setFormData] = useState<BotSubscriptionFormData>({
     bot_uuid: uuid as string,
@@ -88,7 +92,7 @@ export const CreateBotSubscriptionModal: React.FC<CreateBotSubscriptionModalProp
           <div className="space-y-2">
             <Label htmlFor="leverage">Leverage: {formData.leverage}x</Label>
             <div className="px-3 mt-2">
-              <Slider value={[formData.leverage]} onValueChange={(value) => handleInputChange("leverage", value[0])} max={50} min={1} step={1} className="w-full" />
+              <Slider value={[formData.leverage]} onValueChange={(value) => (isAdmin ? handleInputChange("leverage", value[0]) : undefined)} max={50} min={1} step={1} className={`w-full ${!isAdmin ? "opacity-50 cursor-not-allowed" : ""}`} disabled={!isAdmin} />
               <div className="flex justify-between text-xs text-muted-foreground mt-1">
                 <span>1x</span>
                 <span>25x</span>

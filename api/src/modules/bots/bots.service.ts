@@ -1,21 +1,24 @@
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../../core/prisma/prisma-client';
-import { CreateBotDto, UpdateBotDto, BotQueryDto, BotResponse } from './dto/bot.dto';
+import { CreateBotDto, UpdateBotDto, BotQueryDto } from './dto/bot.dto';
 import { UserBotSubscription } from './interfaces/bot.interface';
-import CryptoBotSingleton from '../../services/trades/crypto/crypto-bot-singleton.service';
-import { BotModel } from '../../services/trades/models/bot.model';
+import CryptoBotSingleton from '../../services/trades/models/crypto-bot-singleton.service';
 import { CryptoBotService } from '../../services/trades/crypto/crypto-bot.service';
+import { BinanceTradesService } from '../../integrations/binance/services/binance-trades.service';
+import { BotModel } from '../../services/trades/models/bot.model';
 
 export class BotsService {
     private prisma: any;
     private cryptoBotService: CryptoBotService;
+    private binanceTradesService: BinanceTradesService;
 
     constructor() {
         this.prisma = prisma;
         this.cryptoBotService = CryptoBotSingleton.getInstance();
+        this.binanceTradesService = new BinanceTradesService();
     }
 
-    async createBot(data: CreateBotDto, user_uuid: string): Promise<BotResponse> {
+    async createBot(data: CreateBotDto, user_uuid: string): Promise<BotModel> {
         try {
             const bot = await this.prisma.bot.create({
                 data: {
@@ -36,7 +39,7 @@ export class BotsService {
         }
     }
 
-    async getAllBots(query: BotQueryDto): Promise<BotResponse> {
+    async getAllBots(query: BotQueryDto): Promise<BotModel> {
         const where: any = {};
 
         if (query.symbol) {
@@ -69,7 +72,7 @@ export class BotsService {
         return bots;
     }
 
-    async getBotByUuid(uuid: string): Promise<BotResponse | null> {
+    async getBotByUuid(uuid: string): Promise<BotModel | null> {
         try {
             return await this.prisma.bot.findFirst({
                 where: {
@@ -81,7 +84,7 @@ export class BotsService {
         }
     }
 
-    async updateBot(uuid: string, data: UpdateBotDto, user_uuid: string): Promise<BotResponse | null> {
+    async updateBot(uuid: string, data: UpdateBotDto, user_uuid: string): Promise<BotModel | null> {
         try {
             const existingBot = await this.prisma.bot.findFirst({
                 where: {
@@ -166,36 +169,43 @@ export class BotsService {
 
             await this.cryptoBotService.deleteBot(uuid);
 
+            await this.binanceTradesService.closeAllPositions([existingBot.symbol]);
+
+
             return true;
         } catch (error) {
             return false;
         }
     }
 
-    async stopAllBots(user_uuid: string): Promise<boolean> {
+    async stopAllBots(): Promise<BotModel[]> {
         try {
 
-            const result = await this.startOrStopBots(user_uuid, false);
+            const result = await this.startOrStopBots(false);
 
             await this.cryptoBotService.stopAllBots();
 
+            await this.binanceTradesService.closeAllPositions(result.map((bot: BotModel) => bot.symbol));
+
             return result;
 
         } catch (error) {
-            return false;
+            console.error('Error stopping all bots', error);
+            return [];
         }
     }
 
-    async startAllBots(user_uuid: string): Promise<boolean> {
+    async startAllBots(): Promise<BotModel[]> {
 
         try {
-            const result = await this.startOrStopBots(user_uuid, true);
+            const result = await this.startOrStopBots(true);
 
-            await this.cryptoBotService.startAllBots();
+            await this.cryptoBotService.startAllBots(result);
 
             return result;
         } catch (error) {
-            return false;
+            console.error('Error starting all bots', error);
+            return [];
         }
     }
 
@@ -248,22 +258,34 @@ export class BotsService {
         };
     }
 
-    async startOrStopBots(user_uuid: string, active: boolean): Promise<boolean> {
+    async startOrStopBots(active: boolean): Promise<BotModel[]> {
         try {
             const bots = await this.prisma.bot.findMany({
                 where: {
-                    user_uuid: user_uuid,
                     active: !active
+                },
+                include: {
+                    subscriptions: {
+                        select: {
+                            uuid: true,
+                            bot_uuid: true,
+                            user_uuid: true,
+                            amount: true,
+                            quantity: true,
+                            leverage: true,
+                            active: true,
+                            createdAt: true,
+                        }
+                    }
                 }
             });
 
             if (bots.length === 0) {
-                return false;
+                return [];
             }
 
             await this.prisma.bot.updateMany({
                 where: {
-                    user_uuid: user_uuid,
                     active: !active
                 },
                 data: {
@@ -285,9 +307,9 @@ export class BotsService {
                 )
             );
 
-            return true;
+            return bots;
         } catch (error) {
-            return false;
+            return [];
         }
     }
 

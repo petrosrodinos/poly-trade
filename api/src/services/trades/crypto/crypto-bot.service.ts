@@ -1,5 +1,5 @@
 import { logger } from "../../../shared/utils/logger";
-import { BotModel } from "../models/bot.model";
+import { BotModel, BotSubscriptionModel } from "../models/bot.model";
 import { CryptoSubscriptionService } from "./crypto-subscription.service";
 
 export class CryptoBotService {
@@ -17,7 +17,7 @@ export class CryptoBotService {
             const existingBot = Array.from(this.bots.values()).find((bot: BotModel) => bot.symbol === bot.symbol);
 
             if (!existingBot) {
-                const newBot: BotModel = {
+                let newBot: BotModel = {
                     uuid: bot.uuid,
                     symbol: bot.symbol,
                     timeframe: bot.timeframe,
@@ -26,6 +26,20 @@ export class CryptoBotService {
                     created_at: bot.created_at,
                     subscriptions: new Map(),
                 };
+
+                if (bot.subscriptions) {
+                    for (const [key, value] of bot.subscriptions) {
+                        newBot.subscriptions.set(key, new BotSubscriptionModel({
+                            uuid: value.uuid,
+                            user_uuid: value.user_uuid,
+                            amount: value.amount,
+                            quantity: value.quantity,
+                            leverage: value.leverage,
+                            active: value.active,
+                            created_at: value.created_at,
+                        }));
+                    }
+                }
 
                 this.bots.set(newBot.uuid, new BotModel(newBot));
 
@@ -49,7 +63,6 @@ export class CryptoBotService {
                 bot.active = true;
                 this.bots.set(bot_uuid, new BotModel(bot));
                 await this.cryptoSubscriptionService.startAllSubscriptions(bot_uuid);
-                // this.botManagerService.startBot(bot);
             }
 
         } catch (error) {
@@ -70,7 +83,6 @@ export class CryptoBotService {
                 await this.cryptoSubscriptionService.stopAllSubscriptions(bot_uuid);
             }
 
-            // this.botManagerService.stopBot(bot);
         } catch (error) {
             logger.error(`Error stopping bot: ${bot_uuid}:`, error);
             throw error;
@@ -103,12 +115,18 @@ export class CryptoBotService {
         }
     }
 
-    async startAllBots(): Promise<void> {
+    async startAllBots(db_bots: BotModel[]): Promise<void> {
         try {
             const bots = Array.from(this.bots.values());
+
+            if (bots.length === 0) {
+                for (const bot of db_bots) {
+                    await this.createBot(bot);
+                }
+            }
+
             for (const bot of bots) {
                 await this.startBot(bot.uuid);
-                await this.cryptoSubscriptionService.startAllSubscriptions(bot.uuid);
             }
         } catch (error) {
             throw new Error(`Failed to start all bots: ${error}`);
@@ -120,11 +138,14 @@ export class CryptoBotService {
             const bots = Array.from(this.bots.values());
             for (const bot of bots) {
                 await this.stopBot(bot.uuid);
-                await this.cryptoSubscriptionService.stopAllSubscriptions(bot.uuid);
             }
         } catch (error) {
             throw new Error(`Failed to stop all bots: ${error}`);
         }
+    }
+
+    async getBotByUuid(uuid: string): Promise<BotModel | null> {
+        return this.bots.get(uuid) || null;
     }
 
     async getBotsWithSubscriptions(): Promise<any[]> {

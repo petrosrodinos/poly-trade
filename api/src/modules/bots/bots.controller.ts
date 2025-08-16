@@ -137,7 +137,7 @@ export class BotsController {
     startAllBots = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
             const uuid = req.user!.uuid;
-            const result = await this.botsService.startAllBots(uuid);
+            const result = await this.botsService.startAllBots();
             res.status(200).json({
                 message: 'Bots started successfully',
                 data: result
@@ -153,7 +153,7 @@ export class BotsController {
     stopAllBots = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
             const uuid = req.user!.uuid;
-            const result = await this.botsService.stopAllBots(uuid);
+            const result = await this.botsService.stopAllBots();
             res.status(200).json({
                 message: 'Bots stopped successfully',
                 data: result

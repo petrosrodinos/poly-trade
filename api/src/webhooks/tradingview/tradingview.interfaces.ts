@@ -1,12 +1,3 @@
-export interface TradingviewAlertWebhook {
-    ticker: string;
-    interval: string;
-    time: string;
-    strategy: Strategy;
-    bot: string;
-    alert_message: string;
-    action: string;
-}
 
 export const Strategy = {
     two_candles: "two_candles",

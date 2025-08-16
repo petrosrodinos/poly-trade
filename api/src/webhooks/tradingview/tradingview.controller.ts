@@ -13,12 +13,10 @@ export class TradingviewController {
 
     async handleAlertWebhook(req: Request, res: Response) {
         try {
+
             const validatedData = TradingviewAlertWebhookSchema.parse(req.body);
 
             const result = await this.tradingviewService.handleAlertWebhook(validatedData);
-
-            console.log('result', result);
-            console.log('data', req.body);
 
             return res.status(200).json({
                 message: 'Alert webhook received and processed',
