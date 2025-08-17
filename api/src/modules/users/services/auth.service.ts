@@ -1,18 +1,16 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { LoginDto, RegisterDto, JwtPayload, AuthResponse } from '../dto/auth.dto';
-import { UsersService } from '../users.service';
 import prisma from '../../../core/prisma/prisma-client';
 import { v4 as uuidv4 } from 'uuid';
+import { UserErrorCodes } from '../../../shared/errors/user';
 
 export class AuthService {
-    private usersService: UsersService;
     private jwtSecret: string;
     private jwtExpiresIn: string;
     private prisma: any;
 
     constructor() {
-        this.usersService = new UsersService();
         this.jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
         this.jwtExpiresIn = process.env.JWT_EXPIRES_IN || '1y';
         this.prisma = prisma;
@@ -25,7 +23,7 @@ export class AuthService {
             }
         });
         if (existingUser) {
-            throw new Error('Username already exists');
+            throw new Error(UserErrorCodes.USER_ALREADY_EXISTS);
         }
 
         const hashedPassword = await bcrypt.hash(registerDto.password, 12);

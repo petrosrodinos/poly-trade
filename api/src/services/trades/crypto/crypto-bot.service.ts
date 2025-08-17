@@ -1,6 +1,5 @@
-import { Bot } from "@prisma/client";
 import { logger } from "../../../shared/utils/logger";
-import { BotModel, BotSubscriptionModel } from "../models/bot.model";
+import { BotModel } from "../models/bot.model";
 import { CryptoSubscriptionService } from "./crypto-subscription.service";
 import { UserBotSubscriptions } from "@/modules/bots/interfaces/bot.interface";
 

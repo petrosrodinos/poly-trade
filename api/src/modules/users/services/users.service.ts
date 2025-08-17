@@ -1,7 +1,5 @@
-import { v4 as uuidv4 } from 'uuid';
-import prisma from '../../core/prisma/prisma-client';
-import { RegisterDto } from './dto/auth.dto';
-import { User } from './dto/users.dto';
+import prisma from '../../../core/prisma/prisma-client';
+import { User } from '@prisma/client';
 
 export class UsersService {
 

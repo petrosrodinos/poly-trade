@@ -1,7 +1,7 @@
-import { FuturesAccountInfo, FuturesIncome, FuturesTrade } from "@/integrations/binance/binance.interfaces";
-import { BinanceAccountService } from "../../../../integrations/binance/services/binance-account.service";
-import { AccountChartData, AccountSummary, Timeframe } from "./account.interfaces";
-import { AccountUtils } from "../../../../integrations/binance/utils/account.utils";
+import { FuturesAccountInfo, FuturesIncome, FuturesTrade } from "../../integrations/binance/binance.interfaces";
+import { BinanceAccountService } from "../../integrations/binance/services/binance-account.service";
+import { AccountChartData, AccountSummary, Timeframe } from "./interfaces/account.interfaces";
+import { AccountUtils } from "../../integrations/binance/utils/account.utils";
 
 
 export class BinanceAccountServiceClass {

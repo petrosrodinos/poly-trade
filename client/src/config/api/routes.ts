@@ -2,18 +2,18 @@ export const API_URL = import.meta.env.VITE_API_URL;
 
 export const ApiRoutes = {
     auth: {
-        login: "/auth/login",
-        register: "/auth/register",
+        login: "/users/auth/login",
+        register: "/users/auth/register",
     },
     users: {
         prefix: "/users",
         me: "/users/me",
     },
     account: {
-        income: "/binance/account/income",
-        trades: "/binance/account/trades",
-        status: "/binance/account/status",
-        income_chart: "/binance/account/income/chart",
+        income: "/account/income",
+        trades: "/account/trades",
+        status: "/account/status",
+        income_chart: "/account/income/chart",
     },
     bot: {
         prefix: "/bots",
@@ -22,13 +22,7 @@ export const ApiRoutes = {
         stop: "/bots/stop",
         start_all: "/bots/start-all",
         stop_all: "/bots/stop-all",
-        bot_subscription: (uuid: string) => `/bots/${uuid}/user/subscription`,
-        // prefix: "/binance/bot",
-        // get: "/binance/bots",
-        // start: "/binance/bot/start",
-        // stop: "/binance/bot/stop",
-        // start_all: "/binance/bots/start-all",
-        // stop_all: "/binance/bots/stop-all",
+        bot_subscription: (uuid: string) => `/bots/${uuid}/user/subscription`
     },
     bot_subscription: {
         prefix: "/bot/subscriptions",

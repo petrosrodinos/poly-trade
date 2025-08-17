@@ -1,11 +1,11 @@
-import { FuturesIncome, FuturesTrade } from "@/integrations/binance/binance.interfaces";
-import { AccountChartData, Timeframe, TradeProfitSummary } from "../../../modules/trades/binance/account/account.interfaces";
+import { FuturesIncome, FuturesTrade } from "../binance.interfaces";
+import { AccountChartData, Timeframe, TradeProfitSummary } from "../../../modules/account/interfaces/account.interfaces";
 
 export class AccountUtils {
 
     constructor() { }
 
-    calculateTradesSummary(trades: FuturesTrade[]): TradeProfitSummary & { winRate: number; loseRate: number } {
+    calculateTradesSummary(trades: FuturesTrade[]): TradeProfitSummary {
         if (trades.length === 0) {
             return {
                 grossProfit: 0,
@@ -52,7 +52,7 @@ export class AccountUtils {
         };
     }
 
-    calculateIncomeSummary(incomes: FuturesIncome[]): TradeProfitSummary & { winRate: number; loseRate: number } {
+    calculateIncomeSummary(incomes: FuturesIncome[]): TradeProfitSummary {
         if (incomes.length === 0) {
             return {
                 grossProfit: 0,

@@ -4,14 +4,13 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { usersRouter } from './modules/users/users.routes';
-import { alpacaRouter } from './modules/trades/alpaca/alpaca.routes';
-import { binanceRouter } from './modules/trades/binance/binance.routes';
 import botsRouter from './modules/bots/bots.routes';
 import botSubscriptionsRouter from './modules/bot-subscriptions/bot-subscriptions.routes';
 import { logger } from './shared/utils/logger';
 import { tradingviewRouter } from './webhooks/tradingview/tradingview.routes';
 import { botService } from './modules/bots/bots.service';
 import prisma from './core/prisma/prisma-client';
+import { accountRouter } from './modules/account/account.routes';
 
 dotenv.config();
 
@@ -24,9 +23,8 @@ app.use(morgan('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/auth', usersRouter);
-app.use('/api/alpaca', alpacaRouter);
-app.use('/api/binance', binanceRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/account', accountRouter);
 app.use('/api/bots', botsRouter);
 app.use('/api/bot/subscriptions', botSubscriptionsRouter);
 app.use('/api/webhooks', tradingviewRouter);

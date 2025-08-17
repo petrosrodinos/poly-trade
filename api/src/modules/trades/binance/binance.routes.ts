@@ -1,13 +1,11 @@
 import { Router } from 'express';
 import { BinanceStreamingController } from './streaming/streaming.controller';
 // import { BinanceTradingBotController } from './bot/trading-bot.controller';
-import { BinanceAccountController } from './account/account.controller';
 
 const router = Router();
 
 const binanceStreamingController = new BinanceStreamingController();
 // const binanceTradingBotController = new BinanceTradingBotController();
-const binanceAccountController = new BinanceAccountController();
 
 router.get('/stream/:symbol', binanceStreamingController.streamTickerPrice);
 router.get('/status', binanceStreamingController.getStreamStatus);
@@ -24,11 +22,6 @@ router.post('/terminate-all', binanceStreamingController.terminateAllStreams);
 // router.post('/bots/stop-all', binanceTradingBotController.stopAllBots);
 // router.post('/bot/orders/cancel/:symbol', binanceTradingBotController.cancelOrder);
 
-router.get('/account/status', binanceAccountController.getAccount);
-router.get('/account/trades', binanceAccountController.getFuturesUserTrades);
-router.get('/account/info', binanceAccountController.getAccountFutures);
-router.get('/account/income', binanceAccountController.getFuturesIncome);
-router.get('/account/income/chart', binanceAccountController.getAccountIncomeChart);
 
 
 export { router as binanceRouter };

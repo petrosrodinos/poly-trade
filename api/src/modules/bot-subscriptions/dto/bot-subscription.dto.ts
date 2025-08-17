@@ -1,4 +1,4 @@
-import { TradeProfitSummary } from '@/modules/trades/binance/account/account.interfaces';
+import { TradeProfitSummary } from '../../account/interfaces/account.interfaces';
 import { z } from 'zod';
 
 export const CreateBotSubscriptionSchema = z.object({

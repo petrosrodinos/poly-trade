@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { BinanceAccountServiceClass } from "./account.service";
-import { Timeframe } from "./account.interfaces";
+import { Timeframe } from "./interfaces/account.interfaces";
 
-export class BinanceAccountController {
+export class AccountController {
     private binanceAccountService: BinanceAccountServiceClass;
 
     constructor() {

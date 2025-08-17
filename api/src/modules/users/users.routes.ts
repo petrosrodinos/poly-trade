@@ -1,12 +1,14 @@
 import { Router } from 'express';
-import { UsersController } from './users.controller';
+import { UsersController } from './controllers/users.controller';
 import { authMiddleware } from '../../shared/middleware/auth.middleware';
+import { AuthController } from './controllers/auth.controller';
 
 const router = Router();
 const usersController = new UsersController();
+const authController = new AuthController();
 
-router.post('/register', usersController.register);
-router.post('/login', usersController.login);
+router.post('/auth/register', authController.register);
+router.post('/auth/login', authController.login);
 
 router.delete('/', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.deleteAllUsers);
 router.delete('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.deleteUser);

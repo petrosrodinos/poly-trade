@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../../core/prisma/prisma-client';
 import { CreateBotDto, UpdateBotDto, BotQueryDto } from './dto/bot.dto';
-import { Bot, UserBotSubscriptions } from './interfaces/bot.interface';
+import { UserBotSubscriptions } from './interfaces/bot.interface';
 import CryptoBotSingleton from '../../services/trades/models/crypto-bot-singleton.service';
 import { CryptoBotService } from '../../services/trades/crypto/crypto-bot.service';
 import { BinanceTradesService } from '../../integrations/binance/services/binance-trades.service';
