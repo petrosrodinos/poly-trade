@@ -162,7 +162,7 @@ export class BotSubscriptionsService {
 
             if (data.active !== existingSubscription.active) {
                 if (!data.active) {
-                    // await this.binanceTradesService.closePosition(existingSubscription.bot.symbol);
+                    await this.binanceTradesService.closePosition(existingSubscription.bot.symbol);
                 }
 
             }
@@ -177,31 +177,43 @@ export class BotSubscriptionsService {
     async deleteBotSubscription(uuid: string, user_uuid: string): Promise<boolean> {
 
         try {
-            const existingSubscription = await this.prisma.botSubscription.findFirst({
-                where: {
-                    uuid,
-                    user_uuid
-                },
-                include: {
-                    bot: {
-                        select: {
-                            symbol: true
+
+            let existingSubscription: any;
+
+            try {
+                existingSubscription = await this.prisma.botSubscription.findFirst({
+                    where: {
+                        uuid,
+                        user_uuid
+                    },
+                    include: {
+                        bot: {
+                            select: {
+                                symbol: true
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            if (!existingSubscription) {
-                throw new Error('Bot subscription not found');
+                if (!existingSubscription) {
+                    throw new Error('Bot subscription not found');
+                }
+
+                await this.prisma.botSubscription.delete({
+                    where: { uuid }
+                });
+
+            } catch (error) {
+                console.error('Error deleting bot subscription', error);
             }
 
-            await this.prisma.botSubscription.delete({
-                where: { uuid }
-            });
+            try {
+                await this.binanceTradesService.closePosition(existingSubscription.bot.symbol);
+            } catch (error) {
+                console.error('Error closing position', error);
+            }
 
             await this.cryptoSubscriptionService.deleteSubscription(existingSubscription.bot_uuid, existingSubscription);
-
-            // await this.binanceTradesService.closePosition(existingSubscription.bot.symbol);
 
             return true;
         } catch (error) {

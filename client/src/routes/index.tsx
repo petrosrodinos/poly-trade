@@ -4,6 +4,7 @@ import BotPage from "@/pages/bot";
 import BotsPage from "@/pages/bots";
 import SignUp from "@/pages/auth/pages/sign-up";
 import SignIn from "@/pages/auth/pages/sign-in";
+import CredentialsPage from "@/pages/auth/pages/credentials";
 import ProtectedRoute from "./protected-route";
 import AuthLayout from "@/pages/auth/layout";
 import MainLayout from "@/components/layout/main-layout";
@@ -25,9 +26,20 @@ export default function AppRoutes() {
       </Route>
 
       <Route
-        path="/dashboard"
+        path="/auth"
         element={
           <ProtectedRoute loggedIn={true}>
+            <AuthLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="credentials" element={<CredentialsPage />} />
+      </Route>
+
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute loggedIn={true} requireVerified={true}>
             <MainLayout />
           </ProtectedRoute>
         }

@@ -39,14 +39,18 @@ export class AuthService {
         const token = this.generateToken({
             uuid: newUser.uuid,
             username: newUser.username,
-            role: newUser.role
+            role: newUser.role,
+            verified: false,
+            enabled: false,
         });
 
         return {
             user: {
                 uuid: newUser.uuid,
                 username: newUser.username,
-                role: newUser.role
+                role: newUser.role,
+                verified: false,
+                enabled: false,
             },
             token
         };
@@ -71,14 +75,18 @@ export class AuthService {
         const token = this.generateToken({
             uuid: user.uuid,
             username: user.username,
-            role: user.role
+            role: user.role,
+            verified: user.verified,
+            enabled: user.enabled,
         });
 
         return {
             user: {
                 uuid: user.uuid,
                 username: user.username,
-                role: user.role
+                role: user.role,
+                verified: user.verified,
+                enabled: user.enabled,
             },
             token
         };

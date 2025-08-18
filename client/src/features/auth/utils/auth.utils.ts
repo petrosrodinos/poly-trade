@@ -7,5 +7,7 @@ export const formatAuthUser = (data: any): LoggedInUser => {
         expires_in: data?.expires_in ?? null,
         username: data?.user?.username,
         role: data?.user?.role ?? null,
+        verified: data?.user?.verified ?? false,
+        enabled: data?.user?.enabled ?? false,
     };
 };

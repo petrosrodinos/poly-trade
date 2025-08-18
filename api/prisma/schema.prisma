@@ -65,10 +65,26 @@ model BotSubscription {
   @@unique([bot_uuid, user_uuid])
 }
 
+
+model Credentials {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid())
+  user_uuid    String
+  type  CredentialsType @default(BINANCE)
+  api_key    String
+  api_secret    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+}
+
 enum Role {
   USER
   ADMIN
   WEBHOOK
+}
+
+enum CredentialsType {
+  BINANCE
 }
 
 

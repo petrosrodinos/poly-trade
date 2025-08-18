@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../../core/prisma/prisma-client';
 import { CreateBotDto, UpdateBotDto, BotQueryDto } from './dto/bot.dto';
-import { UserBotSubscriptions } from './interfaces/bot.interface';
+import { Bot, UserBotSubscriptions } from './interfaces/bot.interface';
 import CryptoBotSingleton from '../../services/trades/models/crypto-bot-singleton.service';
 import { CryptoBotService } from '../../services/trades/crypto/crypto-bot.service';
 import { BinanceTradesService } from '../../integrations/binance/services/binance-trades.service';
@@ -132,7 +132,7 @@ export class BotsService {
                     await this.cryptoBotService.startBot(uuid);
                 } else {
                     await this.cryptoBotService.stopBot(uuid);
-                    // await this.binanceTradesService.closeAllPositions([existingBot.symbol]);
+                    await this.binanceTradesService.closeAllPositions([existingBot.symbol]);
                 }
 
                 return updatedBot;
@@ -178,7 +178,7 @@ export class BotsService {
 
             await this.cryptoBotService.deleteBot(uuid);
 
-            // await this.binanceTradesService.closeAllPositions([existingBot.symbol]);
+            await this.binanceTradesService.closeAllPositions([existingBot.symbol]);
 
 
             return true;
@@ -194,7 +194,7 @@ export class BotsService {
 
             await this.cryptoBotService.stopAllBots();
 
-            // await this.binanceTradesService.closeAllPositions(result.map((bot: Bot) => bot.symbol));
+            await this.binanceTradesService.closeAllPositions(result.map((bot: Bot) => bot.symbol));
 
             return result;
 

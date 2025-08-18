@@ -9,6 +9,12 @@ export const ApiRoutes = {
         prefix: "/users",
         me: "/users/me",
     },
+    credentials: {
+        prefix: "/credentials",
+        user: "/credentials/user",
+        update: (uuid: string) => `/credentials/${uuid}`,
+        delete: (uuid: string) => `/credentials/${uuid}`,
+    },
     account: {
         income: "/account/income",
         trades: "/account/trades",

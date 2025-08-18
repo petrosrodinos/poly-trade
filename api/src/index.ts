@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { usersRouter } from './modules/users/users.routes';
 import botsRouter from './modules/bots/bots.routes';
 import botSubscriptionsRouter from './modules/bot-subscriptions/bot-subscriptions.routes';
+import credentialsRouter from './modules/credentials/credentials.routes';
 import { logger } from './shared/utils/logger';
 import { tradingviewRouter } from './webhooks/tradingview/tradingview.routes';
 import { botService } from './modules/bots/bots.service';
@@ -27,6 +28,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/account', accountRouter);
 app.use('/api/bots', botsRouter);
 app.use('/api/bot/subscriptions', botSubscriptionsRouter);
+app.use('/api/credentials', credentialsRouter);
 app.use('/api/webhooks', tradingviewRouter);
 
 app.get('/health', (req, res) => {

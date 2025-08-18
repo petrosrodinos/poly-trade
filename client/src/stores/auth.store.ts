@@ -15,6 +15,8 @@ const initialValues: UserStore = {
     username: "",
     token: null,
     expires_in: null,
+    verified: false,
+    enabled: false,
     login: () => { },
     logout: () => { },
     updateUser: () => { },

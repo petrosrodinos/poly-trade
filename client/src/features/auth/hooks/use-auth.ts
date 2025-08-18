@@ -25,7 +25,15 @@ export function useSignin() {
                 description: "You have successfully logged in",
                 duration: 2000,
             });
-            navigate(Routes.dashboard.root);
+            if (data.verified && data.enabled) {
+                navigate(Routes.dashboard.root);
+            }
+            if (!data.verified) {
+                navigate(Routes.auth.credentials);
+            }
+            // if (!data.enabled){
+            //     navigate(Routes.auth.confirmation);
+            // }
         },
         onError: (error: any) => {
             toast({
@@ -45,7 +53,7 @@ export function useSignup() {
 
     return useMutation({
         mutationFn: (data: SignUpUser) => signUp(data),
-        onSuccess: (data) => {
+        onSuccess: (data: LoggedInUser) => {
             login({
                 ...data,
                 isLoggedIn: true,
@@ -55,7 +63,15 @@ export function useSignup() {
                 description: "You have successfully registered in",
                 duration: 2000,
             });
-            navigate(Routes.dashboard.root);
+            if (data.verified && data.enabled) {
+                navigate(Routes.dashboard.root);
+            }
+            if (!data.verified) {
+                navigate(Routes.auth.credentials);
+            }
+            // if (!data.enabled){
+            //     navigate(Routes.auth.confirmation);
+            // }
         },
         onError: (error) => {
             toast({

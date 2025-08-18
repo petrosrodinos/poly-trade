@@ -16,14 +16,17 @@ export class CryptoTradesService {
     async handleAlertWebhook(data: TradingviewAlertWebhookDto) {
 
         try {
-            const { uuid, ticker, action } = data;
+            const { uuid, symbol, action } = data;
 
             const bot: BotModel | null = await this.cryptoBotService.getBotByUuid(uuid);
 
             console.log('bot', bot);
-            if (!bot || !bot.active) {
+            if (!bot || !bot.active || bot.symbol.toLowerCase() !== symbol.toLowerCase()) {
+                console.log('bot is not active');
                 return;
             }
+
+            console.log('bot is active');
 
             const subscriptions = Array.from(bot.subscriptions.values());
 
@@ -34,10 +37,10 @@ export class CryptoTradesService {
                         if (!subscription.active) {
                             console.log('subscription is not active', subscription);
                         } else {
-                            console.log('opening position', ticker, action, subscription.quantity, subscription.leverage);
+                            console.log('opening position', symbol, action, subscription.quantity, subscription.leverage);
                             // await this.binanceTradesService.closePosition(bot.symbol);
                             // this.binanceTradesService.openPosition(
-                            //     ticker,
+                            //     symbol,
                             //     action,
                             //     subscription.quantity,
                             //     subscription.leverage

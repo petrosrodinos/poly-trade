@@ -13,6 +13,8 @@ export interface LoggedInUser {
     user_uuid: string | null;
     role: RoleType | null;
     token: string | null;
+    verified: boolean;
+    enabled: boolean;
     expires_in: number | null;
     username?: string | null;
     isLoggedIn?: boolean | null;

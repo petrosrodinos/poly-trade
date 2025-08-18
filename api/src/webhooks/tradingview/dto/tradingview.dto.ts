@@ -8,7 +8,7 @@ export const TypeSchema = z.enum(['crypto', 'stock', 'forex']);
 
 export const TradingviewAlertWebhookSchema = z.object({
     uuid: z.string().min(1),
-    ticker: z.string().min(1),
+    symbol: z.string().min(1),
     type: TypeSchema,
     interval: z.string().min(1),
     time: z.string().min(1),
