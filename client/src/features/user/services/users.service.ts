@@ -1,8 +1,8 @@
 import axiosInstance from "@/config/api/axios";
 import { ApiRoutes } from "@/config/api/routes";
-import type { User, UserUpdate } from "../interfaces/user.interface";
+import type { UserAdmin, UserUpdate } from "../interfaces/user.interface";
 
-export const getUsers = async (): Promise<User[]> => {
+export const getUsers = async (): Promise<UserAdmin[]> => {
     const response = await axiosInstance.get(ApiRoutes.users.prefix);
     return response.data;
 };

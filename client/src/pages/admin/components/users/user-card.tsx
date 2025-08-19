@@ -4,14 +4,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { User, CalendarDays, DollarSign, Wallet, Copy, Check, UserX, UserCheck, Zap } from "lucide-react";
-import type { User as UserInterface } from "@/features/user/interfaces/user.interface";
+import type { UserAdmin } from "@/features/user/interfaces/user.interface";
 import { useFormatters } from "@/hooks/useFormatters";
 import { useState } from "react";
 import { useUpdateUser } from "@/features/user/hooks/use-user";
 import { Spinner } from "@/components/ui/spinner";
+import { UserMeta } from "@/features/user/interfaces/user.interface";
 
 interface UserCardProps {
-  user: UserInterface;
+  user: UserAdmin;
 }
 
 export const UserCard = ({ user }: UserCardProps) => {
@@ -44,6 +45,9 @@ export const UserCard = ({ user }: UserCardProps) => {
     updateUserMutation({
       uuid: user.uuid,
       enabled: !user.enabled,
+      meta: {
+        disabled: UserMeta.disabled_by_admin,
+      },
     });
   };
 

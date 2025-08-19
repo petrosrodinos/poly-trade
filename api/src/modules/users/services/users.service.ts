@@ -21,7 +21,8 @@ export class UsersService {
           verified: true,
           enabled: true,
           createdAt: true,
-          subscriptions: true
+          subscriptions: true,
+          meta: true,
         },
         orderBy: {
           createdAt: 'desc'
@@ -47,6 +48,7 @@ export class UsersService {
           enabled: true,
           createdAt: true,
           updatedAt: true,
+          meta: true,
         }
       });
     } catch (error) {
@@ -56,10 +58,28 @@ export class UsersService {
 
   async updateUser(uuid: string, data: UpdateUserDto): Promise<User | null> {
     try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          uuid: uuid
+        }
+      });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      if (data.meta && user.meta) {
+        data.meta = {
+          ...user.meta,
+          ...data.meta
+        };
+      }
+
       return await this.prisma.user.update({
         where: { uuid: uuid },
         data: data
       });
+
     } catch (error) {
       throw new Error('Failed to update user');
     }

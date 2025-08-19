@@ -4,27 +4,28 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { CalendarDays, DollarSign, Wallet, Copy, Check, UserX, UserCheck, Zap } from "lucide-react";
-import type { User as UserInterface } from "@/features/user/interfaces/user.interface";
+import type { UserAdmin } from "@/features/user/interfaces/user.interface";
 import { useFormatters } from "@/hooks/useFormatters";
 import { useState } from "react";
 import { useUpdateUser } from "@/features/user/hooks/use-user";
 import { Spinner } from "@/components/ui/spinner";
+import { UserMeta } from "@/features/user/interfaces/user.interface";
 
 interface UserTableProps {
-  users: UserInterface[];
+  users: UserAdmin[];
 }
 
 export const UserTable = ({ users }: UserTableProps) => {
   const { formatCurrency, formatPrice, formatDateTime } = useFormatters();
   const [isCopied, setIsCopied] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserAdmin | null>(null);
   const { mutate: updateUserMutation, isPending } = useUpdateUser();
 
   const getInitials = (username: string) => {
     return username.charAt(0).toUpperCase();
   };
 
-  const getSubscriptionAmounts = (user: UserInterface) => {
+  const getSubscriptionAmounts = (user: UserAdmin) => {
     const activeAmount = user?.subscriptions?.filter((sub) => sub.active)?.reduce((sum, sub) => sum + (sub.amount || 0), 0) ?? 0;
     const totalAmount = user?.subscriptions?.reduce((sum, sub) => sum + (sub.amount || 0), 0) ?? 0;
     return { activeAmount, totalAmount };
@@ -38,15 +39,23 @@ export const UserTable = ({ users }: UserTableProps) => {
     } catch {}
   };
 
-  const handleToggleEnabled = (user: UserInterface) => {
+  const handleToggleEnabled = (user: UserAdmin) => {
     updateUserMutation({
       uuid: user.uuid,
       enabled: !user.enabled,
+      meta: {
+        disabled: UserMeta.disabled_by_admin,
+      },
     });
+    setSelectedUser(null);
   };
 
-  const openConfirmDialog = (uuid: string) => {
-    setIsDialogOpen(uuid);
+  const openConfirmDialog = (user: UserAdmin) => {
+    setSelectedUser(user);
+  };
+
+  const closeConfirmDialog = () => {
+    setSelectedUser(null);
   };
 
   return (
@@ -136,7 +145,7 @@ export const UserTable = ({ users }: UserTableProps) => {
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleCopyUuid(user.uuid)}>
                       {isCopied === user.uuid ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
                     </Button>
-                    <Button variant={user.enabled ? "destructive" : "default"} size="sm" disabled={isPending} className="text-xs" onClick={() => openConfirmDialog(user.uuid)}>
+                    <Button variant={user.enabled ? "destructive" : "default"} size="sm" disabled={isPending} className="text-xs" onClick={() => openConfirmDialog(user)}>
                       {isPending ? (
                         <Spinner className="h-4 w-4" />
                       ) : user.enabled ? (
@@ -159,9 +168,7 @@ export const UserTable = ({ users }: UserTableProps) => {
         </TableBody>
       </Table>
 
-      {users.map((user) => (
-        <ConfirmationDialog key={user.uuid} isOpen={isDialogOpen === user.uuid} onClose={() => setIsDialogOpen(null)} onConfirm={() => handleToggleEnabled(user)} title={user.enabled ? "Disable User" : "Enable User"} description={`Are you sure you want to ${user.enabled ? "disable" : "enable"} user "${user.username}"?${user.enabled ? " This will prevent them from accessing their account." : ""}`} confirmText={user.enabled ? "Disable" : "Enable"} variant={user.enabled ? "destructive" : "default"} isLoading={isPending} />
-      ))}
+      {selectedUser && <ConfirmationDialog isOpen={!!selectedUser} onClose={closeConfirmDialog} onConfirm={() => handleToggleEnabled(selectedUser)} title={selectedUser.enabled ? "Disable User" : "Enable User"} description={`Are you sure you want to ${selectedUser.enabled ? "disable" : "enable"} user "${selectedUser.username}"?${selectedUser.enabled ? " This will prevent them from accessing their account." : ""}`} confirmText={selectedUser.enabled ? "Disable" : "Enable"} variant={selectedUser.enabled ? "destructive" : "default"} isLoading={isPending} />}
     </div>
   );
 };

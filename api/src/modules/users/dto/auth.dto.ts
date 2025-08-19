@@ -13,6 +13,7 @@ export const RegisterSchema = z.object({
 export const UpdateUserSchema = z.object({
     username: z.string().min(3, 'Username must be at least 3 characters').max(20, 'Username must be less than 20 characters'),
     enabled: z.boolean().optional(),
+    meta: z.record(z.string(), z.any()).optional(),
 });
 
 export type LoginDto = z.infer<typeof LoginSchema>;

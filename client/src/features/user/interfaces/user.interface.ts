@@ -6,10 +6,7 @@ export interface User {
     role: RoleType;
     enabled: boolean;
     verified: boolean;
-    commission?: number;
-    commission_paid?: number;
-    balance?: number;
-    subscriptions: BotSubscription[];
+    meta: Record<string, any>;
     createdAt: string;
 }
 
@@ -17,6 +14,15 @@ export interface UserUpdate {
     uuid: string;
     username?: string;
     enabled?: boolean;
+    meta?: Record<string, any>;
+}
+
+export interface UserAdmin extends User {
+    commission?: number;
+    commission_paid?: number;
+    balance?: number;
+    subscriptions: BotSubscription[];
+    meta: Record<string, any>;
 }
 
 
@@ -30,6 +36,10 @@ export interface LoggedInUser {
     expires_in: number | null;
     username?: string | null;
     isLoggedIn?: boolean | null;
+}
+
+export const UserMeta = {
+    disabled_by_admin: 'DISABLED_BY_ADMIN'
 }
 
 
