@@ -7,6 +7,12 @@ export interface User {
     updated_at: string;
 }
 
+export interface UserUpdate {
+    uuid: string;
+    username?: string;
+    enabled?: boolean;
+}
+
 
 
 export interface LoggedInUser {

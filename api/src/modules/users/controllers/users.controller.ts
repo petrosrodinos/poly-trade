@@ -9,6 +9,37 @@ export class UsersController {
     this.usersService = new UsersService();
   }
 
+  getUsers = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const result = await this.usersService.getUsers();
+      res.status(200).json(result);
+    } catch (error: any) {
+      res.status(500).json({ message: 'Failed to get users', error: error.message });
+    }
+  };
+
+  getMe = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+
+    try {
+      const result = await this.usersService.getMe(req.user!.uuid);
+      res.status(200).json(result);
+    } catch (error: any) {
+      res.status(500).json({ message: 'Failed to get me', error: error.message });
+    }
+  };
+
+  updateUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+
+    try {
+
+      const uuid = req.params.uuid;
+      const result = await this.usersService.updateUser(uuid, req.body);
+      res.status(200).json(result);
+
+    } catch (error: any) {
+      res.status(500).json({ message: 'Failed to update user', error: error.message });
+    }
+  };
 
   deleteUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {

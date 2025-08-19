@@ -31,9 +31,9 @@ export function useSignin() {
             if (!data.verified) {
                 navigate(Routes.auth.credentials);
             }
-            // if (!data.enabled){
-            //     navigate(Routes.auth.confirmation);
-            // }
+            if (!data.enabled) {
+                navigate(Routes.auth.confirmation);
+            }
         },
         onError: (error: any) => {
             toast({
@@ -69,9 +69,9 @@ export function useSignup() {
             if (!data.verified) {
                 navigate(Routes.auth.credentials);
             }
-            // if (!data.enabled){
-            //     navigate(Routes.auth.confirmation);
-            // }
+            if (!data.enabled) {
+                navigate(Routes.auth.confirmation);
+            }
         },
         onError: (error) => {
             toast({

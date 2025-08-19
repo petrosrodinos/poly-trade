@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 const CredentialsPage = () => {
   const [showApiKey, setShowApiKey] = useState(false);
   const [showApiSecret, setShowApiSecret] = useState(false);
-  const { verified, isLoggedIn, updateUser } = useAuthStore();
+  const { verified, isLoggedIn, enabled, updateUser } = useAuthStore();
   const navigate = useNavigate();
   const { mutate, isPending } = useCreateCredentials();
 
@@ -41,16 +41,20 @@ const CredentialsPage = () => {
           updateUser({
             verified: true,
           });
+          navigate(Routes.auth.confirmation);
         },
       }
     );
   };
 
   useEffect(() => {
-    if (verified && isLoggedIn) {
+    if (verified && isLoggedIn && enabled) {
       navigate(Routes.dashboard.root);
     }
-  }, [verified, isLoggedIn]);
+    if (verified && isLoggedIn && !enabled) {
+      navigate(Routes.auth.confirmation);
+    }
+  }, [verified, isLoggedIn, enabled]);
 
   return (
     <Card className="p-6 max-w-md mx-auto">

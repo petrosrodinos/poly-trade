@@ -8,11 +8,12 @@ interface ProtectedRouteProps {
   requiredRoles?: RoleType[];
   loggedIn?: boolean;
   requireVerified?: boolean;
+  requireEnabled?: boolean;
   fallbackPath?: string;
 }
 
-export default function ProtectedRoute({ children, requiredRoles, loggedIn, requireVerified, fallbackPath = "/auth/sign-in" }: ProtectedRouteProps) {
-  const { isLoggedIn, role, verified } = useAuthStore();
+export default function ProtectedRoute({ children, requiredRoles, loggedIn, requireVerified, requireEnabled, fallbackPath = "/auth/sign-in" }: ProtectedRouteProps) {
+  const { isLoggedIn, role, verified, enabled } = useAuthStore();
 
   if (!isLoggedIn && loggedIn) {
     return <Navigate to={fallbackPath} replace />;
@@ -27,6 +28,10 @@ export default function ProtectedRoute({ children, requiredRoles, loggedIn, requ
 
   if (requireVerified && !verified) {
     return <Navigate to={"/auth/credentials"} replace />;
+  }
+
+  if (requireEnabled && !enabled) {
+    return <Navigate to={"/auth/confirmation"} replace />;
   }
 
   if (requiredRoles && !requiredRoles.includes(role || RoleTypes.user)) {

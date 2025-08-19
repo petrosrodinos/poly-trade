@@ -4,9 +4,9 @@ import BottomNavigation from "./bottom-navigation";
 
 const MainLayout = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-full bg-background flex flex-col">
       <NavBar />
-      <div className="pb-20">
+      <div className="flex-1 pb-20 overflow-y-auto">
         <Outlet />
       </div>
       <BottomNavigation />

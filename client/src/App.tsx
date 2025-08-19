@@ -5,12 +5,14 @@ import { Toaster } from "./components/ui/toaster.tsx";
 
 function App() {
   return (
-    <BrowserRouter>
-      <QueryProvider>
-        <AppRoutes />
-        <Toaster />
-      </QueryProvider>
-    </BrowserRouter>
+    <div className="h-full">
+      <BrowserRouter>
+        <QueryProvider>
+          <AppRoutes />
+          <Toaster />
+        </QueryProvider>
+      </BrowserRouter>
+    </div>
   );
 }
 
