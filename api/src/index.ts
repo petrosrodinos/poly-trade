@@ -12,6 +12,7 @@ import { tradingviewRouter } from './webhooks/tradingview/tradingview.routes';
 import { botService } from './modules/bots/bots.service';
 import prisma from './core/prisma/prisma-client';
 import { accountRouter } from './modules/account/account.routes';
+import { adminRouter } from './modules/admin/admin.routes';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use('/api/bots', botsRouter);
 app.use('/api/bot/subscriptions', botSubscriptionsRouter);
 app.use('/api/credentials', credentialsRouter);
 app.use('/api/webhooks', tradingviewRouter);
+app.use('/api/admin', adminRouter);
 
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });

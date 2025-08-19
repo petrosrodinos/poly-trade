@@ -12,4 +12,7 @@ export const Routes = {
         root: "/dashboard/bots",
         bot: (id: string) => `/dashboard/bots/${id}`,
     },
+    admin: {
+        root: "/dashboard/admin",
+    },
 };

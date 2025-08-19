@@ -12,8 +12,6 @@ export const ApiRoutes = {
     credentials: {
         prefix: "/credentials",
         user: "/credentials/user",
-        update: (uuid: string) => `/credentials/${uuid}`,
-        delete: (uuid: string) => `/credentials/${uuid}`,
     },
     account: {
         income: "/account/income",
@@ -35,4 +33,7 @@ export const ApiRoutes = {
         start_all: "/bot/subscriptions/start-all",
         stop_all: "/bot/subscriptions/stop-all",
     },
+    admin: {
+        stats: "/admin/stats",
+    }
 }

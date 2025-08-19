@@ -1,6 +1,9 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, Bot } from "lucide-react";
+import { Home, Bot, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth.store";
+import { RoleTypes } from "@/features/user/interfaces/user.interface";
+import { Routes } from "@/routes/routes";
 
 interface BottomNavigationProps {
   className?: string;
@@ -11,24 +14,33 @@ interface NavItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   path: string;
+  admin?: boolean;
 }
 
 const BottomNavigation = ({ className }: BottomNavigationProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { role } = useAuthStore();
 
   const navItems: NavItem[] = [
     {
       id: "dashboard",
       label: "Dashboard",
       icon: Home,
-      path: "/dashboard",
+      path: Routes.dashboard.root,
     },
     {
       id: "bots",
       label: "Bots",
       icon: Bot,
-      path: "/dashboard/bots",
+      path: Routes.bots.root,
+    },
+    {
+      id: "admin",
+      label: "Admin",
+      icon: Shield,
+      path: Routes.admin.root,
+      admin: true,
     },
   ];
 
@@ -43,10 +55,12 @@ const BottomNavigation = ({ className }: BottomNavigationProps) => {
     navigate(path);
   };
 
+  const visibleNavItems = navItems.filter((item) => !item.admin || role === RoleTypes.admin);
+
   return (
     <div className={cn("fixed bottom-0 left-0 right-0 z-50", "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", "border-t border-border", "safe-area-pb-4", className)}>
       <div className="flex h-16 items-center justify-around px-4">
-        {navItems.map((item) => {
+        {visibleNavItems.map((item) => {
           const isItemActive = isActive(item.path);
           const IconComponent = item.icon;
 
