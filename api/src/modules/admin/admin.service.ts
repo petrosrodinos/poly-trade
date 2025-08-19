@@ -10,7 +10,7 @@ export class AdminService {
     }
 
     async getAdminStats(): Promise<AdminStats> {
-        const [totalUsers, verifiedUsers, enabledUsers, botSubscriptionsCount] = await Promise.all([
+        const [totalUsers, verifiedUsers, enabledUsers, subscriptions_count, subscriptions_amount] = await Promise.all([
             this.prisma.user.count(),
             this.prisma.user.count({
                 where: {
@@ -22,14 +22,23 @@ export class AdminService {
                     enabled: true
                 }
             }),
-            this.prisma.botSubscription.count()
+            this.prisma.botSubscription.count(),
+            this.prisma.botSubscription.aggregate({
+                where: {
+                    active: true
+                },
+                _sum: {
+                    amount: true
+                }
+            })
         ]);
 
         return {
             total_users: totalUsers,
             verified_users: verifiedUsers,
             enabled_users: enabledUsers,
-            bot_subscriptions_count: botSubscriptionsCount
+            subscriptions_count: subscriptions_count,
+            subscriptions_amount: subscriptions_amount._sum.amount || 0
         };
     }
 

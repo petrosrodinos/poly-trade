@@ -81,7 +81,8 @@ const AdminStats = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <StatsCard title="Users Status" value={`${stats.enabled_users}/${stats.total_users}`} icon={Users} description={`${enabledPercentage}% enabled users`} />
 
-        <StatsCard title="Bot Subscriptions" value={stats.bot_subscriptions_count} icon={Bot} description="Active subscriptions" />
+        <StatsCard title="Bot Subscriptions" value={stats.subscriptions_count} icon={Bot} description="Active subscriptions" />
+        <StatsCard title="Subscription Amounts" value={stats.subscriptions_amount} icon={DollarSign} description="Total subscription amounts" />
 
         <StatsCard title="Commission" value={stats.verified_users} icon={DollarSign} description="Total commission" className="md:col-span-2 lg:col-span-1" />
       </div>

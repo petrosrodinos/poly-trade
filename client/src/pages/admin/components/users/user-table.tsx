@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { User, CalendarDays, DollarSign, Wallet, Copy, Check, UserX, UserCheck, Zap } from "lucide-react";
+import { CalendarDays, DollarSign, Wallet, Copy, Check, UserX, UserCheck, Zap } from "lucide-react";
 import type { User as UserInterface } from "@/features/user/interfaces/user.interface";
 import { useFormatters } from "@/hooks/useFormatters";
 import { useState } from "react";
