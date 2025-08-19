@@ -12,7 +12,7 @@ export interface BotSubscription {
     enabled: boolean;
     profit: number;
     trades: FuturesTrade[];
-    created_at: string;
+    createdAt: string;
     bot?: Bot;
 }
 

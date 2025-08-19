@@ -26,6 +26,7 @@ model User {
 
   bots      Bot[]
   subscriptions BotSubscription[]
+  credentials Credentials[]
 }
 
 model Bot {
@@ -69,12 +70,14 @@ model BotSubscription {
 model Credentials {
   id        Int      @id @default(autoincrement())
   uuid      String   @unique @default(uuid())
-  user_uuid    String
+  user_uuid    String 
   type  CredentialsType @default(BINANCE)
   api_key    String
   api_secret    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
+
+  user      User     @relation(fields: [user_uuid], references: [uuid], onDelete: Cascade)
 }
 
 enum Role {

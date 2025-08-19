@@ -1,10 +1,16 @@
+import type { BotSubscription } from "@/features/bot-subscription/interfaces/bot-subscription.interface";
 
 export interface User {
     uuid: string;
     username: string;
     role: RoleType;
-    created_at: string;
-    updated_at: string;
+    enabled: boolean;
+    verified: boolean;
+    commission?: number;
+    commission_paid?: number;
+    balance?: number;
+    subscriptions: BotSubscription[];
+    createdAt: string;
 }
 
 export interface UserUpdate {

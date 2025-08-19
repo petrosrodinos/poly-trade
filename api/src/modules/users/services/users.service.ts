@@ -21,9 +21,14 @@ export class UsersService {
           verified: true,
           enabled: true,
           createdAt: true,
+          subscriptions: true
+        },
+        orderBy: {
+          createdAt: 'desc'
         }
       });
     } catch (error) {
+      console.log(error);
       throw new Error('Failed to get users');
     }
   }

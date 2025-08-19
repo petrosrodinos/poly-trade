@@ -1,8 +1,8 @@
 import axiosInstance from "@/config/api/axios";
 import { ApiRoutes } from "@/config/api/routes";
-import type { UserUpdate } from "../interfaces/user.interface";
+import type { User, UserUpdate } from "../interfaces/user.interface";
 
-export const getUsers = async () => {
+export const getUsers = async (): Promise<User[]> => {
     const response = await axiosInstance.get(ApiRoutes.users.prefix);
     return response.data;
 };
@@ -12,10 +12,6 @@ export const updateUser = async (data: UserUpdate) => {
     return response.data;
 };
 
-export const getUser = async (uuid: string) => {
-    const response = await axiosInstance.get(`${ApiRoutes.users.prefix}/${uuid}`);
-    return response.data;
-};
 
 export const getMe = async () => {
     const response = await axiosInstance.get(`${ApiRoutes.users.prefix}/me`);

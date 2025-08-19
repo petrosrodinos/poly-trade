@@ -1,11 +1,13 @@
 import AdminStats from "./components/stats";
+import AdminUsers from "./components/users";
 
-const AdminDashboard = () => {
+const AdminDashboardPage = () => {
   return (
-    <div>
+    <div className="">
       <AdminStats />
+      <AdminUsers />
     </div>
   );
 };
 
-export default AdminDashboard;
+export default AdminDashboardPage;
