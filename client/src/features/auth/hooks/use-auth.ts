@@ -26,13 +26,16 @@ export function useSignin() {
                 duration: 2000,
             });
             if (data.verified && data.enabled) {
-                navigate(Routes.dashboard.root);
+                navigate(Routes.bots.root);
+                return;
             }
             if (!data.verified) {
                 navigate(Routes.auth.credentials);
+                return;
             }
             if (!data.enabled) {
                 navigate(Routes.auth.confirmation);
+                return;
             }
         },
         onError: (error: any) => {
@@ -65,12 +68,15 @@ export function useSignup() {
             });
             if (data.verified && data.enabled) {
                 navigate(Routes.dashboard.root);
+                return;
             }
             if (!data.verified) {
                 navigate(Routes.auth.credentials);
+                return;
             }
             if (!data.enabled) {
                 navigate(Routes.auth.confirmation);
+                return;
             }
         },
         onError: (error) => {

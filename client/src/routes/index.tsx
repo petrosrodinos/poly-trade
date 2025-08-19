@@ -9,7 +9,7 @@ import CredentialsPage from "@/pages/auth/pages/credentials";
 import ConfirmationPage from "@/pages/auth/pages/confirmation";
 import ProtectedRoute from "./protected-route";
 import AuthLayout from "@/pages/auth/layout";
-import MainLayout from "@/components/layout/main-layout";
+import DashboardLayout from "@/components/layout/dashboard-layout";
 import { RoleTypes } from "@/features/user/interfaces/user.interface";
 
 export default function AppRoutes() {
@@ -44,7 +44,7 @@ export default function AppRoutes() {
         path="/dashboard"
         element={
           <ProtectedRoute loggedIn={true} requireVerified={true} requireEnabled={true}>
-            <MainLayout />
+            <DashboardLayout />
           </ProtectedRoute>
         }
       >

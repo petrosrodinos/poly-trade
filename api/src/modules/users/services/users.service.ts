@@ -46,6 +46,7 @@ export class UsersService {
           verified: true,
           enabled: true,
           createdAt: true,
+          updatedAt: true,
         }
       });
     } catch (error) {
