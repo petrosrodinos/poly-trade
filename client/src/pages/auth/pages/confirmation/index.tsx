@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
 import { UserMeta } from "@/features/user/interfaces/user.interface";
+import ConfirmationSkeleton from "./components/confirmation-skeleton";
 
 const Confirmation: FC = () => {
   const navigate = useNavigate();
@@ -28,6 +29,10 @@ const Confirmation: FC = () => {
   }, [user, isLoading]);
 
   const isAccountDisabled = !user?.enabled && user?.meta?.disabled === UserMeta.disabled_by_admin;
+
+  if (isLoading) {
+    return <ConfirmationSkeleton />;
+  }
 
   if (isAccountDisabled) {
     return (

@@ -6,6 +6,7 @@ interface UserStore extends LoggedInUser {
     login(user: any): void;
     logout(): void;
     updateUser(user: any): void;
+    isInitialized(): boolean;
 }
 
 const initialValues: UserStore = {
@@ -20,6 +21,7 @@ const initialValues: UserStore = {
     login: () => { },
     logout: () => { },
     updateUser: () => { },
+    isInitialized: () => false,
 };
 
 const STORE_KEY = "auth";
@@ -42,6 +44,9 @@ export const useAuthStore = create<UserStore>()(
                 },
                 updateUser: async (user: Partial<LoggedInUser>) => {
                     set((state) => ({ ...state, ...user }));
+                },
+                isInitialized: () => {
+                    return true; // Always consider initialized for simpler logic
                 },
             }),
             {

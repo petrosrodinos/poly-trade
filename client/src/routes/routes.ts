@@ -7,6 +7,8 @@ export const Routes = {
     },
     dashboard: {
         root: "/dashboard",
+        bots: "/dashboard/bots",
+        admin: "/dashboard/admin",
     },
     bots: {
         root: "/dashboard/bots",

@@ -8,7 +8,6 @@ import type { LoggedInUser } from "@/features/user/interfaces/user.interface";
 import type { SignInUser, SignUpUser } from "../interfaces/auth.interface";
 import { Routes } from "@/routes/routes";
 
-
 export function useSignin() {
     const { login } = useAuthStore((state) => state);
     const navigate = useNavigate();
@@ -26,7 +25,7 @@ export function useSignin() {
                 duration: 2000,
             });
             if (data.verified && data.enabled) {
-                navigate(Routes.bots.root);
+                navigate(Routes.dashboard.root);
                 return;
             }
             if (!data.verified) {
@@ -49,7 +48,6 @@ export function useSignin() {
     });
 }
 
-
 export function useSignup() {
     const { login } = useAuthStore((state) => state);
     const navigate = useNavigate();
@@ -66,6 +64,7 @@ export function useSignup() {
                 description: "You have successfully registered in",
                 duration: 2000,
             });
+
             if (data.verified && data.enabled) {
                 navigate(Routes.dashboard.root);
                 return;

@@ -15,29 +15,42 @@ import DashboardLayout from "@/components/layout/dashboard-layout";
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route
-        path="/auth"
-        element={
-          <ProtectedRoute loggedIn={false}>
-            <AuthLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="sign-up" element={<SignUp />} />
-        <Route path="sign-in" element={<SignIn />} />
-        <Route index element={<Navigate to="/auth/sign-in" replace />} />
-      </Route>
+      <Route path="/" element={<Navigate to="/auth/sign-in" replace />} />
 
-      <Route
-        path="/auth"
-        element={
-          <ProtectedRoute loggedIn={true}>
-            <AuthLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="credentials" element={<CredentialsPage />} />
-        <Route path="confirmation" element={<ConfirmationPage />} />
+      <Route path="/auth" element={<AuthLayout />}>
+        <Route
+          path="sign-up"
+          element={
+            <ProtectedRoute loggedIn={false}>
+              <SignUp />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="sign-in"
+          element={
+            <ProtectedRoute loggedIn={false}>
+              <SignIn />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="credentials"
+          element={
+            <ProtectedRoute loggedIn={true}>
+              <CredentialsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="confirmation"
+          element={
+            <ProtectedRoute loggedIn={true}>
+              <ConfirmationPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route index element={<Navigate to="/auth/sign-in" replace />} />
       </Route>
 
       <Route
@@ -51,17 +64,9 @@ export default function AppRoutes() {
         <Route index element={<DashboardPage />} />
         <Route path="bots" element={<BotsPage />} />
         <Route path="bots/:uuid" element={<BotPage />} />
-        <Route
-          path="admin"
-          element={
-            // <ProtectedRoute>
-            <AdminDashboardPage />
-            // </ProtectedRoute>
-          }
-        />
+        <Route path="admin" element={<AdminDashboardPage />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
-
-      <Route path="/" element={<Navigate to="/auth/sign-in" replace />} />
 
       <Route path="*" element={<Navigate to="/auth/sign-in" replace />} />
     </Routes>
