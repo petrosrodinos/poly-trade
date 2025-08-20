@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../../modules/users/services/auth.service';
 import { JwtPayload } from '../../modules/users/dto/auth.dto';
+import { JwtTokenService } from '@/shared/utils/jwt';
 
 interface AuthenticatedRequest extends Request {
     user?: JwtPayload;
@@ -8,9 +9,11 @@ interface AuthenticatedRequest extends Request {
 
 export class AuthMiddleware {
     private authService: AuthService;
+    private jwtTokenService: JwtTokenService;
 
     constructor() {
         this.authService = new AuthService();
+        this.jwtTokenService = new JwtTokenService();
     }
 
     authenticate = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
@@ -23,9 +26,9 @@ export class AuthMiddleware {
             }
 
             const token = authHeader.substring(7);
-            const payload = this.authService.verifyToken(token);
+            const payload = this.jwtTokenService.verifyToken(token);
 
-            req.user = payload;
+            req.user = payload as JwtPayload;
             next();
         } catch (error) {
             res.status(401).json({ message: 'Invalid or expired token' });

@@ -4,15 +4,14 @@ import { LoginDto, RegisterDto, JwtPayload, AuthResponse } from '../dto/auth.dto
 import prisma from '../../../core/prisma/prisma-client';
 import { v4 as uuidv4 } from 'uuid';
 import { UserErrorCodes } from '../../../shared/errors/user';
+import { JwtTokenService } from '@/shared/utils/jwt';
 
 export class AuthService {
-    private jwtSecret: string;
-    private jwtExpiresIn: string;
+    private jwtTokenService: JwtTokenService;
     private prisma: any;
 
     constructor() {
-        this.jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
-        this.jwtExpiresIn = process.env.JWT_EXPIRES_IN || '1y';
+        this.jwtTokenService = new JwtTokenService();
         this.prisma = prisma;
     }
 
@@ -36,7 +35,7 @@ export class AuthService {
             }
         });
 
-        const token = this.generateToken({
+        const token = this.jwtTokenService.generateToken({
             uuid: newUser.uuid,
             username: newUser.username,
             role: newUser.role,
@@ -72,7 +71,7 @@ export class AuthService {
             throw new Error('Invalid credentials');
         }
 
-        const token = this.generateToken({
+        const token = this.jwtTokenService.generateToken({
             uuid: user.uuid,
             username: user.username,
             role: user.role,
@@ -92,17 +91,5 @@ export class AuthService {
         };
     }
 
-    private generateToken(payload: JwtPayload): string {
-        return jwt.sign(payload, this.jwtSecret, {
-            expiresIn: this.jwtExpiresIn
-        } as jwt.SignOptions);
-    }
 
-    verifyToken(token: string): JwtPayload {
-        try {
-            return jwt.verify(token, this.jwtSecret) as JwtPayload;
-        } catch (error) {
-            throw new Error('Invalid token');
-        }
-    }
 }

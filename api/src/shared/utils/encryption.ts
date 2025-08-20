@@ -10,7 +10,7 @@ export class EncryptionService {
     private static readonly SALT_LENGTH = 16;
 
     private static getEncryptionKey(): string {
-        return process.env.ENCRYPTION_KEY || 'default-encryption-key-change-in-production';
+        return process.env.ENCRYPTION_KEY || '';
     }
 
     static async encrypt(text: string): Promise<string> {
