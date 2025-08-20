@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../../modules/users/services/auth.service';
 import { JwtPayload } from '../../modules/users/dto/auth.dto';
-import { JwtTokenService } from '@/shared/utils/jwt';
+import { JwtTokenService } from '../utils/jwt';
 
 interface AuthenticatedRequest extends Request {
     user?: JwtPayload;

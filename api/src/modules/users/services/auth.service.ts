@@ -1,10 +1,9 @@
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { LoginDto, RegisterDto, JwtPayload, AuthResponse } from '../dto/auth.dto';
+import { LoginDto, RegisterDto, AuthResponse } from '../dto/auth.dto';
 import prisma from '../../../core/prisma/prisma-client';
 import { v4 as uuidv4 } from 'uuid';
 import { UserErrorCodes } from '../../../shared/errors/user';
-import { JwtTokenService } from '@/shared/utils/jwt';
+import { JwtTokenService } from '../../../shared/utils/jwt';
 
 export class AuthService {
     private jwtTokenService: JwtTokenService;
