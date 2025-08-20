@@ -108,6 +108,18 @@ export class CryptoBotService {
         }
     }
 
+    async initializeBots(db_bots: UserBotSubscriptions[]): Promise<void> {
+        try {
+
+            for (const bot of db_bots) {
+                await this.createBot(bot);
+            }
+
+        } catch (error) {
+            throw new Error(`Failed to start all bots: ${error}`);
+        }
+    }
+
     async startAllBots(db_bots: UserBotSubscriptions[]): Promise<void> {
         try {
             const bots = Array.from(this.bots.values());

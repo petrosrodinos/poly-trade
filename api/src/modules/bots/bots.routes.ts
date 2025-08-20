@@ -15,11 +15,12 @@ router.get('/:uuid', authMiddleware.authenticate, authMiddleware.requireUser, bo
 
 router.delete('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.deleteBot);
 
+router.put('/initialize', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.initializeBots);
+
 router.put('/start-all', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.startAllBots);
 
 router.put('/stop-all', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.stopAllBots);
 
-router.put('/initialize', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.initializeBots);
 
 router.put('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.updateBot);
 

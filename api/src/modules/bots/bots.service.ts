@@ -242,7 +242,7 @@ export class BotsService {
                 return [];
             }
 
-            await this.cryptoBotService.startAllBots(bots);
+            await this.cryptoBotService.initializeBots(bots);
 
             return bots;
         } catch (error) {
