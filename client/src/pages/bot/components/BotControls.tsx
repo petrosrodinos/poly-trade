@@ -27,6 +27,8 @@ export const BotControls = ({ bot_subscription, bot, isLoading, refetch, isRefet
   const { active, uuid } = bot_subscription;
   const { symbol, active: bot_active } = bot;
 
+  const isSubscriptionActive = bot_subscription.active && bot_active;
+
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     type: "start" | "stop" | "delete";
@@ -133,16 +135,16 @@ export const BotControls = ({ bot_subscription, bot, isLoading, refetch, isRefet
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full flex items-center justify-center ${active ? "bg-green-500 shadow-green-500/50 shadow-lg animate-pulse" : "bg-muted-foreground"}`}>{active && <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>}</div>
-            <Badge variant={active ? "default" : "secondary"} className={`text-sm px-3 py-1 font-medium ${active ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800" : ""}`}>
-              {active ? "Active" : "Inactive"}
+            <div className={`w-3 h-3 rounded-full flex items-center justify-center ${isSubscriptionActive ? "bg-green-500 shadow-green-500/50 shadow-lg animate-pulse" : "bg-muted-foreground"}`}>{isSubscriptionActive && <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>}</div>
+            <Badge variant={isSubscriptionActive ? "default" : "secondary"} className={`text-sm px-3 py-1 font-medium ${isSubscriptionActive ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800" : ""}`}>
+              {isSubscriptionActive ? "Active" : bot_active && !active ? "Inactive" : "Paused"}
             </Badge>
           </div>
 
           <Separator orientation="vertical" className="h-6 hidden sm:block" />
 
           <div className="text-sm text-muted-foreground">
-            Symbol: <span className={`font-medium ${active ? "text-green-700" : "text-muted-foreground"}`}>{symbol}</span>
+            Symbol: <span className={`font-medium ${isSubscriptionActive ? "text-green-700" : "text-muted-foreground"}`}>{symbol}</span>
           </div>
         </div>
 
@@ -156,15 +158,15 @@ export const BotControls = ({ bot_subscription, bot, isLoading, refetch, isRefet
             </Button>
           </div>
 
-          <Button variant={active ? "destructive" : "default"} size="sm" onClick={handleStartStopClick} disabled={updateBotSubscriptionMutation.isPending || !bot_active} className={`w-full sm:w-auto sm:min-w-[100px] font-medium transition-all duration-200 ${active ? "bg-red-500 hover:bg-red-600 shadow-red-500/20 shadow-lg" : "bg-green-500 hover:bg-green-600 text-white shadow-green-500/20 shadow-lg"} ${!bot_active ? "opacity-50 cursor-not-allowed" : ""}`}>
+          <Button variant={isSubscriptionActive ? "destructive" : "default"} size="sm" onClick={handleStartStopClick} disabled={updateBotSubscriptionMutation.isPending || !bot_active} className={`w-full sm:w-auto sm:min-w-[100px] font-medium transition-all duration-200 ${isSubscriptionActive ? "bg-red-500 hover:bg-red-600 shadow-red-500/20 shadow-lg" : "bg-green-500 hover:bg-green-600 text-white shadow-green-500/20 shadow-lg"} ${!bot_active ? "opacity-50 cursor-not-allowed" : ""}`}>
             <div className="flex items-center justify-center gap-2 min-w-0">
               {updateBotSubscriptionMutation.isPending ? (
                 <>
                   <Spinner size="sm" />
-                  <span className="hidden sm:inline truncate">{active ? "Stopping..." : "Starting..."}</span>
-                  <span className="sm:hidden truncate">{active ? "Stop..." : "Start..."}</span>
+                  <span className="hidden sm:inline truncate">{isSubscriptionActive ? "Stopping..." : "Starting..."}</span>
+                  <span className="sm:hidden truncate">{isSubscriptionActive ? "Stop..." : "Start..."}</span>
                 </>
-              ) : active ? (
+              ) : isSubscriptionActive ? (
                 <>
                   <div className="w-2 h-2 bg-white rounded-sm flex-shrink-0"></div>
                   <span className="hidden sm:inline truncate">Stop Bot</span>

@@ -45,9 +45,9 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
             <CardTitle className="text-lg">Recent Trades</CardTitle>
             <div className="flex items-center gap-2">
               {filteredTrades.length > 0 && (
-                <div className="text-sm text-slate-500">
+                <div className="text-sm text-muted-foreground">
                   Showing {startIndex}-{endIndex} of {filteredTrades.length}
-                  {filteredTrades.length !== displayTrades.length && <span className="text-slate-400"> (filtered from {displayTrades.length})</span>}
+                  {filteredTrades.length !== displayTrades.length && <span className="text-muted-foreground/70"> (filtered from {displayTrades.length})</span>}
                 </div>
               )}
               <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)} className="flex items-center gap-1 text-xs">
@@ -63,9 +63,9 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
           </div>
 
           {showFilters && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 p-3 bg-slate-50 rounded-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 p-3 bg-muted/50 rounded-lg border">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-700">Sort by P&L</label>
+                <label className="text-xs font-medium text-foreground">Sort by P&L</label>
                 <Select value={filters.sortByPnl} onValueChange={(value) => setFilters((prev) => ({ ...prev, sortByPnl: value }))}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
@@ -79,7 +79,7 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-700">Side</label>
+                <label className="text-xs font-medium text-foreground">Side</label>
                 <Select value={filters.side} onValueChange={(value) => setFilters((prev) => ({ ...prev, side: value }))}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
@@ -93,7 +93,7 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-700">P&L</label>
+                <label className="text-xs font-medium text-foreground">P&L</label>
                 <Select value={filters.pnl} onValueChange={(value) => setFilters((prev) => ({ ...prev, pnl: value }))}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
@@ -107,7 +107,7 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-700">Date Range</label>
+                <label className="text-xs font-medium text-foreground">Date Range</label>
                 <Select value={filters.dateRange} onValueChange={(value) => setFilters((prev) => ({ ...prev, dateRange: value }))}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
@@ -123,7 +123,7 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
 
               {activeFiltersCount > 0 && (
                 <div className="col-span-full flex justify-end">
-                  <Button variant="ghost" size="sm" onClick={clearFilters} className="flex items-center gap-1 text-xs text-slate-600 hover:text-slate-900">
+                  <Button variant="ghost" size="sm" onClick={clearFilters} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
                     <X className="h-3 w-3" />
                     Clear Filters
                   </Button>
@@ -137,17 +137,17 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
         {isLoading ? (
           <div className="flex items-center justify-center py-6">
             <Spinner size="sm" />
-            <span className="ml-2 text-sm text-slate-500">Loading trades...</span>
+            <span className="ml-2 text-sm text-muted-foreground">Loading trades...</span>
           </div>
         ) : filteredTrades.length > 0 ? (
           <>
             <div className="space-y-3">
               {paginatedTrades.map((trade) => (
-                <div key={trade.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 p-3 bg-slate-50 rounded-lg">
+                <div key={trade.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 p-3 bg-muted/30 rounded-lg border hover:bg-muted/50 transition-colors">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-sm truncate">{trade.symbol}</div>
-                      <div className="text-xs text-slate-500">{formatTimestamp(trade.time)}</div>
+                      <div className="font-medium text-sm truncate text-foreground">{trade.symbol}</div>
+                      <div className="text-xs text-muted-foreground">{formatTimestamp(trade.time)}</div>
                     </div>
                     <Badge variant={trade.side === "BUY" ? "success" : "destructive"} className="text-xs w-fit">
                       {trade.side}
@@ -155,16 +155,16 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
                   </div>
                   <div className="flex flex-col gap-1 sm:block sm:text-right">
                     <div className="flex justify-between sm:block">
-                      <span className="text-xs text-slate-500 sm:hidden">Price:</span>
-                      <div className="text-sm font-medium">{formatCurrency(parseFloat(trade.price))}</div>
+                      <span className="text-xs text-muted-foreground sm:hidden">Price:</span>
+                      <div className="text-sm font-medium text-foreground">{formatCurrency(parseFloat(trade.price))}</div>
                     </div>
                     <div className="flex justify-between sm:block">
-                      <span className="text-xs text-slate-500 sm:hidden">P&L:</span>
-                      <div className={`text-xs ${parseFloat(trade.realizedPnl) >= 0 ? "text-green-600" : "text-red-600"}`}>{formatCurrency(parseFloat(trade.realizedPnl))}</div>
+                      <span className="text-xs text-muted-foreground sm:hidden">P&L:</span>
+                      <div className={`text-xs ${parseFloat(trade.realizedPnl) >= 0 ? "text-green-500" : "text-red-500"}`}>{formatCurrency(parseFloat(trade.realizedPnl))}</div>
                     </div>
                     <div className="flex justify-between sm:block">
-                      <span className="text-xs text-slate-500 sm:hidden">Commission:</span>
-                      <div className="text-xs text-slate-500">{formatCurrency(parseFloat(trade.commission))}</div>
+                      <span className="text-xs text-muted-foreground sm:hidden">Commission:</span>
+                      <div className="text-xs text-muted-foreground">{formatCurrency(parseFloat(trade.commission))}</div>
                     </div>
                   </div>
                 </div>
@@ -172,7 +172,7 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
             </div>
 
             {totalPages > 1 && (
-              <div className="pt-3 border-t border-slate-200">
+              <div className="pt-3 border-t border-border">
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>
@@ -236,7 +236,7 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
             )}
           </>
         ) : (
-          <div className="text-center py-6 text-slate-500 text-sm">
+          <div className="text-center py-6 text-muted-foreground text-sm">
             {displayTrades.length === 0 ? "No trades found" : "No trades match the current filters"}
             {activeFiltersCount > 0 && (
               <div className="mt-2">

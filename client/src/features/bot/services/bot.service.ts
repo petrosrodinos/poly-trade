@@ -4,7 +4,7 @@ import type { Bot, BotFormData, BotQuery, UpdateBotFormData } from "../interface
 
 export const getBots = async (query?: BotQuery): Promise<Bot[]> => {
     try {
-        const response = await axiosInstance.get(ApiRoutes.bot.get, { params: query });
+        const response = await axiosInstance.get(ApiRoutes.bot.prefix, { params: query });
         return response.data;
     } catch (error) {
         throw error;
@@ -60,6 +60,24 @@ export const startAllBots = async (): Promise<Bot[]> => {
 export const stopAllBots = async (): Promise<Bot[]> => {
     try {
         const response = await axiosInstance.put(ApiRoutes.bot.stop_all);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const initializeBots = async (): Promise<Bot[]> => {
+    try {
+        const response = await axiosInstance.put(ApiRoutes.bot.initialize);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getInMemoryBots = async (): Promise<Bot[]> => {
+    try {
+        const response = await axiosInstance.get(ApiRoutes.bot.memory);
         return response.data;
     } catch (error) {
         throw error;

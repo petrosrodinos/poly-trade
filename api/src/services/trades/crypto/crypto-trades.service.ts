@@ -1,5 +1,5 @@
 import { BinanceTradesService } from "../../../integrations/binance/services/binance-trades.service";
-import { TradingviewAlertWebhookDto } from "../../../webhooks/tradingview/dto/tradingview.dto";
+import { TradingviewAlertWebhookDto } from "../../../modules/tradingview/dto/tradingview.dto";
 import CryptoBotSingleton from "../models/crypto-bot-singleton.service";
 import { CryptoBotService } from "./crypto-bot.service";
 import { BotModel } from "../models/bot.model";
@@ -20,36 +20,31 @@ export class CryptoTradesService {
 
             const bot: BotModel | null = await this.cryptoBotService.getBotByUuid(uuid);
 
-            console.log('bot', bot);
+            // console.log('bot', bot);
             if (!bot || !bot.active || bot.symbol.toLowerCase() !== symbol.toLowerCase()) {
-                console.log('bot is not active');
                 return;
             }
 
-            console.log('bot is active');
-
             const subscriptions = Array.from(bot.subscriptions.values());
 
-            await Promise.all(
+            await Promise.allSettled(
                 subscriptions
-                    // .filter(subscription => subscription.active)
-                    .map(async subscription => {
-                        if (!subscription.active) {
-                            console.log('subscription is not active', subscription);
-                        } else {
-                            console.log('opening position', symbol, action, subscription.quantity, subscription.leverage);
-                            // await this.binanceTradesService.closePosition(bot.symbol);
-                            // this.binanceTradesService.openPosition(
-                            //     symbol,
-                            //     action,
-                            //     subscription.quantity,
-                            //     subscription.leverage
-                            // )
+                    .filter(s => s.active)
+                    .map(async s => {
+                        try {
+                            await this.binanceTradesService.closePosition(bot.symbol);
+                            await this.binanceTradesService.openPosition(
+                                symbol,
+                                action,
+                                s.quantity,
+                                s.leverage
+                            );
+                        } catch (err: any) {
+                            console.error(`Subscription failed`, err.message);
                         }
-
-                    }
-                    )
+                    })
             );
+
         } catch (error) {
             console.error('Error handling alert webhook', error);
             throw error;

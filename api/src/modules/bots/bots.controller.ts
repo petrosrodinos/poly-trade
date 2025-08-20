@@ -159,10 +159,22 @@ export class BotsController {
         }
     };
 
-
-    getInternalBots = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    initializeBots = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
-            const bots = await this.botsService.getInternalBots();
+            const bots = await this.botsService.initializeBots();
+            res.status(200).json(bots);
+        } catch (error: any) {
+            res.status(500).json({
+                message: 'Failed to initialize bots',
+                error: error.message
+            });
+        }
+    };
+
+
+    getInMemoryBots = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        try {
+            const bots = await this.botsService.getInMemoryBots();
             res.status(200).json(bots);
         } catch (error: any) {
             res.status(500).json({

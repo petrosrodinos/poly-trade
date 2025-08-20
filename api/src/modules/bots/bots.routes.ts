@@ -9,7 +9,7 @@ router.post('/', authMiddleware.authenticate, authMiddleware.requireAdmin, botsC
 
 router.get('/', authMiddleware.authenticate, authMiddleware.requireUser, botsController.getAllBots);
 
-router.get('/internal', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.getInternalBots);
+router.get('/memory', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.getInMemoryBots);
 
 router.get('/:uuid', authMiddleware.authenticate, authMiddleware.requireUser, botsController.getBotByUuid);
 
@@ -18,6 +18,8 @@ router.delete('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin
 router.put('/start-all', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.startAllBots);
 
 router.put('/stop-all', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.stopAllBots);
+
+router.put('/initialize', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.initializeBots);
 
 router.put('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, botsController.updateBot);
 

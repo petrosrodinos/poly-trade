@@ -27,9 +27,6 @@ export class TradingviewService {
 
             this.webhookCache.markAsProcessed(uuid, time);
 
-            const timeDifference = new Date(data.time).getTime() - new Date().getTime();
-            console.log('timeDifference', timeDifference);
-
             await this.cryptoTradesService.handleAlertWebhook(data);
 
             return {

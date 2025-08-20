@@ -1,10 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { Play, Square, Bot as BotIcon } from "lucide-react";
+import { Play, Square, Bot as BotIcon, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import type { Bot } from "@/features/bot/interfaces/bot.interface";
-import { useStartAllBots, useStopAllBots } from "@/features/bot/hooks/use-bot";
+import { useInitializeBots, useStartAllBots, useStopAllBots } from "@/features/bot/hooks/use-bot";
+import { InMemoryBotsModal } from "./in-memory-bots-modal";
 
 interface BotsStatusProps {
   bots: Bot[];
@@ -14,6 +15,7 @@ interface BotsStatusProps {
 export const BotsStatus = ({ bots, className }: BotsStatusProps) => {
   const { mutate: startAllBots, isPending: isStartingAllBots } = useStartAllBots();
   const { mutate: stopAllBots, isPending: isStoppingAllBots } = useStopAllBots();
+  const { mutate: initializeBots, isPending: isInitializingBots } = useInitializeBots();
 
   const [showStartDialog, setShowStartDialog] = useState(false);
   const [showStopDialog, setShowStopDialog] = useState(false);
@@ -30,6 +32,10 @@ export const BotsStatus = ({ bots, className }: BotsStatusProps) => {
   const handleStopAllBots = () => {
     stopAllBots();
     setShowStopDialog(false);
+  };
+
+  const handleInitializeBots = () => {
+    initializeBots();
   };
 
   return (
@@ -65,6 +71,13 @@ export const BotsStatus = ({ bots, className }: BotsStatusProps) => {
             <Square className={`w-4 h-4 mr-2 ${isStoppingAllBots ? "animate-spin" : ""}`} />
             Stop All Bots
           </Button>
+          <div className="grid grid-cols-2 gap-2">
+            <Button onClick={handleInitializeBots} disabled={isInitializingBots} className="w-full bg-yellow-600 hover:bg-yellow-700 text-white" size="sm">
+              <RotateCcw className={`w-4 h-4 mr-2 ${isInitializingBots ? "animate-spin" : ""}`} />
+              Initialize Bots
+            </Button>
+            <InMemoryBotsModal />
+          </div>
         </div>
       </CardContent>
 

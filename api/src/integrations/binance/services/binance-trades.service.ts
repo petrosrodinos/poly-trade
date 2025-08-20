@@ -55,6 +55,9 @@ export class BinanceTradesService {
             }
 
 
+            logger.info(`Opened ${side} position for ${symbol} with quantity ${quantity} and leverage ${leverageValue}`);
+
+
             return {
                 symbol: order.symbol,
                 orderId: order.orderId,

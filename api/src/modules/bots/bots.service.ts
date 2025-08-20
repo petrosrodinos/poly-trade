@@ -107,15 +107,16 @@ export class BotsService {
 
             if (existingBot.active !== data.active) {
                 const [, updatedBot] = await Promise.all([
-                    this.prisma.botSubscription.updateMany({
-                        where: {
-                            bot_uuid: uuid,
-                            active: !data.active
-                        },
-                        data: {
-                            active: data.active
-                        }
-                    }),
+                    Promise.resolve(null),
+                    // this.prisma.botSubscription.updateMany({
+                    //     where: {
+                    //         bot_uuid: uuid,
+                    //         active: !data.active
+                    //     },
+                    //     data: {
+                    //         active: data.active
+                    //     }
+                    // }),
                     this.prisma.bot.update({
                         where: {
                             uuid: uuid
@@ -218,6 +219,37 @@ export class BotsService {
         }
     }
 
+    async initializeBots(): Promise<UserBotSubscriptions[]> {
+        try {
+            const bots = await this.prisma.bot.findMany({
+                include: {
+                    subscriptions: {
+                        select: {
+                            uuid: true,
+                            bot_uuid: true,
+                            user_uuid: true,
+                            amount: true,
+                            quantity: true,
+                            leverage: true,
+                            active: true,
+                            createdAt: true,
+                        }
+                    }
+                }
+            });
+
+            if (bots.length === 0) {
+                return [];
+            }
+
+            await this.cryptoBotService.startAllBots(bots);
+
+            return bots;
+        } catch (error) {
+            return [];
+        }
+    }
+
 
     async startOrStopBots(active: boolean): Promise<UserBotSubscriptions[]> {
         try {
@@ -254,19 +286,19 @@ export class BotsService {
                 }
             })
 
-            await Promise.all(
-                bots.map((bot: { uuid: string; }) =>
-                    this.prisma.botSubscription.updateMany({
-                        where: {
-                            bot_uuid: bot.uuid,
-                            active: !active
-                        },
-                        data: {
-                            active: active
-                        }
-                    })
-                )
-            );
+            // await Promise.all(
+            //     bots.map((bot: { uuid: string; }) =>
+            //         this.prisma.botSubscription.updateMany({
+            //             where: {
+            //                 bot_uuid: bot.uuid,
+            //                 active: !active
+            //             },
+            //             data: {
+            //                 active: active
+            //             }
+            //         })
+            //     )
+            // );
 
             return bots;
         } catch (error) {
@@ -274,7 +306,7 @@ export class BotsService {
         }
     }
 
-    async getInternalBots(): Promise<any[]> {
+    async getInMemoryBots(): Promise<any[]> {
         return await this.cryptoBotService.getBotsWithSubscriptions();
     }
 

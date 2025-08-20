@@ -8,7 +8,7 @@ import botsRouter from './modules/bots/bots.routes';
 import botSubscriptionsRouter from './modules/bot-subscriptions/bot-subscriptions.routes';
 import credentialsRouter from './modules/credentials/credentials.routes';
 import { logger } from './shared/utils/logger';
-import { tradingviewRouter } from './webhooks/tradingview/tradingview.routes';
+import { tradingviewRouter } from './modules/tradingview/tradingview.routes';
 import { botService } from './modules/bots/bots.service';
 import prisma from './core/prisma/prisma-client';
 import { accountRouter } from './modules/account/account.routes';

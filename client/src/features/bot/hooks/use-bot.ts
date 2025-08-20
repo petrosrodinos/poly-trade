@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getBots, createBot, deleteBot, startAllBots, stopAllBots, updateBot, getBot } from "../services/bot.service";
+import { getBots, createBot, deleteBot, startAllBots, stopAllBots, updateBot, getBot, initializeBots, getInMemoryBots } from "../services/bot.service";
 import { toast } from "@/hooks/use-toast";
 import type { BotQuery } from "../interfaces/bot.interface";
 
@@ -123,5 +123,21 @@ export const useStopAllBots = () => {
                 variant: "error",
             });
         },
+    });
+}
+
+export const useInitializeBots = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: initializeBots,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["bots"] });
+        },
+    });
+}
+
+export const useGetInMemoryBots = () => {
+    return useMutation({
+        mutationFn: getInMemoryBots,
     });
 }

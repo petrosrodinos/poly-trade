@@ -57,7 +57,7 @@ export class CryptoBotService {
             if (bot) {
                 bot.active = true;
                 this.bots.set(bot_uuid, new BotModel(bot));
-                await this.cryptoSubscriptionService.startAllSubscriptions(bot_uuid);
+                // await this.cryptoSubscriptionService.startAllSubscriptions(bot_uuid);
             }
 
         } catch (error) {
@@ -74,7 +74,7 @@ export class CryptoBotService {
             if (bot) {
                 bot.active = false;
                 this.bots.set(bot_uuid, new BotModel(bot));
-                await this.cryptoSubscriptionService.stopAllSubscriptions(bot_uuid);
+                // await this.cryptoSubscriptionService.stopAllSubscriptions(bot_uuid);
             }
 
         } catch (error) {

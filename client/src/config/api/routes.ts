@@ -21,11 +21,12 @@ export const ApiRoutes = {
     },
     bot: {
         prefix: "/bots",
-        get: "/bots",
         start: "/bots/start",
         stop: "/bots/stop",
         start_all: "/bots/start-all",
         stop_all: "/bots/stop-all",
+        memory: "/bots/memory",
+        initialize: "/bots/initialize",
         bot_subscription: (uuid: string) => `/bots/${uuid}/user/subscription`
     },
     bot_subscription: {
