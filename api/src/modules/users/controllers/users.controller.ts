@@ -43,7 +43,7 @@ export class UsersController {
 
   deleteUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
-      const uuid = req.user!.uuid;
+      const uuid = req.params.uuid;
       const result = await this.usersService.deleteUser(uuid);
       res.status(200).json(result);
     } catch (error: any) {

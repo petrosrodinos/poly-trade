@@ -3,11 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { User, CalendarDays, DollarSign, Wallet, Copy, Check, UserX, UserCheck, Zap } from "lucide-react";
+import { User, CalendarDays, DollarSign, Wallet, Copy, Check, UserX, UserCheck, Zap, Trash2 } from "lucide-react";
 import type { UserAdmin } from "@/features/user/interfaces/user.interface";
 import { useFormatters } from "@/hooks/useFormatters";
 import { useState } from "react";
-import { useUpdateUser } from "@/features/user/hooks/use-user";
+import { useUpdateUser, useDeleteUser } from "@/features/user/hooks/use-user";
 import { Spinner } from "@/components/ui/spinner";
 import { UserMeta } from "@/features/user/interfaces/user.interface";
 
@@ -19,7 +19,9 @@ export const UserCard = ({ user }: UserCardProps) => {
   const { formatCurrency, formatPrice, formatDateTime } = useFormatters();
   const [isCopied, setIsCopied] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { mutate: updateUserMutation, isPending } = useUpdateUser();
+  const { mutate: deleteUserMutation, isPending: isDeletePending } = useDeleteUser();
 
   const getInitials = (username: string) => {
     return username.charAt(0).toUpperCase();
@@ -55,6 +57,15 @@ export const UserCard = ({ user }: UserCardProps) => {
     setIsDialogOpen(true);
   };
 
+  const openDeleteDialog = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDelete = () => {
+    deleteUserMutation(user.uuid);
+    setIsDeleteDialogOpen(false);
+  };
+
   return (
     <Card className="w-full hover:shadow-lg transition-shadow duration-200 bg-card border-border">
       <CardHeader className="pb-4">
@@ -67,6 +78,9 @@ export const UserCard = ({ user }: UserCardProps) => {
               <div className="flex items-center gap-2 mb-2">
                 <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 <h3 className="text-base sm:text-lg font-semibold text-foreground truncate">{user.username}</h3>
+                <Button variant="outline" size="sm" className="text-xs h-7 w-7 p-0 flex-shrink-0 ml-auto" onClick={openDeleteDialog}>
+                  <Trash2 className="h-3 w-3" />
+                </Button>
               </div>
               <div className="flex gap-2 flex-wrap">
                 <Badge variant={user.enabled ? "default" : "destructive"} className="text-xs">
@@ -176,6 +190,8 @@ export const UserCard = ({ user }: UserCardProps) => {
       </CardContent>
 
       <ConfirmationDialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} onConfirm={handleToggleEnabled} title={user.enabled ? "Disable User" : "Enable User"} description={`Are you sure you want to ${user.enabled ? "disable" : "enable"} user "${user.username}"?${user.enabled ? " This will prevent them from accessing their account." : ""}`} confirmText={user.enabled ? "Disable" : "Enable"} variant={user.enabled ? "destructive" : "default"} isLoading={isPending} />
+
+      <ConfirmationDialog isOpen={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)} onConfirm={handleDelete} title="Delete User" description={`Are you sure you want to delete user "${user.username}"? This action cannot be undone and will permanently remove all user data, subscriptions, and trading history.`} confirmText="Delete" variant="destructive" isLoading={isDeletePending} />
     </Card>
   );
 };

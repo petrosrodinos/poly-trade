@@ -14,8 +14,8 @@ router.get('/me', authMiddleware.authenticate, usersController.getMe);
 router.get('/', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.getUsers);
 router.put('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.updateUser);
 
-router.delete('/', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.deleteAllUsers);
 router.delete('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.deleteUser);
+router.delete('/', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.deleteAllUsers);
 
 
 

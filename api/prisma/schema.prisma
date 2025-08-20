@@ -62,7 +62,7 @@ model BotSubscription {
   updatedAt DateTime @updatedAt @default(now())
 
   bot       Bot      @relation(fields: [bot_uuid], references: [uuid], onDelete: Cascade)
-  user      User     @relation(fields: [user_uuid], references: [uuid])
+  user      User     @relation(fields: [user_uuid], references: [uuid], onDelete: Cascade)
 
   @@unique([bot_uuid, user_uuid])
 }

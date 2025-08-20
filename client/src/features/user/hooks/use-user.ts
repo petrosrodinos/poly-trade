@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMe, getUsers, updateUser } from "../services/users.service";
+import { deleteUser, getMe, getUsers, updateUser } from "../services/users.service";
+import { toast } from "@/hooks/use-toast";
 
 export const useGetMe = () => {
     return useQuery({
@@ -25,5 +26,25 @@ export const useGetUsers = () => {
     return useQuery({
         queryKey: ["users"],
         queryFn: () => getUsers(),
+    });
+};
+
+export const useDeleteUser = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: deleteUser,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+            toast({
+                title: "User deleted",
+                description: "User has been deleted",
+            });
+        },
+        onError: (error) => {
+            toast({
+                title: "Error",
+                description: error.message,
+            });
+        },
     });
 };

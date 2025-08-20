@@ -3,11 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { CalendarDays, DollarSign, Wallet, Copy, Check, UserX, UserCheck, Zap } from "lucide-react";
+import { CalendarDays, DollarSign, Wallet, Copy, Check, UserX, UserCheck, Zap, Trash2 } from "lucide-react";
 import type { UserAdmin } from "@/features/user/interfaces/user.interface";
 import { useFormatters } from "@/hooks/useFormatters";
 import { useState } from "react";
-import { useUpdateUser } from "@/features/user/hooks/use-user";
+import { useUpdateUser, useDeleteUser } from "@/features/user/hooks/use-user";
 import { Spinner } from "@/components/ui/spinner";
 import { UserMeta } from "@/features/user/interfaces/user.interface";
 
@@ -19,7 +19,9 @@ export const UserTable = ({ users }: UserTableProps) => {
   const { formatCurrency, formatPrice, formatDateTime } = useFormatters();
   const [isCopied, setIsCopied] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserAdmin | null>(null);
+  const [userToDelete, setUserToDelete] = useState<UserAdmin | null>(null);
   const { mutate: updateUserMutation, isPending } = useUpdateUser();
+  const { mutate: deleteUserMutation, isPending: isDeletePending } = useDeleteUser();
 
   const getInitials = (username: string) => {
     return username.charAt(0).toUpperCase();
@@ -56,6 +58,21 @@ export const UserTable = ({ users }: UserTableProps) => {
 
   const closeConfirmDialog = () => {
     setSelectedUser(null);
+  };
+
+  const openDeleteDialog = (user: UserAdmin) => {
+    setUserToDelete(user);
+  };
+
+  const closeDeleteDialog = () => {
+    setUserToDelete(null);
+  };
+
+  const handleDelete = () => {
+    if (userToDelete) {
+      deleteUserMutation(userToDelete.uuid);
+    }
+    closeDeleteDialog();
   };
 
   return (
@@ -160,6 +177,9 @@ export const UserTable = ({ users }: UserTableProps) => {
                         </>
                       )}
                     </Button>
+                    <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => openDeleteDialog(user)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -169,6 +189,8 @@ export const UserTable = ({ users }: UserTableProps) => {
       </Table>
 
       {selectedUser && <ConfirmationDialog isOpen={!!selectedUser} onClose={closeConfirmDialog} onConfirm={() => handleToggleEnabled(selectedUser)} title={selectedUser.enabled ? "Disable User" : "Enable User"} description={`Are you sure you want to ${selectedUser.enabled ? "disable" : "enable"} user "${selectedUser.username}"?${selectedUser.enabled ? " This will prevent them from accessing their account." : ""}`} confirmText={selectedUser.enabled ? "Disable" : "Enable"} variant={selectedUser.enabled ? "destructive" : "default"} isLoading={isPending} />}
+
+      {userToDelete && <ConfirmationDialog isOpen={!!userToDelete} onClose={closeDeleteDialog} onConfirm={handleDelete} title="Delete User" description={`Are you sure you want to delete user "${userToDelete.username}"? This action cannot be undone and will permanently remove all user data, subscriptions, and trading history.`} confirmText="Delete" variant="destructive" isLoading={isDeletePending} />}
     </div>
   );
 };

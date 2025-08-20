@@ -17,3 +17,10 @@ export const getMe = async () => {
     const response = await axiosInstance.get(`${ApiRoutes.users.prefix}/me`);
     return response.data;
 };
+
+export const deleteUser = async (uuid: string) => {
+    const response = await axiosInstance.delete(`${ApiRoutes.users.prefix}/${uuid}`);
+    return response.data;
+};
+
+
