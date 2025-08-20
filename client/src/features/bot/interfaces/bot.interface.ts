@@ -1,4 +1,3 @@
-import type { FuturesTrade } from "@/features/account/interfaces/account.interfaces";
 
 export interface Bot {
     id: number;
@@ -8,11 +7,6 @@ export interface Bot {
     visible: boolean;
     symbol: string;
     timeframe: string;
-    amount: number;
-    leverage: number;
-    profit?: number;
-    trades?: FuturesTrade[];
-    quantity?: number;
     created_at: string;
 }
 

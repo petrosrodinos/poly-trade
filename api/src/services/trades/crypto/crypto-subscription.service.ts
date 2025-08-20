@@ -149,6 +149,36 @@ export class CryptoSubscriptionService {
         }
     }
 
+    async stopAllSubscriptionsByUser(user_uuid: string): Promise<void> {
+        try {
+            const bots = this.cryptoBotService.bots.values();
+            for (const bot of bots) {
+                for (const subscription of bot.subscriptions.values()) {
+                    if (subscription && subscription.user_uuid === user_uuid && subscription.active) {
+                        await this.stopSubscription(bot.uuid, subscription);
+                    }
+                }
+            }
+        } catch (error) {
+            throw new Error(`Failed to stop all subscriptions by user: ${error}`);
+        }
+    }
+
+    async startAllSubscriptionsByUser(user_uuid: string): Promise<void> {
+        try {
+            const bots = this.cryptoBotService.bots.values();
+            for (const bot of bots) {
+                for (const subscription of bot.subscriptions.values()) {
+                    if (subscription && subscription.user_uuid === user_uuid && !subscription.active) {
+                        await this.startSubscription(bot.uuid, subscription);
+                    }
+                }
+            }
+        } catch (error) {
+            throw new Error(`Failed to start all subscriptions by user: ${error}`);
+        }
+    }
+
 
 
 }

@@ -2,10 +2,10 @@ import { useState } from "react";
 import { UserCard } from "./user-card";
 import { UserTable } from "./user-table";
 import { ViewToggle } from "./view-toggle";
-import type { User as UserInterface } from "@/features/user/interfaces/user.interface";
+import type { UserAdmin } from "@/features/user/interfaces/user.interface";
 
 interface UsersListProps {
-  users: UserInterface[];
+  users: UserAdmin[];
 }
 
 export const UsersList = ({ users }: UsersListProps) => {

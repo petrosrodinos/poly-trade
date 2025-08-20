@@ -15,11 +15,8 @@ export const UpdateBotSubscriptionSchema = z.object({
 });
 
 export const BotSubscriptionQuerySchema = z.object({
-    page: z.number().min(1).optional().default(1),
-    limit: z.number().min(1).max(100).optional().default(10),
-    bot_uuid: z.string().optional(),
     active: z.boolean().optional(),
-    user_id: z.number().optional()
+    user_uuid: z.string().optional()
 });
 
 export type CreateBotSubscriptionDto = z.infer<typeof CreateBotSubscriptionSchema>;

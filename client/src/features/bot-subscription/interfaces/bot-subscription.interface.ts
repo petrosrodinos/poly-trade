@@ -9,9 +9,8 @@ export interface BotSubscription {
     amount: number;
     leverage: number;
     active: boolean;
-    enabled: boolean;
-    profit: number;
-    trades: FuturesTrade[];
+    profit?: number;
+    trades?: FuturesTrade[];
     createdAt: string;
     bot?: Bot;
 }

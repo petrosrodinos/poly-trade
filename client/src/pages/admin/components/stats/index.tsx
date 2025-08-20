@@ -97,6 +97,10 @@ const AdminStats = () => {
           </div>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Total Users</span>
+              <span className="font-medium">{stats.total_users}</span>
+            </div>
+            <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Enabled Users</span>
               <span className="font-medium">{stats.enabled_users}</span>
             </div>

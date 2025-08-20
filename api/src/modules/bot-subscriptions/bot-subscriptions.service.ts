@@ -94,10 +94,6 @@ export class BotSubscriptionsService {
 
             where.user_uuid = user_uuid;
 
-            if (query.bot_uuid) {
-                where.bot_uuid = query.bot_uuid;
-            }
-
             if (query.active !== undefined) {
                 where.active = query.active;
             }
@@ -108,7 +104,6 @@ export class BotSubscriptionsService {
                     include: {
                         bot: {
                             select: {
-                                id: true,
                                 uuid: true,
                                 symbol: true,
                                 timeframe: true,
@@ -233,9 +228,10 @@ export class BotSubscriptionsService {
                     where: { user_uuid },
                     data: { active: true }
                 });
+
+                await this.cryptoSubscriptionService.startAllSubscriptionsByUser(user_uuid);
             }
 
-            // TODO: Start all user subscriptions
 
             return true;
         } catch (error) {
@@ -256,9 +252,10 @@ export class BotSubscriptionsService {
                     where: { user_uuid },
                     data: { active: false }
                 });
+
+                await this.cryptoSubscriptionService.stopAllSubscriptionsByUser(user_uuid);
             }
 
-            // TODO: Stop all user subscriptions
 
             return true;
         } catch (error) {

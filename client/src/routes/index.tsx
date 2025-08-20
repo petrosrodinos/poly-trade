@@ -10,7 +10,7 @@ import ConfirmationPage from "@/pages/auth/pages/confirmation";
 import ProtectedRoute from "./protected-route";
 import AuthLayout from "@/pages/auth/layout";
 import DashboardLayout from "@/components/layout/dashboard-layout";
-import { RoleTypes } from "@/features/user/interfaces/user.interface";
+// import { RoleTypes } from "@/features/user/interfaces/user.interface";
 
 export default function AppRoutes() {
   return (

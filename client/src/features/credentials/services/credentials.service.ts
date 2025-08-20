@@ -12,11 +12,4 @@ export const getUserCredentials = async (): Promise<Credentials> => {
     return response.data;
 }
 
-export const updateCredentials = async (uuid: string, data: Partial<CreateCredentialsRequest>): Promise<Credentials> => {
-    const response = await axiosInstance.put(ApiRoutes.credentials.update(uuid), data);
-    return response.data;
-}
 
-export const deleteCredentials = async (uuid: string): Promise<void> => {
-    await axiosInstance.delete(ApiRoutes.credentials.delete(uuid));
-}

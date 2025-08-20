@@ -35,11 +35,8 @@ export class BotSubscriptionsController {
     getAllBotSubscriptions = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
             const queryParams = {
-                page: parseInt(req.query.page as string) || 1,
-                limit: parseInt(req.query.limit as string) || 10,
-                bot_id: req.query.bot_id ? parseInt(req.query.bot_id as string) : undefined,
                 active: req.query.active ? req.query.active === 'true' : undefined,
-                user_id: req.query.user_id ? parseInt(req.query.user_id as string) : undefined
+                user_uuid: req.query.user_uuid ? req.query.user_uuid as string : undefined
             };
 
             const validatedQuery = BotSubscriptionQuerySchema.parse(queryParams);

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
-import { createBotSubscription, deleteBotSubscription, updateBotSubscription, startAllBotSubscriptions, stopAllBotSubscriptions, getBotSubscriptionByBotUuid } from "../services/bot-subscription.service";
+import { createBotSubscription, deleteBotSubscription, updateBotSubscription, startAllBotSubscriptions, stopAllBotSubscriptions, getBotSubscriptionByBotUuid, getBotSubscriptions } from "../services/bot-subscription.service";
 
 
 export const useCreateBotSubscription = (bot_uuid: string) => {
@@ -25,6 +25,13 @@ export const useCreateBotSubscription = (bot_uuid: string) => {
         },
     });
 };
+
+export const useGetBotSubscriptions = () => {
+    return useQuery({
+        queryKey: ["bot-subscriptions"],
+        queryFn: getBotSubscriptions,
+    });
+}
 
 
 export const useBotSubscriptionByBotUuid = (bot_uuid: string) => {

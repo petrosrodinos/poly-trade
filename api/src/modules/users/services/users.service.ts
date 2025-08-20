@@ -1,13 +1,17 @@
 import prisma from '../../../core/prisma/prisma-client';
 import { User } from '@prisma/client';
 import { UpdateUserDto } from '../dto/auth.dto';
+import { BotSubscriptionsService } from '../../bot-subscriptions/bot-subscriptions.service';
 
 export class UsersService {
 
   private prisma: any;
+  private botSubscriptionsService: BotSubscriptionsService;
 
   constructor() {
     this.prisma = prisma;
+    this.botSubscriptionsService = new BotSubscriptionsService();
+
   }
 
 
@@ -47,7 +51,6 @@ export class UsersService {
           verified: true,
           enabled: true,
           createdAt: true,
-          updatedAt: true,
           meta: true,
         }
       });
@@ -73,6 +76,12 @@ export class UsersService {
           ...user.meta,
           ...data.meta
         };
+      }
+
+      if (!data.enabled) {
+        await this.botSubscriptionsService.stopAllBotSubscriptions(uuid);
+      } else {
+        await this.botSubscriptionsService.startAllBotSubscriptions(uuid);
       }
 
       return await this.prisma.user.update({
