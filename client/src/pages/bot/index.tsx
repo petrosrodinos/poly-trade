@@ -44,7 +44,7 @@ const BotPage = () => {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 pb-20">
+    <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 pb-40">
       <Button variant="ghost" size="sm" onClick={() => navigate(Routes.bots.root)} className="mb-2">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back
@@ -60,6 +60,7 @@ const BotPage = () => {
               <BotControls bot_subscription={botSubscription || ({} as BotSubscription)} bot={bot || ({} as Bot)} isLoading={false} refetch={handleRefetch} isRefetching={isRefetching} />
               <BotInfo bot={bot || ({} as Bot)} bot_subscription={botSubscription || ({} as BotSubscription)} isLoading={false} />
               <BotTrades trades={botSubscription?.trades || []} isLoading={false} />
+              <div className="h-20"></div>
             </>
           )}
         </>

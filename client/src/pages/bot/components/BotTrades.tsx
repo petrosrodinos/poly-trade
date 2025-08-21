@@ -38,7 +38,7 @@ export const BotTrades = ({ trades, isLoading }: TradesTableProps) => {
   });
 
   return (
-    <Card className="h-fit">
+    <Card className="h-fit mb-8">
       <CardHeader className="pb-3">
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
