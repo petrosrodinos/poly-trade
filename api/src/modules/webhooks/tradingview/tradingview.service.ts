@@ -1,6 +1,6 @@
-import { CryptoTradesService } from "../../services/trades/crypto/crypto-trades.service";
-import { logger } from "../../shared/utils/logger";
-import { WebhookCacheService } from "../../shared/services/webhook-cache.service";
+import { CryptoTradesService } from "../../../services/trades/crypto/crypto-trades.service";
+import { logger } from "../../../shared/utils/logger";
+import { WebhookCacheService } from "../../../shared/services/webhook-cache.service";
 import { TradingviewAlertWebhookDto } from "./dto/tradingview.dto";
 
 export class TradingviewService {

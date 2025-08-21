@@ -111,4 +111,13 @@ export class BinanceAccountService {
         }
     }
 
+    async ping(): Promise<any> {
+        try {
+            const response = await this.binanceClient.futuresPing();
+            return response;
+        } catch (error) {
+            throw new Error(`Failed to ping Binance: ${error}`);
+        }
+    }
+
 }

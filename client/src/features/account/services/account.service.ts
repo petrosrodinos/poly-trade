@@ -29,14 +29,7 @@ export const getAccountStatus = async (): Promise<AccountSummary> => {
   }
 };
 
-export const getAccountIncomeChart = async (): Promise<AccountIncomeChart[]> => {
-  try {
-    const response = await axiosInstance.get(ApiRoutes.account.income_chart);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
+
 
 export const getIncomeChart = async (timeframe: Timeframe = "1minute"): Promise<AccountIncomeChart[]> => {
   try {

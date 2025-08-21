@@ -10,41 +10,41 @@ export class BinanceClient {
 
     constructor() {
         const useTestnet = process.env.BINANCE_USE_TESTNET === 'true';
-        let apiKey;
-        let secretKey;
-
-        if (useTestnet) {
-            apiKey = process.env.BINANCE_API_KEY_TEST
-            secretKey = process.env.BINANCE_SECRET_KEY_TEST
-        } else {
-            apiKey = process.env.BINANCE_API_KEY_LIVE
-            secretKey = process.env.BINANCE_SECRET_KEY_LIVE
-        }
+        let apiKey = process.env.BINANCE_ADMIN_API_KEY
+        let secretKey = process.env.BINANCE_ADMIN_SECRET_KEY
 
         if (!apiKey || !secretKey) {
-            throw new Error('Binance API credentials are required. Please set BINANCE_API_KEY and BINANCE_SECRET_KEY environment variables.');
+            throw new Error('Binance API credentials are required. Please set BINANCE_ADMIN_API_KEY and BINANCE_ADMIN_SECRET_KEY environment variables.');
         }
+
+        const baseUrlFutures = useTestnet
+            ? 'https://testnet.binancefuture.com/fapi/'
+            : 'https://fapi.binance.com/fapi/';
 
         this.binance = new Binance().options({
             APIKEY: apiKey,
             APISECRET: secretKey,
-            test: useTestnet,
-            verbose: process.env.NODE_ENV === 'development',
             useServerTime: true,
-            reconnect: true,
             recvWindow: 60000,
             futures: true,
+            reconnect: true,
             urls: {
-                base: 'https://testnet.binancefuture.com',
+                base: "https://api.binance.com/api/",
+                fapi: baseUrlFutures,
+                sapi: "https://api.binance.com/sapi/",
+                wapi: "https://api.binance.com/wapi/",
+                stream: useTestnet
+                    ? "wss://stream.binancefuture.com/ws"
+                    : "wss://fstream.binance.com/ws",
             },
-            log: (msg: string) => {
-                console.log(`[Binance${useTestnet ? ' Testnet' : ''}]: ${msg}`);
-            }
         });
+
+        // this.binance.baseURL = baseUrl;
+        // this.binance.fapi = baseUrl;
+        // this.binance.futures = true;
 
         logger.debug(`Binance client initialized successfully (${useTestnet ? 'Testnet' : 'Mainnet'} mode)`);
     }
-
 
     public static getInstance(): BinanceClient {
         if (!BinanceClient.instance) {

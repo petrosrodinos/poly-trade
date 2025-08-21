@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { TradingviewService } from './tradingview.service';
-import { logger } from '../../shared/utils/logger';
+import { logger } from '../../../shared/utils/logger';
 import { TradingviewAlertWebhookSchema } from './dto/tradingview.dto';
 
 export class TradingviewController {

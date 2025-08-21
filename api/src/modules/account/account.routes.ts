@@ -10,6 +10,6 @@ router.get('/trades', accountController.getFuturesUserTrades);
 router.get('/info', accountController.getAccountFutures);
 router.get('/income', accountController.getFuturesIncome);
 router.get('/income/chart', accountController.getAccountIncomeChart);
-
+router.get('/ping', accountController.ping);
 
 export { router as accountRouter };

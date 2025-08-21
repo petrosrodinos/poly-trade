@@ -67,18 +67,20 @@ export const UserCard = ({ user }: UserCardProps) => {
   };
 
   return (
-    <Card className="w-full hover:shadow-lg transition-shadow duration-200 bg-card border-border">
+    <Card className="w-full hover:shadow-lg transition-shadow duration-200 bg-card border-border overflow-hidden">
       <CardHeader className="pb-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 bg-primary/10 flex-shrink-0">
+        <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 sm:gap-4 w-full">
+          <div className="flex items-start gap-3 min-w-0">
+            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 bg-primary/10 flex-shrink-0 mt-1">
               <AvatarFallback className="bg-primary/20 text-primary font-semibold text-sm sm:text-base">{getInitials(user.username)}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                <h3 className="text-base sm:text-lg font-semibold text-foreground truncate">{user.username}</h3>
-                <Button variant="outline" size="sm" className="text-xs h-7 w-7 p-0 flex-shrink-0 ml-auto" onClick={openDeleteDialog}>
+              <div className="flex items-start gap-2 mb-2 w-full">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <h3 className="text-base sm:text-lg font-semibold text-foreground truncate">{user.username}</h3>
+                </div>
+                <Button variant="outline" size="sm" className="text-xs h-7 w-7 p-0 flex-shrink-0 ml-2" onClick={openDeleteDialog}>
                   <Trash2 className="h-3 w-3" />
                 </Button>
               </div>
@@ -92,7 +94,7 @@ export const UserCard = ({ user }: UserCardProps) => {
               </div>
             </div>
           </div>
-          <div className="flex justify-end sm:justify-center w-full sm:w-auto">
+          <div className="flex justify-end w-full sm:w-auto">
             <Button variant={user.enabled ? "destructive" : "default"} size="sm" disabled={isPending} className="text-xs w-full sm:w-auto" onClick={openConfirmDialog}>
               {isPending ? (
                 <Spinner className="h-4 w-4" />

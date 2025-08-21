@@ -87,4 +87,17 @@ export class BinanceAccountServiceClass {
         }
     }
 
+    ping = async (): Promise<{ message: string; response: any; timestamp: string }> => {
+        try {
+            const response = await this.binanceAccountService.ping();
+            return {
+                message: 'pong',
+                response,
+                timestamp: new Date().toISOString()
+            };
+        } catch (error: any) {
+            throw new Error(`Failed to ping Binance: ${error}`);
+        }
+    }
+
 }

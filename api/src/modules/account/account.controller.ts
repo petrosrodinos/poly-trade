@@ -74,5 +74,17 @@ export class AccountController {
         }
     }
 
+    ping = async (req: Request, res: Response) => {
+        try {
+            const result = await this.binanceAccountService.ping();
+            res.status(200).json(result);
+        } catch (error: any) {
+            res.status(500).json({
+                message: 'Error',
+                error: error.message,
+                timestamp: new Date().toISOString()
+            });
+        }
+    }
 
 }

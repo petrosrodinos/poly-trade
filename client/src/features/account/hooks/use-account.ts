@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAccountIncome, getAccountIncomeChart, getAccountStatus, getAccountTrades, getIncomeChart } from "../services/account.service";
+import { getAccountIncome, getAccountStatus, getAccountTrades, getIncomeChart } from "../services/account.service";
 import type { Timeframe } from "../interfaces/account.interfaces";
 
 export const useAccountIncome = () => {
@@ -20,19 +20,15 @@ export const useAccountStatus = () => {
     return useQuery({
         queryKey: ["account-status"],
         queryFn: getAccountStatus,
+        retry: false,
     });
 };
 
-export const useAccountIncomeChart = () => {
-    return useQuery({
-        queryKey: ["account-income-chart"],
-        queryFn: getAccountIncomeChart,
-    });
-};
 
 export const useIncomeChart = (timeframe: Timeframe = "1minute") => {
     return useQuery({
         queryKey: ["income-chart", timeframe],
         queryFn: () => getIncomeChart(timeframe),
+        retry: false,
     });
 };

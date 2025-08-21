@@ -39,7 +39,7 @@ export class CryptoBotService {
 
                 return newBot;
             } else {
-                console.log('bot already exists', existingBot);
+                console.log('bot already exists');
             }
 
             return existingBot;
@@ -49,6 +49,8 @@ export class CryptoBotService {
             return null;
         }
     }
+
+
 
     async startBot(bot_uuid: string): Promise<void> {
         try {
@@ -110,6 +112,8 @@ export class CryptoBotService {
 
     async initializeBots(db_bots: UserBotSubscriptions[]): Promise<void> {
         try {
+
+            this.bots.clear();
 
             for (const bot of db_bots) {
                 await this.createBot(bot);

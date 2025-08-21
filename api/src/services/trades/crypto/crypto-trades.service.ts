@@ -1,5 +1,5 @@
 import { BinanceTradesService } from "../../../integrations/binance/services/binance-trades.service";
-import { TradingviewAlertWebhookDto } from "../../../modules/tradingview/dto/tradingview.dto";
+import { TradingviewAlertWebhookDto } from "../../../modules/webhooks/tradingview/dto/tradingview.dto";
 import CryptoBotSingleton from "../models/crypto-bot-singleton.service";
 import { CryptoBotService } from "./crypto-bot.service";
 import { BotModel } from "../models/bot.model";
