@@ -34,14 +34,8 @@ export class CredentialsController {
 
     getAllCredentials = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
-            const validatedQuery = CredentialsQuerySchema.parse({
-                ...req.query,
-                page: req.query.page ? Number(req.query.page) : undefined,
-                limit: req.query.limit ? Number(req.query.limit) : undefined
-            });
-            const user_uuid = req.user!.uuid;
 
-            const result = await this.credentialsService.getAllCredentials(validatedQuery, user_uuid);
+            const result = await this.credentialsService.getAllCredentials();
 
             res.status(200).json(result);
         } catch (error: any) {
@@ -56,34 +50,6 @@ export class CredentialsController {
         }
     };
 
-
-    updateCredentials = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-        try {
-            const { uuid } = req.params;
-            const validatedData = UpdateCredentialsSchema.parse(req.body);
-            const user_uuid = req.user!.uuid;
-
-            const credentials = await this.credentialsService.updateCredentials(uuid, validatedData, user_uuid);
-
-            if (!credentials) {
-                res.status(404).json({
-                    message: 'Credentials not found'
-                });
-                return;
-            }
-
-            res.status(200).json(credentials);
-        } catch (error: any) {
-            if (error instanceof z.ZodError) {
-                handleValidationError(error, res);
-            } else {
-                res.status(400).json({
-                    message: 'Failed to update credentials',
-                    error: error.message
-                });
-            }
-        }
-    };
 
     deleteCredential = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {

@@ -11,8 +11,6 @@ router.get('/user', authMiddleware.authenticate, authMiddleware.requireUser, cre
 
 router.get('/', authMiddleware.authenticate, authMiddleware.requireAdmin, credentialsController.getAllCredentials);
 
-router.put('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, credentialsController.updateCredentials);
-
 router.delete('/', authMiddleware.authenticate, authMiddleware.requireAdmin, credentialsController.deleteAllCredentials);
 
 router.delete('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, credentialsController.deleteCredential);

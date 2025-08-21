@@ -53,13 +53,13 @@ export class BotSubscriptionsService {
                 throw new Error('User already subscribed to this bot');
             }
 
-            const balance = await this.binanceAccountService.getAccountBalance("USDT");
+            const balance = await this.binanceAccountService.getAccountBalance(user_uuid, "USDT");
 
             if (balance < data.amount) {
                 throw new Error('Insufficient balance to create bot');
             }
 
-            const { quantity, minQty, price } = await this.tradesUtils.getTradeQuantity(botExists.symbol, data.amount);
+            const { quantity, minQty, price } = await this.tradesUtils.getTradeQuantity(user_uuid, botExists.symbol, data.amount);
 
             if (quantity === 0) {
                 throw new Error(`Minimum amount required is ${minQty * (price || 0)} USDT`);
@@ -157,7 +157,7 @@ export class BotSubscriptionsService {
 
             if (data.active !== existingSubscription.active) {
                 if (!data.active) {
-                    await this.binanceTradesService.closePosition(existingSubscription.bot.symbol);
+                    await this.binanceTradesService.closePosition(user_uuid, existingSubscription.bot.symbol);
                 }
 
             }
@@ -203,7 +203,7 @@ export class BotSubscriptionsService {
             }
 
             try {
-                await this.binanceTradesService.closePosition(existingSubscription.bot.symbol);
+                await this.binanceTradesService.closePosition(user_uuid, existingSubscription.bot.symbol);
             } catch (error) {
                 console.error('Error closing position', error);
             }
@@ -244,7 +244,14 @@ export class BotSubscriptionsService {
     async stopAllBotSubscriptions(user_uuid: string): Promise<boolean> {
         try {
             const subscriptions = await this.prisma.botSubscription.findMany({
-                where: { user_uuid }
+                where: { user_uuid },
+                include: {
+                    bot: {
+                        select: {
+                            symbol: true
+                        }
+                    }
+                }
             });
 
             if (subscriptions.length > 0) {
@@ -254,6 +261,8 @@ export class BotSubscriptionsService {
                 });
 
                 await this.cryptoSubscriptionService.stopAllSubscriptionsByUser(user_uuid);
+
+                await this.binanceTradesService.closeAllPositionsForUser(user_uuid, subscriptions.map((subscription: any) => subscription.bot.symbol));
             }
 
 
@@ -287,7 +296,7 @@ export class BotSubscriptionsService {
             }
 
 
-            const { trades, profit } = await this.binanceAccountService.getFuturesUserTradesAndProfit(subscription.bot.symbol);
+            const { trades, profit } = await this.binanceAccountService.getFuturesUserTradesAndProfit(user_uuid, subscription.bot.symbol);
 
             return {
                 ...subscription,

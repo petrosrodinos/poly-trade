@@ -106,51 +106,26 @@ export class BotsService {
             }
 
             if (existingBot.active !== data.active) {
-                const [, updatedBot] = await Promise.all([
-                    Promise.resolve(null),
-                    // this.prisma.botSubscription.updateMany({
-                    //     where: {
-                    //         bot_uuid: uuid,
-                    //         active: !data.active
-                    //     },
-                    //     data: {
-                    //         active: data.active
-                    //     }
-                    // }),
-                    this.prisma.bot.update({
-                        where: {
-                            uuid: uuid
-                        },
-                        data: {
-                            ...data,
-                        }
-                    })
-                ]);
-
-                await this.cryptoBotService.updateBot(uuid, data);
-
                 if (data.active) {
                     await this.cryptoBotService.startBot(uuid);
                 } else {
                     await this.cryptoBotService.stopBot(uuid);
                     await this.binanceTradesService.closeAllPositions([existingBot.symbol]);
                 }
-
-                return updatedBot;
-
-            } else {
-                const updatedBot = await this.prisma.bot.update({
-                    where: {
-                        uuid: uuid
-                    },
-                    data: {
-                        ...data,
-                    }
-                });
-
-                return updatedBot;
             }
 
+            const updatedBot = await this.prisma.bot.update({
+                where: {
+                    uuid: uuid
+                },
+                data: {
+                    ...data,
+                }
+            })
+
+            await this.cryptoBotService.updateBot(uuid, data);
+
+            return updatedBot;
 
 
         } catch (error) {

@@ -1,19 +1,16 @@
 import { BinanceExchangeInfo, TradeQuantity } from "../binance.interfaces";
-import { BinanceClient } from "../binance.client";
+import { BinanceClientManager } from "../binance-client-manager";
 
 export class TradesUtils {
-    private binanceClient: any;
 
     constructor() {
-        this.binanceClient = BinanceClient.getClient();
-
     }
 
-    async getTradeQuantity(symbol: string, amount: number): Promise<TradeQuantity> {
+    async getTradeQuantity(user_uuid: string, symbol: string, amount: number): Promise<TradeQuantity> {
 
-        const price = await this.getFuturesPrices(symbol);
+        const price = await this.getFuturesPrices(user_uuid, symbol);
 
-        const { minQty, stepSize } = await this.getExchangeInfo(symbol);
+        const { minQty, stepSize } = await this.getExchangeInfo(user_uuid, symbol);
 
         const quantityValue = this.calculateQuantity(amount, price || 0, minQty, stepSize);
 
@@ -25,9 +22,10 @@ export class TradesUtils {
         }
     }
 
-    async getExchangeInfo(symbol: string): Promise<BinanceExchangeInfo> {
+    async getExchangeInfo(user_uuid: string, symbol: string): Promise<BinanceExchangeInfo> {
         try {
-            const info = await this.binanceClient.futuresExchangeInfo();
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            const info = await binanceClient.futuresExchangeInfo();
             const symbolInfo = info.symbols.find((s: any) => s.symbol === symbol);
             const lotSizeFilter = symbolInfo.filters.find((f: any) => f.filterType === "LOT_SIZE");
 
@@ -40,9 +38,10 @@ export class TradesUtils {
         }
     }
 
-    async getFuturesPrices(symbol: string): Promise<number | null> {
+    async getFuturesPrices(user_uuid: string, symbol: string): Promise<number | null> {
         try {
-            const prices = await this.binanceClient.futuresPrices();
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            const prices = await binanceClient.futuresPrices();
             return parseFloat(prices?.[symbol] || 0);
         } catch (error) {
             throw new Error(`Failed to get futures prices for ${symbol}: ${error}`);

@@ -1,22 +1,21 @@
-import { BinanceClient } from "../binance.client";
+import { BinanceClientManager } from "../binance-client-manager";
 import { FuturesAccountInfo, FuturesIncome, FuturesIncomeTradesAndProfit, FuturesTrade, FuturesTradeAndProfit } from "../binance.interfaces";
 import { AccountUtils } from "../utils/account.utils";
 
 export class BinanceAccountService {
 
-    private binanceClient: any;
     private accountUtils: AccountUtils;
 
 
     constructor() {
-        this.binanceClient = BinanceClient.getClient();
         this.accountUtils = new AccountUtils();
 
     }
 
-    async getAccountFutures(): Promise<FuturesAccountInfo> {
+    async getAccountFutures(user_uuid: string): Promise<FuturesAccountInfo> {
         try {
-            const accountInfo = await this.binanceClient.futuresAccount();
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            const accountInfo = await binanceClient.futuresAccount();
             return accountInfo;
         } catch (error) {
             throw new Error(`Failed to get futures account: ${error}`);
@@ -24,19 +23,21 @@ export class BinanceAccountService {
     }
 
 
-    async getFuturesUserTrades(symbol?: string): Promise<FuturesTrade[]> {
+    async getFuturesUserTrades(user_uuid: string, symbol?: string): Promise<FuturesTrade[]> {
         try {
-            const trades = await this.binanceClient.futuresUserTrades(symbol);
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            const trades = await binanceClient.futuresUserTrades(symbol);
             return this.accountUtils.sortTrades(trades);
         } catch (error) {
             throw new Error(`Failed to get futures user trades: ${error}`);
         }
     }
 
-    async futuresIncome(symbol?: string): Promise<FuturesIncome[]> {
+    async futuresIncome(user_uuid: string, symbol?: string): Promise<FuturesIncome[]> {
         try {
 
-            let income = await this.binanceClient.futuresIncome();
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            let income = await binanceClient.futuresIncome();
 
             if (!income || income.length === 0) {
                 return []
@@ -52,9 +53,9 @@ export class BinanceAccountService {
         }
     }
 
-    async getAccountBalance(symbol: string): Promise<number> {
+    async getAccountBalance(user_uuid: string, symbol: string): Promise<number> {
         try {
-            const account = await this.getAccountFutures();
+            const account = await this.getAccountFutures(user_uuid);
             if (!account) {
                 throw new Error('Unable to fetch account information');
             }
@@ -68,9 +69,9 @@ export class BinanceAccountService {
         }
     }
 
-    async getFuturesIncomeTradesAndProfit(symbol?: string): Promise<FuturesIncomeTradesAndProfit> {
+    async getFuturesIncomeTradesAndProfit(user_uuid: string, symbol?: string): Promise<FuturesIncomeTradesAndProfit> {
         try {
-            let incomes = await this.futuresIncome(symbol);
+            let incomes = await this.futuresIncome(user_uuid, symbol);
 
             if (!incomes || incomes.length === 0) {
                 return {
@@ -90,9 +91,9 @@ export class BinanceAccountService {
         }
     }
 
-    async getFuturesUserTradesAndProfit(symbol?: string): Promise<FuturesTradeAndProfit> {
+    async getFuturesUserTradesAndProfit(user_uuid: string, symbol?: string): Promise<FuturesTradeAndProfit> {
         try {
-            const trades = await this.getFuturesUserTrades(symbol);
+            const trades = await this.getFuturesUserTrades(user_uuid, symbol);
 
             if (!trades || trades.length === 0) {
                 return {
@@ -111,9 +112,10 @@ export class BinanceAccountService {
         }
     }
 
-    async ping(): Promise<any> {
+    async ping(user_uuid: string): Promise<any> {
         try {
-            const response = await this.binanceClient.futuresPing();
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            const response = await binanceClient.futuresPing();
             return response;
         } catch (error) {
             throw new Error(`Failed to ping Binance: ${error}`);

@@ -1,3 +1,4 @@
+import { AuthenticatedRequest } from "../../../../shared/middleware/auth.middleware";
 import { BinanceStreamingService } from "../../../../integrations/binance/services/binance-streaming.service";
 import { Request, Response } from "express";
 
@@ -8,8 +9,9 @@ export class BinanceStreamingController {
         this.streamingService = new BinanceStreamingService();
     }
 
-    streamTickerPrice = (req: Request, res: Response): void => {
+    streamTickerPrice = (req: AuthenticatedRequest, res: Response): void => {
         try {
+            const user_uuid = req.user!.uuid;
             const symbol = req.params.symbol?.toUpperCase();
             if (!symbol) {
                 res.status(400).json({ error: 'Symbol parameter is required' });
@@ -26,7 +28,7 @@ export class BinanceStreamingController {
 
             console.log(`Starting stream for symbol: ${symbol}`);
 
-            this.streamingService.streamCandlesticksFutures(symbol, "1m", (candlestick: any) => {
+            this.streamingService.streamCandlesticksFutures(user_uuid, symbol, "1m", (candlestick: any) => {
                 try {
                     console.log(`Sending candlestick data for ${symbol}:`, candlestick);
 
@@ -37,12 +39,12 @@ export class BinanceStreamingController {
             });
 
             req.on('close', () => {
-                this.streamingService.terminateStream(`${symbol.toLowerCase()}@kline_1m`);
+                this.streamingService.terminateStream(user_uuid, `${symbol.toLowerCase()}@kline_1m`);
             });
 
             req.on('error', (error) => {
                 console.error('Request error:', error);
-                this.streamingService.terminateStream(`${symbol.toLowerCase()}@kline_1m`);
+                this.streamingService.terminateStream(user_uuid, `${symbol.toLowerCase()}@kline_1m`);
             });
 
         } catch (error) {
@@ -54,10 +56,11 @@ export class BinanceStreamingController {
     }
 
 
-    getStreamStatus = async (req: Request, res: Response): Promise<void> => {
+    getStreamStatus = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
 
-            const status = await this.streamingService.getStreamStatus();
+            const user_uuid = req.user!.uuid;
+            const status = await this.streamingService.getStreamStatus(user_uuid);
 
             res.json(status);
 
@@ -67,10 +70,11 @@ export class BinanceStreamingController {
         }
     }
 
-    terminateAllStreams = async (req: Request, res: Response): Promise<void> => {
+    terminateAllStreams = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
 
-            const result = await this.streamingService.terminateAll();
+            const user_uuid = req.user!.uuid;
+            const result = await this.streamingService.terminateAll(user_uuid);
 
             if (result) {
                 res.json({

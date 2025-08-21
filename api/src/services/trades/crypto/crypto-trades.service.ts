@@ -32,8 +32,9 @@ export class CryptoTradesService {
                     .filter(s => s.active)
                     .map(async s => {
                         try {
-                            await this.binanceTradesService.closePosition(bot.symbol);
+                            await this.binanceTradesService.closePosition(s.user_uuid, bot.symbol);
                             await this.binanceTradesService.openPosition(
+                                s.user_uuid,
                                 symbol,
                                 action,
                                 s.quantity,

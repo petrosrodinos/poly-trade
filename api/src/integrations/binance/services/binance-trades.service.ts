@@ -1,18 +1,17 @@
 import { TradesConfig } from "../../../shared/constants/trades";
-import { BinanceClient } from "../binance.client";
 import { BinancePosition, BinanceOrderResponse, BinanceOrderSide } from "../binance.interfaces";
 import { logger } from "../../../shared/utils/logger";
+import { BinanceClientManager } from "../binance-client-manager";
 
 export class BinanceTradesService {
-    private binanceClient: any;
 
     constructor() {
-        this.binanceClient = BinanceClient.getClient();
     }
 
-    async getPosition(symbol: string): Promise<BinancePosition | null> {
+    async getPosition(user_uuid: string, symbol: string): Promise<BinancePosition | null> {
         try {
-            const positions = await this.binanceClient.futuresPositionRisk();
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            const positions = await binanceClient.futuresPositionRisk();
             const position = positions.find((pos: any) => pos.symbol === symbol);
 
             if (!position || parseFloat(position.positionAmt) === 0) {
@@ -38,7 +37,7 @@ export class BinanceTradesService {
         }
     }
 
-    async openPosition(symbol: string, side: 'buy' | 'sell', quantity?: number, leverage?: number): Promise<BinanceOrderResponse> {
+    async openPosition(user_uuid: string, symbol: string, side: 'buy' | 'sell', quantity?: number, leverage?: number): Promise<BinanceOrderResponse> {
         try {
             const orderSide: BinanceOrderSide = side.toUpperCase() as BinanceOrderSide;
 
@@ -46,12 +45,13 @@ export class BinanceTradesService {
 
             const leverageValue = leverage || TradesConfig.leverage;
 
-            await this.binanceClient.futuresLeverage(symbol, leverageValue);
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            await binanceClient.futuresLeverage(symbol, leverageValue);
 
             if (orderSide === 'BUY') {
-                order = await this.binanceClient.futuresMarketBuy(symbol, quantity);
+                order = await binanceClient.futuresMarketBuy(symbol, quantity);
             } else {
-                order = await this.binanceClient.futuresMarketSell(symbol, quantity);
+                order = await binanceClient.futuresMarketSell(symbol, quantity);
             }
 
 
@@ -76,9 +76,10 @@ export class BinanceTradesService {
         }
     }
 
-    async closePosition(symbol: string): Promise<BinanceOrderResponse | null> {
+    async closePosition(user_uuid: string, symbol: string): Promise<BinanceOrderResponse | null> {
         try {
-            const position = await this.getPosition(symbol);
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            const position = await this.getPosition(user_uuid, symbol);
 
             if (!position || parseFloat(position.positionAmt) === 0) {
                 console.log(`No position to close for ${symbol}`);
@@ -94,15 +95,15 @@ export class BinanceTradesService {
             let order;
             if (positionAmount > 0) {
                 // Long → Close with sell
-                order = await this.binanceClient.futuresMarketSell(symbol, quantity);
+                order = await binanceClient.futuresMarketSell(symbol, quantity);
             } else if (positionAmount < 0) {
                 // Short → Close with buy
-                order = await this.binanceClient.futuresMarketBuy(symbol, quantity);
+                order = await binanceClient.futuresMarketBuy(symbol, quantity);
             }
 
             // Wait until Binance confirms positionAmt = 0
             for (let retries = 0; retries < 15; retries++) { // max ~3 seconds
-                const pos = await this.getPosition(symbol);
+                const pos = await this.getPosition(user_uuid, symbol);
                 if (!pos || parseFloat(pos.positionAmt) === 0) {
                     break;
                 }
@@ -130,16 +131,29 @@ export class BinanceTradesService {
 
     async closeAllPositions(symbols: string[]): Promise<any> {
         try {
-            await Promise.all(symbols.map(symbol => this.closePosition(symbol)));
+            const binanceClients = await BinanceClientManager.getClients();
+            for (const [user_uuid, client] of Object.entries(binanceClients)) {
+                await Promise.all(symbols.map(symbol => this.closePosition(user_uuid, symbol)));
+            }
         } catch (error) {
+            throw new Error(`Failed to close all positions: ${error}`);
+        }
+    }
+
+    async closeAllPositionsForUser(user_uuid: string, symbols: string[]): Promise<any> {
+        try {
+            await Promise.all(symbols.map(symbol => this.closePosition(user_uuid, symbol)));
+        } catch (error) {
+            throw new Error(`Failed to close all positions for user ${user_uuid}: ${error}`);
         }
     }
 
 
-    async cancelOrder(symbol: string, orderId: string): Promise<any> {
+    async cancelOrder(user_uuid: string, symbol: string, orderId: string): Promise<any> {
         try {
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
             console.log(`Cancelling order ${orderId} for ${symbol}`);
-            return await this.binanceClient.futuresCancel(symbol, orderId);
+            return await binanceClient.futuresCancel(symbol, orderId);
 
         } catch (error) {
             throw new Error(`Failed to cancel order ${orderId} for ${symbol}: ${error}`);
@@ -148,11 +162,12 @@ export class BinanceTradesService {
 
 
 
-    async cancelAllOrders(symbol?: string): Promise<any> {
+    async cancelAllOrders(user_uuid: string, symbol?: string): Promise<any> {
         try {
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
             return symbol
-                ? await this.binanceClient.futuresCancelAll(symbol)
-                : await this.binanceClient.futuresCancelAll();
+                ? await binanceClient.futuresCancelAll(symbol)
+                : await binanceClient.futuresCancelAll();
         } catch (error) {
             throw new Error(`Failed to cancel all orders: ${error}`);
         }

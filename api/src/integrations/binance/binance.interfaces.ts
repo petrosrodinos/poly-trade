@@ -1,3 +1,5 @@
+import { BinanceClient } from "./binance.client";
+
 export interface BinanceAccount {
     id: string;
     status: string;
@@ -141,6 +143,9 @@ export interface TradeQuantity {
     minQty: number;
     stepSize: number;
 }
+
+
+export type ClientMap = { [user_uuid: string]: BinanceClient };
 
 export type BinanceOrderSide = 'BUY' | 'SELL';
 export type BinanceOrderType = 'MARKET' | 'LIMIT';

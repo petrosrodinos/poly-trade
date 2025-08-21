@@ -4,16 +4,16 @@ import { promisify } from 'util';
 const scryptAsync = promisify(crypto.scrypt);
 
 export class EncryptionService {
-    private static readonly ALGORITHM = 'aes-256-cbc';
-    private static readonly KEY_LENGTH = 32;
-    private static readonly IV_LENGTH = 16;
-    private static readonly SALT_LENGTH = 16;
+    private readonly ALGORITHM = 'aes-256-cbc';
+    private readonly KEY_LENGTH = 32;
+    private readonly IV_LENGTH = 16;
+    private readonly SALT_LENGTH = 16;
 
-    private static getEncryptionKey(): string {
+    private getEncryptionKey(): string {
         return process.env.ENCRYPTION_KEY || '';
     }
 
-    static async encrypt(text: string): Promise<string> {
+    async encrypt(text: string): Promise<string> {
         try {
             const salt = crypto.randomBytes(this.SALT_LENGTH);
             const iv = crypto.randomBytes(this.IV_LENGTH);
@@ -33,7 +33,7 @@ export class EncryptionService {
         }
     }
 
-    static async decrypt(encryptedData: string): Promise<string> {
+    async decrypt(encryptedData: string): Promise<string> {
         try {
             const parts = encryptedData.split(':');
             if (parts.length !== 3) {

@@ -13,10 +13,10 @@ export class BinanceAccountServiceClass {
         this.accountUtils = new AccountUtils();
     }
 
-    getAccount = async (): Promise<AccountSummary> => {
+    getAccount = async (user_uuid: string): Promise<AccountSummary> => {
         try {
-            const account = await this.getAccountFutures();
-            const trades = await this.getFuturesUserTrades();
+            const account = await this.getAccountFutures(user_uuid);
+            const trades = await this.getFuturesUserTrades(user_uuid);
             // const income = await this.getFuturesIncome();
 
             const tradesSummary = this.accountUtils.calculateTradesSummary(trades);
@@ -35,9 +35,9 @@ export class BinanceAccountServiceClass {
     }
 
 
-    getAccountFutures = async (): Promise<FuturesAccountInfo> => {
+    getAccountFutures = async (user_uuid: string): Promise<FuturesAccountInfo> => {
         try {
-            const account = await this.binanceAccountService.getAccountFutures();
+            const account = await this.binanceAccountService.getAccountFutures(user_uuid);
             return account;
         } catch (error: any) {
             throw new Error(`Failed to get account status: ${error}`);
@@ -45,9 +45,9 @@ export class BinanceAccountServiceClass {
     }
 
 
-    getFuturesUserTrades = async (symbol?: string): Promise<FuturesTrade[]> => {
+    getFuturesUserTrades = async (user_uuid: string, symbol?: string): Promise<FuturesTrade[]> => {
         try {
-            const orders = await this.binanceAccountService.getFuturesUserTrades(symbol);
+            const orders = await this.binanceAccountService.getFuturesUserTrades(user_uuid, symbol);
             return orders;
         } catch (error: any) {
             throw new Error(`Failed to get futures orders: ${error}`);
@@ -55,9 +55,9 @@ export class BinanceAccountServiceClass {
     }
 
 
-    getFuturesIncome = async (symbol?: string): Promise<FuturesIncome[]> => {
+    getFuturesIncome = async (user_uuid: string, symbol?: string): Promise<FuturesIncome[]> => {
         try {
-            const income = await this.binanceAccountService.futuresIncome(symbol);
+            const income = await this.binanceAccountService.futuresIncome(user_uuid, symbol);
             return income;
         } catch (error: any) {
             throw new Error(`Failed to get futures income: ${error}`);
@@ -65,9 +65,9 @@ export class BinanceAccountServiceClass {
     }
 
 
-    getAccountIncomeChart = async (timeframe: Timeframe): Promise<AccountChartData[]> => {
+    getAccountIncomeChart = async (user_uuid: string, timeframe: Timeframe): Promise<AccountChartData[]> => {
         try {
-            const income = await this.getFuturesIncome();
+            const income = await this.getFuturesIncome(user_uuid);
             const reversedIncome = income.reverse();
             const incomeChart = this.accountUtils.calculateIncomeChart(reversedIncome, timeframe);
             return incomeChart
@@ -76,9 +76,9 @@ export class BinanceAccountServiceClass {
         }
     }
 
-    getAccountTradesChart = async (timeframe: Timeframe): Promise<AccountChartData[]> => {
+    getAccountTradesChart = async (user_uuid: string, timeframe: Timeframe): Promise<AccountChartData[]> => {
         try {
-            const trades = await this.getFuturesUserTrades();
+            const trades = await this.getFuturesUserTrades(user_uuid);
             const reversedTrades = trades.reverse();
             const incomeChart = this.accountUtils.calculateTradesChart(reversedTrades, timeframe);
             return incomeChart
@@ -87,9 +87,9 @@ export class BinanceAccountServiceClass {
         }
     }
 
-    ping = async (): Promise<{ message: string; response: any; timestamp: string }> => {
+    ping = async (user_uuid: string): Promise<{ message: string; response: any; timestamp: string }> => {
         try {
-            const response = await this.binanceAccountService.ping();
+            const response = await this.binanceAccountService.ping(user_uuid);
             return {
                 message: 'pong',
                 response,

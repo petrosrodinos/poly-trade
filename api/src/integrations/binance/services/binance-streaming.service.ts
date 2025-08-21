@@ -1,16 +1,14 @@
 import { TradesConfig } from "../../../shared/constants/trades";
-import { BinanceClient } from "../binance.client";
+import { BinanceClientManager } from "../binance-client-manager";
 import { Request } from "express";
 
 export class BinanceStreamingService {
-    private binanceClient: any;
     private activeStreams: Map<string, string> = new Map();
 
     constructor() {
-        this.binanceClient = BinanceClient.getClient();
     }
 
-    streamCandlesticksFutures(symbol: string, timeframe: string, callback: (data: any) => void) {
+    async streamCandlesticksFutures(user_uuid: string, symbol: string, timeframe: string, callback: (data: any) => void) {
 
         try {
 
@@ -25,7 +23,8 @@ export class BinanceStreamingService {
 
             const timeframeValue = timeframe || TradesConfig.timeframe;
 
-            const streamEndpoint = this.binanceClient.futuresSubscribe(`${symbol.toLowerCase()}@kline_${timeframeValue}`, (candlesticks: any) => {
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            const streamEndpoint = binanceClient.futuresSubscribe(`${symbol.toLowerCase()}@kline_${timeframeValue}`, (candlesticks: any) => {
                 const kline = candlesticks.k || candlesticks;
                 const data = {
                     symbol: kline.s ?? candlesticks.s ?? symbol,
@@ -53,7 +52,7 @@ export class BinanceStreamingService {
         }
     }
 
-    streamCandlesticks(symbol: string, req: Request, callback: (data: any) => void) {
+    async streamCandlesticks(user_uuid: string, symbol: string, req: Request, callback: (data: any) => void) {
 
         try {
 
@@ -66,7 +65,8 @@ export class BinanceStreamingService {
             //     this.activeStreams.delete(streamKey);
             // }
 
-            const streamEndpoint = this.binanceClient.websockets.candlesticks([symbol], "1m", (candlesticks: any) => {
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            const streamEndpoint = binanceClient.websockets.candlesticks([symbol], "1m", (candlesticks: any) => {
                 const kline = candlesticks.k || candlesticks;
                 const data = {
                     symbol: kline.s || candlesticks.s || symbol,
@@ -94,10 +94,11 @@ export class BinanceStreamingService {
     }
 
 
-    async terminateStream(endpoint: string) {
+    async terminateStream(user_uuid: string, endpoint: string) {
         try {
 
-            await this.binanceClient.futuresTerminate(endpoint);
+            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            await binanceClient.futuresTerminate(endpoint);
 
             return true;
         } catch (error) {
@@ -106,9 +107,9 @@ export class BinanceStreamingService {
         }
     }
 
-    async getStreamStatus(): Promise<any> {
+    async getStreamStatus(user_uuid: string): Promise<any> {
         try {
-            const subscriptions = this.getSubscriptions();
+            const subscriptions = await this.getSubscriptions(user_uuid);
             const activeStreams = Array.from(this.activeStreams.keys());
 
             return {
@@ -126,14 +127,15 @@ export class BinanceStreamingService {
     }
 
 
-    async terminateAll() {
+    async terminateAll(user_uuid: string) {
         try {
-            const subscriptions = await this.getSubscriptions();
+            const subscriptions = await this.getSubscriptions(user_uuid);
 
             console.log(`Terminating all streams: ${subscriptions}`);
 
-            Object.keys(subscriptions).forEach(key => {
-                this.binanceClient.websockets.terminate(key);
+            Object.keys(subscriptions).forEach(async (key) => {
+                const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+                binanceClient.websockets.terminate(key);
                 // this.activeStreams.delete(key);
             });
 
@@ -144,7 +146,8 @@ export class BinanceStreamingService {
         }
     }
 
-    async getSubscriptions() {
-        return await this.binanceClient.websockets.subscriptions();
+    async getSubscriptions(user_uuid: string) {
+        const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+        return await binanceClient.websockets.subscriptions();
     }
 }

@@ -6,12 +6,9 @@ dotenv.config();
 
 export class BinanceClient {
     private binance: any;
-    private static instance: any = null;
 
-    constructor() {
+    constructor(apiKey: string, secretKey: string) {
         const useTestnet = process.env.BINANCE_USE_TESTNET === 'true';
-        let apiKey = process.env.BINANCE_ADMIN_API_KEY
-        let secretKey = process.env.BINANCE_ADMIN_SECRET_KEY
 
         if (!apiKey || !secretKey) {
             throw new Error('Binance API credentials are required. Please set BINANCE_ADMIN_API_KEY and BINANCE_ADMIN_SECRET_KEY environment variables.');
@@ -39,21 +36,12 @@ export class BinanceClient {
             },
         });
 
-        // this.binance.baseURL = baseUrl;
-        // this.binance.fapi = baseUrl;
-        // this.binance.futures = true;
-
         logger.debug(`Binance client initialized successfully (${useTestnet ? 'Testnet' : 'Mainnet'} mode)`);
     }
 
-    public static getInstance(): BinanceClient {
-        if (!BinanceClient.instance) {
-            BinanceClient.instance = new BinanceClient();
-        }
-        return BinanceClient.instance;
+    getClient() {
+        return this.binance;
     }
 
-    public static getClient(): any {
-        return BinanceClient.getInstance().binance;
-    }
+
 }
