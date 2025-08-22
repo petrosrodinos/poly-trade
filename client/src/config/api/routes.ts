@@ -8,6 +8,7 @@ export const ApiRoutes = {
     users: {
         prefix: "/users",
         me: "/users/me",
+        change_password: "/users/auth/change-password",
     },
     credentials: {
         prefix: "/credentials",

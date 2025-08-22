@@ -7,7 +7,7 @@ import { User, CalendarDays, DollarSign, Wallet, Copy, Check, UserX, UserCheck, 
 import type { UserAdmin } from "@/features/user/interfaces/user.interface";
 import { useFormatters } from "@/hooks/useFormatters";
 import { useState } from "react";
-import { useUpdateUser, useDeleteUser } from "@/features/user/hooks/use-user";
+import { useUpdateUserAdmin, useDeleteUser } from "@/features/user/hooks/use-user";
 import { Spinner } from "@/components/ui/spinner";
 import { UserMeta } from "@/features/user/interfaces/user.interface";
 
@@ -20,7 +20,7 @@ export const UserCard = ({ user }: UserCardProps) => {
   const [isCopied, setIsCopied] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const { mutate: updateUserMutation, isPending } = useUpdateUser();
+  const { mutate: updateUserMutation, isPending } = useUpdateUserAdmin();
   const { mutate: deleteUserMutation, isPending: isDeletePending } = useDeleteUser();
 
   const getInitials = (username: string) => {

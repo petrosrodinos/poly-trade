@@ -7,7 +7,7 @@ import { CalendarDays, DollarSign, Wallet, Copy, Check, UserX, UserCheck, Zap, T
 import type { UserAdmin } from "@/features/user/interfaces/user.interface";
 import { useFormatters } from "@/hooks/useFormatters";
 import { useState } from "react";
-import { useUpdateUser, useDeleteUser } from "@/features/user/hooks/use-user";
+import { useUpdateUserAdmin, useDeleteUser } from "@/features/user/hooks/use-user";
 import { Spinner } from "@/components/ui/spinner";
 import { UserMeta } from "@/features/user/interfaces/user.interface";
 
@@ -20,7 +20,7 @@ export const UserTable = ({ users }: UserTableProps) => {
   const [isCopied, setIsCopied] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserAdmin | null>(null);
   const [userToDelete, setUserToDelete] = useState<UserAdmin | null>(null);
-  const { mutate: updateUserMutation, isPending } = useUpdateUser();
+  const { mutate: updateUserMutation, isPending } = useUpdateUserAdmin();
   const { mutate: deleteUserMutation, isPending: isDeletePending } = useDeleteUser();
 
   const getInitials = (username: string) => {

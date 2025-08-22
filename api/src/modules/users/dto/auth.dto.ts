@@ -16,8 +16,14 @@ export const UpdateUserSchema = z.object({
     meta: z.record(z.string(), z.any()).optional(),
 });
 
+export const ChangePasswordSchema = z.object({
+    old_password: z.string().min(1, 'Old password is required'),
+    new_password: z.string().min(1, 'New password is required'),
+});
+
 export type LoginDto = z.infer<typeof LoginSchema>;
 export type RegisterDto = z.infer<typeof RegisterSchema>;
 export type UpdateUserDto = z.infer<typeof UpdateUserSchema>;
+export type ChangePasswordDto = z.infer<typeof ChangePasswordSchema>;
 
 

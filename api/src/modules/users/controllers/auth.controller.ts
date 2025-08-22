@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
-import { LoginSchema, RegisterSchema } from '../dto/auth.dto';
+import { ChangePasswordSchema, LoginSchema, RegisterSchema } from '../dto/auth.dto';
 import { AuthService } from '../services/auth.service';
 import { UserErrorCodes } from '../../../shared/errors/user';
 import { handleValidationError } from '../../../shared/utils/validation';
 import { z } from 'zod';
+import { AuthenticatedRequest } from '@/shared/middleware/auth.middleware';
 
 export class AuthController {
     private authService: AuthService;
@@ -44,7 +45,15 @@ export class AuthController {
         }
     };
 
-
+    changePassword = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        try {
+            const validatedData = ChangePasswordSchema.parse(req.body);
+            const result = await this.authService.changePassword(req.user!.uuid, validatedData);
+            res.status(200).json(result);
+        } catch (error: any) {
+            res.status(500).json({ message: 'Failed to change password', error: error.message });
+        }
+    };
 
 
 

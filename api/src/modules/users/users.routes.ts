@@ -9,10 +9,13 @@ const authController = new AuthController();
 
 router.post('/auth/register', authController.register);
 router.post('/auth/login', authController.login);
+router.post('/auth/change-password', authMiddleware.authenticate, authController.changePassword);
 
 router.get('/me', authMiddleware.authenticate, usersController.getMe);
 router.get('/', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.getUsers);
-router.put('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.updateUser);
+
+router.put('/', authMiddleware.authenticate, usersController.updateUser);
+router.put('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.updateUserAdmin);
 
 router.delete('/:uuid', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.deleteUser);
 router.delete('/', authMiddleware.authenticate, authMiddleware.requireAdmin, usersController.deleteAllUsers);

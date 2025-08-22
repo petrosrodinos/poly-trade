@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { LoginDto, RegisterDto } from '../dto/auth.dto';
+import { ChangePasswordDto, LoginDto, RegisterDto } from '../dto/auth.dto';
 import prisma from '../../../core/prisma/prisma-client';
 import { v4 as uuidv4 } from 'uuid';
 import { UserErrorCodes } from '../../../shared/errors/user';
@@ -91,5 +91,29 @@ export class AuthService {
         };
     }
 
+    async changePassword(uuid: string, changePasswordDto: ChangePasswordDto): Promise<void> {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: { uuid }
+            });
+
+            if (!user) {
+                throw new Error('User not found');
+            }
+
+            const isPasswordValid = await bcrypt.compare(changePasswordDto.old_password, user.password);
+            if (!isPasswordValid) {
+                throw new Error('Invalid old password');
+            }
+
+            const hashedPassword = await bcrypt.hash(changePasswordDto.new_password, 12);
+            await this.prisma.user.update({
+                where: { uuid },
+                data: { password: hashedPassword }
+            });
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
 
 }

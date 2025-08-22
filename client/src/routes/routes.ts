@@ -17,4 +17,7 @@ export const Routes = {
     admin: {
         root: "/dashboard/admin",
     },
+    account: {
+        root: "/dashboard/account",
+    },
 };

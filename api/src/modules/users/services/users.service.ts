@@ -80,7 +80,7 @@ export class UsersService {
     }
   }
 
-  async updateUser(uuid: string, data: UpdateUserDto): Promise<User | null> {
+  async updateUserAdmin(uuid: string, data: UpdateUserDto): Promise<User | null> {
     try {
       const user = await this.prisma.user.findUnique({
         where: {
@@ -110,6 +110,19 @@ export class UsersService {
         data: data
       });
 
+    } catch (error) {
+      throw new Error('Failed to update user');
+    }
+  }
+
+  async updateUser(uuid: string, data: UpdateUserDto): Promise<User | null> {
+    try {
+      return await this.prisma.user.update({
+        where: { uuid: uuid },
+        data: {
+          username: data.username
+        }
+      });
     } catch (error) {
       throw new Error('Failed to update user');
     }

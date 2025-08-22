@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, Bot, Shield } from "lucide-react";
+import { Home, Bot, Shield, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth.store";
 import { RoleTypes } from "@/features/user/interfaces/user.interface";
@@ -36,6 +36,12 @@ const BottomNavigation = ({ className }: BottomNavigationProps) => {
       path: Routes.bots.root,
     },
     {
+      id: "account",
+      label: "Account",
+      icon: User,
+      path: Routes.account.root,
+    },
+    {
       id: "admin",
       label: "Admin",
       icon: Shield,
@@ -47,6 +53,9 @@ const BottomNavigation = ({ className }: BottomNavigationProps) => {
   const isActive = (path: string) => {
     if (path === "/dashboard") {
       return location.pathname === "/dashboard";
+    }
+    if (path === "/dashboard/account") {
+      return location.pathname === "/dashboard/account";
     }
     return location.pathname.startsWith(path);
   };

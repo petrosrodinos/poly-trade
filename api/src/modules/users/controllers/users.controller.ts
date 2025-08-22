@@ -28,14 +28,23 @@ export class UsersController {
     }
   };
 
-  updateUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  updateUserAdmin = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
 
     try {
 
       const uuid = req.params.uuid;
-      const result = await this.usersService.updateUser(uuid, req.body);
+      const result = await this.usersService.updateUserAdmin(uuid, req.body);
       res.status(200).json(result);
 
+    } catch (error: any) {
+      res.status(500).json({ message: 'Failed to update user', error: error.message });
+    }
+  };
+
+  updateUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const result = await this.usersService.updateUser(req.user!.uuid, req.body);
+      res.status(200).json(result);
     } catch (error: any) {
       res.status(500).json({ message: 'Failed to update user', error: error.message });
     }

@@ -27,7 +27,6 @@ export interface UserAdmin extends User {
 }
 
 
-
 export interface LoggedInUser {
     user_uuid: string | null;
     role: RoleType | null;
@@ -37,6 +36,11 @@ export interface LoggedInUser {
     expires_in: number | null;
     username?: string | null;
     isLoggedIn?: boolean | null;
+}
+
+export interface ChangePassword {
+    old_password: string;
+    new_password: string;
 }
 
 export const UserMeta = {

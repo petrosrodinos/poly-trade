@@ -3,6 +3,7 @@ import DashboardPage from "@/pages/dashboard";
 import BotPage from "@/pages/bot";
 import BotsPage from "@/pages/bots";
 import AdminDashboardPage from "@/pages/admin";
+import AccountPage from "@/pages/account";
 import SignUp from "@/pages/auth/pages/sign-up";
 import SignIn from "@/pages/auth/pages/sign-in";
 import CredentialsPage from "@/pages/auth/pages/credentials";
@@ -62,6 +63,7 @@ export default function AppRoutes() {
         }
       >
         <Route index element={<DashboardPage />} />
+        <Route path="account" element={<AccountPage />} />
         <Route path="bots" element={<BotsPage />} />
         <Route path="bots/:uuid" element={<BotPage />} />
         <Route path="admin" element={<AdminDashboardPage />} />
