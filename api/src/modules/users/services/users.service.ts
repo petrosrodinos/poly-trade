@@ -3,17 +3,27 @@ import { UpdateUserDto } from '../dto/auth.dto';
 import { BotSubscriptionsService } from '../../bot-subscriptions/bot-subscriptions.service';
 import { User } from '../interfaces/user.interface';
 import { AccountService } from '../../account/account.service';
+import { BinanceTradesService } from '../../../integrations/binance/services/binance-trades.service';
+import { CryptoSubscriptionService } from '../../../services/trades/crypto/crypto-subscription.service';
+import CryptoBotSingleton from '../../../services/trades/models/crypto-bot-singleton.service';
+import { CryptoBotService } from '../../../services/trades/crypto/crypto-bot.service';
 
 export class UsersService {
 
   private prisma: any;
   private botSubscriptionsService: BotSubscriptionsService;
   private accountService: AccountService;
+  private binanceTradesService: BinanceTradesService;
+  private cryptoSubscriptionService: CryptoSubscriptionService;
+  private cryptoBotService: CryptoBotService;
 
   constructor() {
     this.prisma = prisma;
     this.botSubscriptionsService = new BotSubscriptionsService();
     this.accountService = new AccountService();
+    this.binanceTradesService = new BinanceTradesService();
+    this.cryptoBotService = CryptoBotSingleton.getInstance();
+    this.cryptoSubscriptionService = new CryptoSubscriptionService(this.cryptoBotService);
   }
 
 
@@ -119,11 +129,38 @@ export class UsersService {
 
   async deleteUser(uuid: string): Promise<boolean> {
     try {
-      await this.prisma.user.delete({
+
+      const user = await this.prisma.user.findUnique({
         where: {
           uuid: uuid
+        },
+        include: {
+          subscriptions: {
+            include: {
+              bot: true
+            }
+          }
         }
       });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      if (user.role === 'ADMIN') {
+        throw new Error('Admin users cannot be deleted');
+      }
+
+      await Promise.all([
+        this.prisma.user.delete({
+          where: {
+            uuid: uuid
+          }
+        }),
+        this.binanceTradesService.closeAllPositionsForUser(uuid, user.subscriptions.map((subscription: any) => subscription.bot.symbol)),
+        this.cryptoSubscriptionService.deleteAllSubscriptionsByUser(uuid)
+      ]);
+
       return true;
     } catch (error) {
       console.log(error);

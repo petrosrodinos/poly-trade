@@ -179,6 +179,21 @@ export class CryptoSubscriptionService {
         }
     }
 
+    async deleteAllSubscriptionsByUser(user_uuid: string): Promise<void> {
+        try {
+            const bots = this.cryptoBotService.bots.values();
+            for (const bot of bots) {
+                for (const subscription of bot.subscriptions.values()) {
+                    if (subscription && subscription.user_uuid === user_uuid) {
+                        await this.deleteSubscription(bot.uuid, subscription);
+                    }
+                }
+            }
+        } catch (error) {
+            throw new Error(`Failed to delete all subscriptions by user: ${error}`);
+        }
+    }
+
 
 
 }
