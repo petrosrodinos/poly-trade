@@ -2,10 +2,13 @@ import { v4 as uuidv4 } from 'uuid';
 import prisma from '../../core/prisma/prisma-client';
 import { CreateCredentialsDto, CredentialsResponse } from './dto/credentials.dto';
 import { EncryptionService } from '../../shared/utils/encryption';
+import { AccountService } from '../account/account.service';
+import { BinanceAccountService } from '../../integrations/binance/services/binance-account.service';
 
 export class CredentialsService {
     private prisma: any;
     private encryptionService: EncryptionService;
+
 
     constructor() {
         this.prisma = prisma;
@@ -25,6 +28,7 @@ export class CredentialsService {
                 throw new Error(`Credentials of type ${data.type} already exist for this user`);
             }
 
+
             const encryptedApiKey = await this.encryptionService.encrypt(data.api_key);
             const encryptedApiSecret = await this.encryptionService.encrypt(data.api_secret);
 
@@ -38,6 +42,20 @@ export class CredentialsService {
                 }
             });
 
+            const binanceAccountService = new BinanceAccountService();
+
+            const account = await binanceAccountService.getAccountFutures(user_uuid);
+
+            if (account.totalWalletBalance === '0') {
+                await this.prisma.credentials.delete({
+                    where: {
+                        uuid: credentials.uuid
+                    }
+                });
+
+                throw new Error('Account balance is 0, please transfer funds to your futures account');
+            }
+
             await this.prisma.user.update({
                 where: {
                     uuid: user_uuid
@@ -47,13 +65,15 @@ export class CredentialsService {
                 }
             });
 
-            return {
-                ...credentials,
-                api_key: data.api_key,
-                api_secret: data.api_secret
-            };
+            return credentials;
         } catch (error) {
-            throw error;
+            console.log(error);
+            await this.prisma.credentials.delete({
+                where: {
+                    user_uuid: user_uuid
+                }
+            });
+            throw new Error('Invalid API key or secret');
         }
     }
 
@@ -76,12 +96,11 @@ export class CredentialsService {
     }
 
 
-    async deleteCredential(uuid: string, user_uuid: string): Promise<CredentialsResponse | null> {
+    async deleteCredential(uuid: string): Promise<CredentialsResponse | null> {
         try {
             const existingCredentials = await this.prisma.credentials.findFirst({
                 where: {
                     uuid: uuid,
-                    user_uuid: user_uuid
                 }
             });
 
@@ -92,6 +111,15 @@ export class CredentialsService {
             const credentials = await this.prisma.credentials.delete({
                 where: {
                     uuid: uuid
+                }
+            });
+
+            await this.prisma.user.update({
+                where: {
+                    uuid: existingCredentials.user_uuid
+                },
+                data: {
+                    verified: false
                 }
             });
 
@@ -121,13 +149,6 @@ export class CredentialsService {
                 where,
             });
 
-            if (credential) {
-                return {
-                    ...credential,
-                    api_key: await this.encryptionService.decrypt(credential.api_key),
-                    api_secret: await this.encryptionService.decrypt(credential.api_secret)
-                };
-            }
 
             return credential;
         } catch (error) {

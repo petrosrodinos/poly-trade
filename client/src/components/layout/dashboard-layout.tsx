@@ -6,7 +6,7 @@ import { useGetMe } from "@/features/user/hooks/use-user";
 import { useAuthStore } from "@/stores/auth.store";
 
 const DashboardLayout = () => {
-  const { updateUser } = useAuthStore();
+  const { updateUser, logout } = useAuthStore();
   const { data: user } = useGetMe();
 
   useEffect(() => {
@@ -15,6 +15,9 @@ const DashboardLayout = () => {
         verified: user.verified,
         enabled: user.enabled,
       });
+      if (!user.verified) {
+        logout();
+      }
     }
   }, [user, updateUser]);
 

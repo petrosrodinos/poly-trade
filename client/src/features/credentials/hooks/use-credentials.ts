@@ -32,7 +32,7 @@ export const useCreateCredentials = () => {
             toast({
                 variant: 'error',
                 title: 'Error',
-                description: error.response?.data?.message || 'Failed to save credentials',
+                description: error.response?.data?.error || 'Failed to save credentials',
             });
         },
     });

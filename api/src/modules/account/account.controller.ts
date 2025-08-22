@@ -1,18 +1,18 @@
 import { Request, Response } from "express";
-import { BinanceAccountServiceClass } from "./account.service";
+import { AccountService } from "./account.service";
 import { Timeframe } from "./interfaces/account.interfaces";
 import { AuthenticatedRequest } from "../../shared/middleware/auth.middleware";
 
 export class AccountController {
-    private binanceAccountService: BinanceAccountServiceClass;
+    private accountService: AccountService;
 
     constructor() {
-        this.binanceAccountService = new BinanceAccountServiceClass();
+        this.accountService = new AccountService();
     }
 
     getAccount = async (req: AuthenticatedRequest, res: Response) => {
         try {
-            const account = await this.binanceAccountService.getAccount(req.user!.uuid);
+            const account = await this.accountService.getAccount(req.user!.uuid);
             res.status(200).json(account);
         } catch (error: any) {
             res.status(500).json({
@@ -25,7 +25,7 @@ export class AccountController {
     getAccountIncomeChart = async (req: AuthenticatedRequest, res: Response) => {
         try {
             const timeframe = req.query.timeframe as Timeframe;
-            const incomeChart = await this.binanceAccountService.getAccountTradesChart(req.user!.uuid, timeframe);
+            const incomeChart = await this.accountService.getAccountTradesChart(req.user!.uuid, timeframe);
             res.status(200).json(incomeChart);
         } catch (error: any) {
             res.status(500).json({
@@ -37,7 +37,7 @@ export class AccountController {
 
     getAccountFutures = async (req: AuthenticatedRequest, res: Response) => {
         try {
-            const account = await this.binanceAccountService.getAccountFutures(req.user!.uuid);
+            const account = await this.accountService.getAccountFutures(req.user!.uuid);
             res.status(200).json(account);
         } catch (error: any) {
             res.status(500).json({
@@ -51,7 +51,7 @@ export class AccountController {
     getFuturesUserTrades = async (req: AuthenticatedRequest, res: Response) => {
         try {
             const symbol = req.query.symbol?.toString().toUpperCase() as string;
-            const orders = await this.binanceAccountService.getFuturesUserTrades(req.user!.uuid, symbol);
+            const orders = await this.accountService.getFuturesUserTrades(req.user!.uuid, symbol);
             res.status(200).json(orders);
         } catch (error: any) {
             res.status(500).json({
@@ -65,7 +65,7 @@ export class AccountController {
     getFuturesIncome = async (req: AuthenticatedRequest, res: Response) => {
         try {
             const symbol = req.query.symbol?.toString().toUpperCase() as string;
-            const income = await this.binanceAccountService.getFuturesIncome(req.user!.uuid, symbol);
+            const income = await this.accountService.getFuturesIncome(req.user!.uuid, symbol);
             res.status(200).json(income);
         } catch (error: any) {
             res.status(500).json({
@@ -77,7 +77,7 @@ export class AccountController {
 
     ping = async (req: AuthenticatedRequest, res: Response) => {
         try {
-            const result = await this.binanceAccountService.ping(req.user!.uuid);
+            const result = await this.accountService.ping(req.user!.uuid);
             res.status(200).json(result);
         } catch (error: any) {
             res.status(500).json({

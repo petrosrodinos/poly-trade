@@ -39,12 +39,15 @@ export class BinanceClientManager {
                     throw new Error(`No Binance credentials found for user ${user_uuid}`);
                 }
 
-                this.clients[user_uuid] = new BinanceClient(creds.api_key, creds.api_secret);
+                const decryptedApiKey = await this.encryptionService.decrypt(creds.api_key);
+                const decryptedApiSecret = await this.encryptionService.decrypt(creds.api_secret);
+
+                this.clients[user_uuid] = new BinanceClient(decryptedApiKey, decryptedApiSecret);
             }
 
             return this.clients[user_uuid].getClient();
         } catch (error) {
-            throw new Error(`Failed to get Binance client for user ${user_uuid}: ${error}`);
+            throw new Error("Invalid API key or secret");
         }
     }
 

@@ -54,9 +54,8 @@ export class CredentialsController {
     deleteCredential = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         try {
             const { uuid } = req.params;
-            const user_uuid = req.user!.uuid;
 
-            const credentials = await this.credentialsService.deleteCredential(uuid, user_uuid);
+            const credentials = await this.credentialsService.deleteCredential(uuid);
 
             if (!credentials) {
                 res.status(404).json({

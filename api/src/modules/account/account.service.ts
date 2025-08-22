@@ -4,7 +4,7 @@ import { AccountChartData, AccountSummary, Timeframe } from "./interfaces/accoun
 import { AccountUtils } from "../../integrations/binance/utils/account.utils";
 
 
-export class BinanceAccountServiceClass {
+export class AccountService {
     private binanceAccountService: BinanceAccountService;
     private accountUtils: AccountUtils;
 
