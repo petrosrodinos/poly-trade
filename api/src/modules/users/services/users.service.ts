@@ -1,23 +1,25 @@
 import prisma from '../../../core/prisma/prisma-client';
-import { User } from '@prisma/client';
 import { UpdateUserDto } from '../dto/auth.dto';
 import { BotSubscriptionsService } from '../../bot-subscriptions/bot-subscriptions.service';
+import { User } from '../interfaces/user.interface';
+import { AccountService } from '../../account/account.service';
 
 export class UsersService {
 
   private prisma: any;
   private botSubscriptionsService: BotSubscriptionsService;
+  private accountService: AccountService;
 
   constructor() {
     this.prisma = prisma;
     this.botSubscriptionsService = new BotSubscriptionsService();
-
+    this.accountService = new AccountService();
   }
 
 
   async getUsers(): Promise<User[]> {
     try {
-      return await this.prisma.user.findMany({
+      const users = await this.prisma.user.findMany({
         select: {
           uuid: true,
           username: true,
@@ -32,6 +34,15 @@ export class UsersService {
           createdAt: 'desc'
         }
       });
+
+      const accounts = await Promise.all(users.map((user: User) => this.accountService.getAccount(user.uuid)));
+
+      users.forEach((user: User, index: number) => {
+        user.balance = accounts[index].totalWalletBalance;
+        user.profit = accounts[index].income.netProfit;
+      });
+
+      return users;
     } catch (error) {
       console.log(error);
       throw new Error('Failed to get users');
@@ -81,7 +92,7 @@ export class UsersService {
       if (!data.enabled) {
         await this.botSubscriptionsService.stopAllBotSubscriptions(uuid);
       } else {
-        await this.botSubscriptionsService.startAllBotSubscriptions(uuid);
+        // await this.botSubscriptionsService.startAllBotSubscriptions(uuid);
       }
 
       return await this.prisma.user.update({

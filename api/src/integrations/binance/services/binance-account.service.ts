@@ -12,13 +12,17 @@ export class BinanceAccountService {
 
     }
 
-    async getAccountFutures(user_uuid: string): Promise<FuturesAccountInfo> {
+    async getAccountFutures(user_uuid: string): Promise<FuturesAccountInfo | null> {
         try {
             const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            if (!binanceClient) {
+                return null;
+            }
             const accountInfo = await binanceClient.futuresAccount();
             return accountInfo;
         } catch (error) {
-            throw new Error(`Failed to get futures account: ${error}`);
+            console.error(`Failed to get futures account: ${error}`);
+            return null;
         }
     }
 
@@ -26,10 +30,14 @@ export class BinanceAccountService {
     async getFuturesUserTrades(user_uuid: string, symbol?: string): Promise<FuturesTrade[]> {
         try {
             const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
+            if (!binanceClient) {
+                return [];
+            }
             const trades = await binanceClient.futuresUserTrades(symbol);
             return this.accountUtils.sortTrades(trades);
         } catch (error) {
-            throw new Error(`Failed to get futures user trades: ${error}`);
+            console.error(`Failed to get futures user trades: ${error}`);
+            return [];
         }
     }
 

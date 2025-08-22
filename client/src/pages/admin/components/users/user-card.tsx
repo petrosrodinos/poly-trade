@@ -143,7 +143,15 @@ export const UserCard = ({ user }: UserCardProps) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+          <div className="flex items-center space-x-2">
+            <DollarSign className="h-4 w-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-muted-foreground">Profit</p>
+              <p className="font-semibold text-foreground text-sm sm:text-base">{formatCurrency(user?.profit ?? 0)}</p>
+            </div>
+          </div>
+
           <div className="flex items-center space-x-2">
             <Zap className="h-4 w-4 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
             <div className="min-w-0 flex-1">
@@ -153,18 +161,18 @@ export const UserCard = ({ user }: UserCardProps) => {
               </p>
             </div>
           </div>
+        </div>
 
-          <div className="flex items-center space-x-2">
-            <Zap className="h-4 w-4 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
-            <div className="min-w-0 flex-1">
-              <p className="text-xs text-muted-foreground">Subscription Amounts</p>
-              <p className="font-semibold text-foreground text-sm sm:text-base">
-                {(() => {
-                  const { activeAmount, totalAmount } = getSubscriptionAmounts();
-                  return `${formatPrice(activeAmount)}/${formatPrice(totalAmount)}`;
-                })()}
-              </p>
-            </div>
+        <div className="flex items-center space-x-2">
+          <Zap className="h-4 w-4 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-muted-foreground">Subscription Amounts</p>
+            <p className="font-semibold text-foreground text-sm sm:text-base">
+              {(() => {
+                const { activeAmount, totalAmount } = getSubscriptionAmounts();
+                return `${formatPrice(activeAmount)}/${formatPrice(totalAmount)}`;
+              })()}
+            </p>
           </div>
         </div>
 

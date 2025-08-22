@@ -85,6 +85,7 @@ export const UserTable = ({ users }: UserTableProps) => {
             <TableHead>Balance</TableHead>
             <TableHead>Commission</TableHead>
             <TableHead>Commission Paid</TableHead>
+            <TableHead>Profit</TableHead>
             <TableHead>Subscriptions</TableHead>
             <TableHead>Subscription Amounts</TableHead>
             <TableHead>Joined</TableHead>
@@ -133,6 +134,12 @@ export const UserTable = ({ users }: UserTableProps) => {
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                     <span className="font-medium">{formatCurrency(user?.commission_paid ?? 0)}</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    <span className="font-medium">{formatCurrency(user?.profit ?? 0)}</span>
                   </div>
                 </TableCell>
                 <TableCell>

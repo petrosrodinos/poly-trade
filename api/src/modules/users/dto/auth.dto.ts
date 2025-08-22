@@ -20,21 +20,4 @@ export type LoginDto = z.infer<typeof LoginSchema>;
 export type RegisterDto = z.infer<typeof RegisterSchema>;
 export type UpdateUserDto = z.infer<typeof UpdateUserSchema>;
 
-export interface JwtPayload {
-    uuid: string;
-    username: string;
-    role: string;
-    verified: boolean;
-    enabled: boolean;
-}
 
-export interface AuthResponse {
-    user: {
-        uuid: string;
-        username: string;
-        role: string;
-        verified: boolean;
-        enabled: boolean;
-    };
-    token: string;
-}

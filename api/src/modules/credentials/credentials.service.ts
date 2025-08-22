@@ -46,7 +46,7 @@ export class CredentialsService {
 
             const account = await binanceAccountService.getAccountFutures(user_uuid);
 
-            if (account.totalWalletBalance === '0') {
+            if (account?.totalWalletBalance === '0' || !account) {
                 await this.prisma.credentials.delete({
                     where: {
                         uuid: credentials.uuid

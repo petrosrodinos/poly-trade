@@ -15,17 +15,18 @@ export class AccountService {
 
     getAccount = async (user_uuid: string): Promise<AccountSummary> => {
         try {
-            const account = await this.getAccountFutures(user_uuid);
-            const trades = await this.getFuturesUserTrades(user_uuid);
-            // const income = await this.getFuturesIncome();
+            const [account, trades] = await Promise.all([
+                this.getAccountFutures(user_uuid),
+                this.getFuturesUserTrades(user_uuid)
+                // this.getFuturesIncome()
+            ]);
 
             const tradesSummary = this.accountUtils.calculateTradesSummary(trades);
             // const incomeSummary = this.accountUtils.calculateIncomeSummary(income);
 
-
             return {
-                totalWalletBalance: parseFloat(account.totalWalletBalance),
-                availableBalance: parseFloat(account.availableBalance),
+                totalWalletBalance: parseFloat(account?.totalWalletBalance ?? '0'),
+                availableBalance: parseFloat(account?.availableBalance ?? '0'),
                 // trades: incomeSummary,
                 income: tradesSummary,
             };
@@ -35,7 +36,7 @@ export class AccountService {
     }
 
 
-    getAccountFutures = async (user_uuid: string): Promise<FuturesAccountInfo> => {
+    getAccountFutures = async (user_uuid: string): Promise<FuturesAccountInfo | null> => {
         try {
             const account = await this.binanceAccountService.getAccountFutures(user_uuid);
             return account;

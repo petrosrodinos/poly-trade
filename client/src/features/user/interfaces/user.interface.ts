@@ -21,6 +21,7 @@ export interface UserAdmin extends User {
     commission?: number;
     commission_paid?: number;
     balance?: number;
+    profit?: number;
     subscriptions: BotSubscription[];
     meta: Record<string, any>;
 }
