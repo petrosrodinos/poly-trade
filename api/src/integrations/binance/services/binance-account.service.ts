@@ -60,9 +60,11 @@ export class BinanceAccountService {
                 throw new Error('Unable to fetch account information');
             }
 
-            const balance = parseFloat(account.assets.find((asset: any) => asset.asset === symbol)?.availableBalance || '0');
+            return parseFloat(account.availableBalance);
 
-            return balance;
+            // const balance = parseFloat(account.assets.find((asset: any) => asset.asset === symbol)?.walletBalance || '0');
+
+            // return balance;
 
         } catch (error) {
             throw new Error(`Failed to get account balance: ${error}`);
