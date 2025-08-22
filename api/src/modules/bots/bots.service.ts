@@ -6,6 +6,7 @@ import CryptoBotSingleton from '../../services/trades/models/crypto-bot-singleto
 import { CryptoBotService } from '../../services/trades/crypto/crypto-bot.service';
 import { BinanceTradesService } from '../../integrations/binance/services/binance-trades.service';
 import { BotModel } from '../../services/trades/models/bot.model';
+import { BinanceClientManager } from '../../integrations/binance/binance-client-manager';
 
 export class BotsService {
     private prisma: any;
@@ -37,6 +38,39 @@ export class BotsService {
             return bot;
         } catch (error) {
             throw error;
+        }
+    }
+
+    async initializeBots(): Promise<UserBotSubscriptions[]> {
+        try {
+            const bots = await this.prisma.bot.findMany({
+                include: {
+                    subscriptions: {
+                        select: {
+                            uuid: true,
+                            bot_uuid: true,
+                            user_uuid: true,
+                            amount: true,
+                            quantity: true,
+                            leverage: true,
+                            active: true,
+                            createdAt: true,
+                        }
+                    }
+                }
+            });
+
+            if (bots.length === 0) {
+                return [];
+            }
+
+            await BinanceClientManager.initializeClients();
+
+            await this.cryptoBotService.initializeBots(bots);
+
+            return bots;
+        } catch (error) {
+            return [];
         }
     }
 
@@ -190,37 +224,6 @@ export class BotsService {
             return result;
         } catch (error) {
             console.error('Error starting all bots', error);
-            return [];
-        }
-    }
-
-    async initializeBots(): Promise<UserBotSubscriptions[]> {
-        try {
-            const bots = await this.prisma.bot.findMany({
-                include: {
-                    subscriptions: {
-                        select: {
-                            uuid: true,
-                            bot_uuid: true,
-                            user_uuid: true,
-                            amount: true,
-                            quantity: true,
-                            leverage: true,
-                            active: true,
-                            createdAt: true,
-                        }
-                    }
-                }
-            });
-
-            if (bots.length === 0) {
-                return [];
-            }
-
-            await this.cryptoBotService.initializeBots(bots);
-
-            return bots;
-        } catch (error) {
             return [];
         }
     }

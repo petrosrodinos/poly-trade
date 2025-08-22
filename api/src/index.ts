@@ -72,7 +72,7 @@ app.listen(PORT, async () => {
 
     try {
         await prisma.$connect();
-        await botService.startAllBots();
+        await botService.initializeBots();
         logger.debug('All bots started successfully');
     } catch (error: any) {
         logger.error('Failed to start all bots:', error?.message);
