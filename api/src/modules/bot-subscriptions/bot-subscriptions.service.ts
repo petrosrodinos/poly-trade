@@ -53,7 +53,7 @@ export class BotSubscriptionsService {
                 throw new Error('User already subscribed to this bot');
             }
 
-            const balance = await this.binanceAccountService.getAccountBalance("USDT");
+            const balance = await this.binanceAccountService.getAccountBalance("USDC");
 
             if (balance < data.amount) {
                 throw new Error('Insufficient balance to create bot');
