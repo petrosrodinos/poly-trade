@@ -2,15 +2,21 @@ import { FuturesAccountInfo, FuturesIncome, FuturesTrade } from "../../integrati
 import { BinanceAccountService } from "../../integrations/binance/services/binance-account.service";
 import { AccountChartData, AccountSummary, Timeframe } from "./interfaces/account.interfaces";
 import { AccountUtils } from "../../integrations/binance/utils/account.utils";
+import { BrokersAccountService } from "../../integrations/brokers/services/brokers-account.services";
+import { BrokerAccountUtils } from "../../integrations/brokers/utils/broker-account.utils";
 
 
 export class AccountService {
     private binanceAccountService: BinanceAccountService;
     private accountUtils: AccountUtils;
+    private brokersAccountService: BrokersAccountService;
+    private brokersAccountUtils: BrokerAccountUtils;
 
     constructor() {
         this.binanceAccountService = new BinanceAccountService();
         this.accountUtils = new AccountUtils();
+        this.brokersAccountService = new BrokersAccountService();
+        this.brokersAccountUtils = new BrokerAccountUtils();
     }
 
     getAccount = async (user_uuid: string): Promise<AccountSummary> => {
@@ -21,7 +27,7 @@ export class AccountService {
                 // this.getFuturesIncome()
             ]);
 
-            const tradesSummary = this.accountUtils.calculateTradesSummary(trades);
+            const tradesSummary = this.brokersAccountUtils.calculateTradesSummary(trades);
             // const incomeSummary = this.accountUtils.calculateIncomeSummary(income);
 
             return {
@@ -38,7 +44,7 @@ export class AccountService {
 
     getAccountFutures = async (user_uuid: string): Promise<FuturesAccountInfo | null> => {
         try {
-            const account = await this.binanceAccountService.getAccountFutures(user_uuid);
+            const account = await this.brokersAccountService.getAccountFutures(user_uuid, 'BINANCE');
             return account;
         } catch (error: any) {
             throw new Error(`Failed to get account status: ${error}`);
@@ -48,7 +54,7 @@ export class AccountService {
 
     getFuturesUserTrades = async (user_uuid: string, symbol?: string): Promise<FuturesTrade[]> => {
         try {
-            const orders = await this.binanceAccountService.getFuturesUserTrades(user_uuid, symbol);
+            const orders = await this.brokersAccountService.getFuturesUserTrades(user_uuid, 'BINANCE', symbol);
             return orders;
         } catch (error: any) {
             throw new Error(`Failed to get futures orders: ${error}`);

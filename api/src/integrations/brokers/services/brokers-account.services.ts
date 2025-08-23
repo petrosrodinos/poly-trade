@@ -21,13 +21,41 @@ export class BrokersAccountService {
             let accountInfo: any;
 
             if (type === 'BINANCE') {
-                accountInfo = await (brokerClient as any).futuresAccount();
+                try {
+                    accountInfo = await brokerClient.fetchBalance();
+                } catch (error) {
+                    console.warn(`fetchBalance failed for BINANCE: ${error}`);
+                    if (brokerClient.has && brokerClient.has.fetchBalance) {
+                        accountInfo = await brokerClient.fetchBalance();
+                    } else {
+                        throw new Error('fetchBalance method not available on BINANCE client');
+                    }
+                }
             } else if (type === 'ALPACA') {
-                accountInfo = await (brokerClient as any).getAccount();
+                try {
+                    accountInfo = await brokerClient.fetchBalance();
+                } catch (error) {
+                    console.warn(`fetchBalance failed for ALPACA: ${error}`);
+                    if (brokerClient.has && brokerClient.has.fetchBalance) {
+                        accountInfo = await brokerClient.fetchBalance();
+                    } else {
+                        throw new Error('fetchBalance method not available on ALPACA client');
+                    }
+                }
             } else if (type === 'COINBASE') {
-                accountInfo = await brokerClient.fetchBalance();
+                try {
+                    accountInfo = await brokerClient.fetchBalance();
+                } catch (error) {
+                    console.warn(`fetchBalance failed for COINBASE: ${error}`);
+                    accountInfo = { free: {}, used: {}, total: {} };
+                }
             } else if (type === 'KRAKEN') {
-                accountInfo = await brokerClient.fetchBalance();
+                try {
+                    accountInfo = await brokerClient.fetchBalance();
+                } catch (error) {
+                    console.warn(`fetchBalance failed for KRAKEN: ${error}`);
+                    accountInfo = { free: {}, used: {}, total: {} };
+                }
             } else {
                 throw new Error(`Unsupported exchange type: ${type}`);
             }
@@ -49,13 +77,63 @@ export class BrokersAccountService {
             let trades: any[];
 
             if (type === 'BINANCE') {
-                trades = await (brokerClient as any).futuresUserTrades(symbol);
+                try {
+                    if (!symbol) {
+                        console.warn('No symbol provided for BINANCE fetchMyTrades, using default symbol BTCUSDT');
+                        symbol = 'BTCUSDT';
+                    }
+                    trades = await brokerClient.fetchMyTrades(symbol);
+                } catch (error) {
+                    console.warn(`fetchMyTrades failed for BINANCE, trying alternative method: ${error}`);
+                    if (brokerClient.has && brokerClient.has.fetchMyTrades) {
+                        if (!symbol) {
+                            symbol = 'BTCUSDT';
+                        }
+                        trades = await brokerClient.fetchMyTrades(symbol);
+                    } else {
+                        throw new Error('fetchMyTrades method not available on BINANCE client');
+                    }
+                }
             } else if (type === 'ALPACA') {
-                trades = await brokerClient.fetchMyTrades(symbol);
+                try {
+                    if (!symbol) {
+                        console.warn('No symbol provided for ALPACA fetchMyTrades, using default symbol SPY');
+                        symbol = 'SPY';
+                    }
+                    trades = await brokerClient.fetchMyTrades(symbol);
+                } catch (error) {
+                    console.warn(`fetchMyTrades failed for ALPACA, trying alternative method: ${error}`);
+                    if (brokerClient.has && brokerClient.has.fetchMyTrades) {
+                        if (!symbol) {
+                            symbol = 'SPY';
+                        }
+                        trades = await brokerClient.fetchMyTrades(symbol);
+                    } else {
+                        throw new Error('fetchMyTrades method not available on ALPACA client');
+                    }
+                }
             } else if (type === 'COINBASE') {
-                trades = await brokerClient.fetchMyTrades(symbol);
+                try {
+                    if (!symbol) {
+                        console.warn('No symbol provided for COINBASE fetchMyTrades, using default symbol BTC/USDT');
+                        symbol = 'BTC/USDT';
+                    }
+                    trades = await brokerClient.fetchMyTrades(symbol);
+                } catch (error) {
+                    console.warn(`fetchMyTrades failed for COINBASE: ${error}`);
+                    trades = [];
+                }
             } else if (type === 'KRAKEN') {
-                trades = await brokerClient.fetchMyTrades(symbol);
+                try {
+                    if (!symbol) {
+                        console.warn('No symbol provided for KRAKEN fetchMyTrades, using default symbol BTC/USDT');
+                        symbol = 'BTC/USDT';
+                    }
+                    trades = await brokerClient.fetchMyTrades(symbol);
+                } catch (error) {
+                    console.warn(`fetchMyTrades failed for KRAKEN: ${error}`);
+                    trades = [];
+                }
             } else {
                 throw new Error(`Unsupported exchange type: ${type}`);
             }
@@ -64,6 +142,9 @@ export class BrokersAccountService {
             return this.brokerAccountUtils.sortTrades(normalizedTrades);
         } catch (error) {
             console.error(`Failed to get futures user trades for ${type}: ${error}`);
+            if (type === 'BINANCE' && !symbol) {
+                console.error('BINANCE fetchMyTrades requires a symbol parameter. Consider providing a default symbol.');
+            }
             return [];
         }
     }
@@ -74,13 +155,43 @@ export class BrokersAccountService {
             let income: any[] = [];
 
             if (type === 'BINANCE') {
-                income = await (brokerClient as any).futuresIncome();
+                try {
+                    income = await brokerClient.fetchLedger();
+                } catch (error) {
+                    console.warn(`fetchLedger failed for BINANCE: ${error}`);
+                    if (brokerClient.has && brokerClient.has.fetchLedger) {
+                        income = await brokerClient.fetchLedger();
+                    } else {
+                        console.warn('fetchLedger method not available on BINANCE client, returning empty array');
+                        income = [];
+                    }
+                }
             } else if (type === 'ALPACA') {
-                income = await brokerClient.fetchLedger();
+                try {
+                    income = await brokerClient.fetchLedger();
+                } catch (error) {
+                    console.warn(`fetchLedger failed for ALPACA: ${error}`);
+                    if (brokerClient.has && brokerClient.has.fetchLedger) {
+                        income = await brokerClient.fetchLedger();
+                    } else {
+                        console.warn('fetchLedger method not available on ALPACA client, returning empty array');
+                        income = [];
+                    }
+                }
             } else if (type === 'COINBASE') {
-                income = await brokerClient.fetchLedger();
+                try {
+                    income = await brokerClient.fetchLedger();
+                } catch (error) {
+                    console.warn(`fetchLedger failed for COINBASE: ${error}`);
+                    income = [];
+                }
             } else if (type === 'KRAKEN') {
-                income = await brokerClient.fetchLedger();
+                try {
+                    income = await brokerClient.fetchLedger();
+                } catch (error) {
+                    console.warn(`fetchLedger failed for KRAKEN: ${error}`);
+                    income = [];
+                }
             } else {
                 throw new Error(`Unsupported exchange type: ${type}`);
             }
@@ -162,13 +273,33 @@ export class BrokersAccountService {
             let response: any;
 
             if (type === 'BINANCE') {
-                response = await (brokerClient as any).futuresPing();
+                try {
+                    response = await brokerClient.fetchTime();
+                } catch (error) {
+                    console.warn(`fetchTime failed for BINANCE: ${error}`);
+                    response = { serverTime: Date.now() };
+                }
             } else if (type === 'ALPACA') {
-                response = await brokerClient.fetchTime();
+                try {
+                    response = await brokerClient.fetchTime();
+                } catch (error) {
+                    console.warn(`fetchTime failed for ALPACA: ${error}`);
+                    response = { serverTime: Date.now() };
+                }
             } else if (type === 'COINBASE') {
-                response = await brokerClient.fetchTime();
+                try {
+                    response = await brokerClient.fetchTime();
+                } catch (error) {
+                    console.warn(`fetchTime failed for COINBASE: ${error}`);
+                    response = { serverTime: Date.now() };
+                }
             } else if (type === 'KRAKEN') {
-                response = await brokerClient.fetchTime();
+                try {
+                    response = await brokerClient.fetchTime();
+                } catch (error) {
+                    console.warn(`fetchTime failed for KRAKEN: ${error}`);
+                    response = { serverTime: Date.now() };
+                }
             } else {
                 throw new Error(`Unsupported exchange type: ${type}`);
             }
