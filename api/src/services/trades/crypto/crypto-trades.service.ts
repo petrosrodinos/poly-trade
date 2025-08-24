@@ -20,8 +20,8 @@ export class CryptoTradesService {
 
             const bot: BotModel | null = await this.cryptoBotService.getBotByUuid(uuid);
 
-            // console.log('bot', bot);
             if (!bot || !bot.active || bot.symbol.toLowerCase() !== symbol.toLowerCase()) {
+                console.log('bot not found', uuid);
                 return;
             }
 
