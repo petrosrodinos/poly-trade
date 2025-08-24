@@ -128,6 +128,7 @@ export class BotsService {
 
     async updateBot(uuid: string, data: UpdateBotDto, user_uuid: string): Promise<BotModel | null> {
         try {
+
             const existingBot = await this.prisma.bot.findFirst({
                 where: {
                     uuid: uuid,
