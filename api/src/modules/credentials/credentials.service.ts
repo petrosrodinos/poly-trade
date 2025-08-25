@@ -46,7 +46,7 @@ export class CredentialsService {
 
             const account = await binanceAccountService.getAccountFutures(user_uuid);
 
-            if (account?.totalWalletBalance === '0' || !account) {
+            if (!account) {
                 await this.prisma.credentials.delete({
                     where: {
                         uuid: credentials.uuid
@@ -68,11 +68,6 @@ export class CredentialsService {
             return credentials;
         } catch (error) {
             console.log(error);
-            await this.prisma.credentials.delete({
-                where: {
-                    user_uuid: user_uuid
-                }
-            });
             throw new Error('Invalid API key or secret');
         }
     }

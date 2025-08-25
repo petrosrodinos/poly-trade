@@ -44,7 +44,7 @@ app.use('*', (req, res) => {
 const shutdown = async (signal: string) => {
     logger.debug(`Received ${signal}, shutting down gracefully...`);
     try {
-        await botService.stopAllBots();
+        // await botService.stopAllBots();
     } catch (error: any) {
         logger.error("Could not stop all bots", error?.message);
     }

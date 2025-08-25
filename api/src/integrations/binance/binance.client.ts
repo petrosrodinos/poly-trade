@@ -11,7 +11,7 @@ export class BinanceClient {
         const useTestnet = process.env.BINANCE_USE_TESTNET === 'true';
 
         if (!apiKey || !secretKey) {
-            throw new Error('Binance API credentials are required. Please set BINANCE_ADMIN_API_KEY and BINANCE_ADMIN_SECRET_KEY environment variables.');
+            throw new Error('Binance API credentials are required');
         }
 
         const baseUrlFutures = useTestnet

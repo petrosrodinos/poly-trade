@@ -30,14 +30,14 @@ export class BinanceTradesService {
             console.error(`Error getting position for ${symbol}:`, error);
 
             if (error.message && error.message.includes('-2015')) {
-                throw new Error(`API authentication failed. Please check your Binance API credentials and permissions.`);
+                console.log(`API authentication failed. Please check your Binance API credentials and permissions.`);
             }
 
-            throw new Error(`Failed to get position for ${symbol}: ${error.message || error}`);
+            return null;
         }
     }
 
-    async openPosition(user_uuid: string, symbol: string, side: 'buy' | 'sell', quantity?: number, leverage?: number): Promise<BinanceOrderResponse> {
+    async openPosition(user_uuid: string, symbol: string, side: 'buy' | 'sell', quantity?: number, leverage?: number): Promise<BinanceOrderResponse | null> {
         try {
             const orderSide: BinanceOrderSide = side.toUpperCase() as BinanceOrderSide;
 
@@ -72,7 +72,7 @@ export class BinanceTradesService {
             };
         } catch (error) {
             console.error(`Error opening ${side} position for ${symbol}:`, error);
-            throw new Error(`Failed to open ${side} position for ${symbol}: ${error}`);
+            return null;
         }
     }
 
@@ -124,7 +124,7 @@ export class BinanceTradesService {
             };
         } catch (error) {
             console.error(`Error closing position for ${symbol}:`, error);
-            throw new Error(`Failed to close position for ${symbol}: ${error}`);
+            return null;
         }
     }
 
@@ -136,7 +136,8 @@ export class BinanceTradesService {
                 await Promise.all(symbols.map(symbol => this.closePosition(user_uuid, symbol)));
             }
         } catch (error) {
-            throw new Error(`Failed to close all positions: ${error}`);
+            console.error(`Error closing all positions:`, error);
+            return false;
         }
     }
 
@@ -144,7 +145,8 @@ export class BinanceTradesService {
         try {
             await Promise.all(symbols.map(symbol => this.closePosition(user_uuid, symbol)));
         } catch (error) {
-            throw new Error(`Failed to close all positions for user ${user_uuid}: ${error}`);
+            console.error(`Error closing all positions for user:`, error);
+            return false;
         }
     }
 
