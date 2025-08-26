@@ -1,7 +1,7 @@
 import { Exchange } from 'ccxt';
 import { CredentialsService } from "../../modules/credentials/credentials.service";
 import { EncryptionService } from "../../shared/utils/encryption";
-import { ExchangeType } from './interfaces/brokers.interfaces';
+import { ExchangeType } from './futures/interfaces/brokers.interfaces';
 import { BrokersClient } from './brokers-client';
 
 export class BrokersClientManager {

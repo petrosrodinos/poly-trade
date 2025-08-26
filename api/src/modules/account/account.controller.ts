@@ -51,7 +51,7 @@ export class AccountController {
     getFuturesUserTrades = async (req: AuthenticatedRequest, res: Response) => {
         try {
             const symbol = req.query.symbol?.toString().toUpperCase() as string;
-            const orders = await this.accountService.getFuturesUserTrades(req.user!.uuid, symbol);
+            const orders = await this.accountService.getFuturesUserTrades(req.user!.uuid, [symbol]);
             res.status(200).json(orders);
         } catch (error: any) {
             res.status(500).json({
@@ -62,18 +62,18 @@ export class AccountController {
     }
 
 
-    getFuturesIncome = async (req: AuthenticatedRequest, res: Response) => {
-        try {
-            const symbol = req.query.symbol?.toString().toUpperCase() as string;
-            const income = await this.accountService.getFuturesIncome(req.user!.uuid, symbol);
-            res.status(200).json(income);
-        } catch (error: any) {
-            res.status(500).json({
-                message: 'Failed to get futures income',
-                error: error.message
-            });
-        }
-    }
+    // getFuturesIncome = async (req: AuthenticatedRequest, res: Response) => {
+    //     try {
+    //         const symbol = req.query.symbol?.toString().toUpperCase() as string;
+    //         const income = await this.accountService.getFuturesIncome(req.user!.uuid, symbol);
+    //         res.status(200).json(income);
+    //     } catch (error: any) {
+    //         res.status(500).json({
+    //             message: 'Failed to get futures income',
+    //             error: error.message
+    //         });
+    //     }
+    // }
 
     ping = async (req: AuthenticatedRequest, res: Response) => {
         try {

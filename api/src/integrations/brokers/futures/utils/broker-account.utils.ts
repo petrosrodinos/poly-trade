@@ -1,11 +1,30 @@
-import { BrokerIncome, BrokerTrade } from "../interfaces/brokers.interfaces";
-import { AccountChartData, Timeframe, TradeProfitSummary } from "../../../modules/account/interfaces/account.interfaces";
+import { BrokerIncome, BrokerFuturesTrade } from "../interfaces/brokers.interfaces";
+import { AccountChartData, Timeframe, TradeProfitSummary } from "../../../../modules/account/interfaces/account.interfaces";
 
-export class BrokerAccountUtils {
+export class BrokerFuturesAccountUtils {
 
     constructor() { }
 
-    calculateTradesSummary(trades: BrokerTrade[]): TradeProfitSummary {
+    normalizeTrade(data: any): BrokerFuturesTrade {
+        return {
+            symbol: data.symbol,
+            id: Number(data.info.id),
+            orderId: Number(data.info.orderId),
+            side: data.info.side.toUpperCase() as 'BUY' | 'SELL',
+            price: data.info.price,
+            qty: data.info.qty,
+            realizedPnl: data.info.realizedPnl,
+            quoteQty: data.info.quoteQty,
+            commission: data.info.commission,
+            commissionAsset: data.info.commissionAsset,
+            time: Number(data.info.time),
+            positionSide: data.info.positionSide as 'BOTH' | 'LONG' | 'SHORT',
+            maker: data.info.maker,
+            buyer: data.info.buyer,
+        };
+    }
+
+    calculateTradesSummary(trades: BrokerFuturesTrade[]): TradeProfitSummary {
         if (trades.length === 0) {
             return {
                 grossProfit: 0,
@@ -102,7 +121,7 @@ export class BrokerAccountUtils {
         };
     }
 
-    sortTrades(trades: BrokerTrade[]): BrokerTrade[] {
+    sortTrades(trades: BrokerFuturesTrade[]): BrokerFuturesTrade[] {
         return trades.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
     }
 
@@ -175,7 +194,7 @@ export class BrokerAccountUtils {
         }));
     }
 
-    calculateTradesChart(trades: BrokerTrade[], timeframe: Timeframe = "hour"): AccountChartData[] {
+    calculateTradesChart(trades: BrokerFuturesTrade[], timeframe: Timeframe = "hour"): AccountChartData[] {
         const grouped = trades.reduce((acc: Record<string, number>, trade) => {
             const date = new Date(trade.time);
             let key: string;

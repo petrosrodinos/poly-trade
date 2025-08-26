@@ -31,8 +31,8 @@ export interface BotSubscriptionResponse {
     amount: number;
     leverage: number;
     active: boolean;
-    trades: TradeProfitSummary;
-    profit: number;
+    trades?: TradeProfitSummary;
+    profit?: number;
     createdAt: Date;
     updatedAt: Date;
 }

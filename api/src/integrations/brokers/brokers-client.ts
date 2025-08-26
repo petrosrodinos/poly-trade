@@ -1,6 +1,6 @@
 import ccxt, { Exchange } from 'ccxt';
 import { logger } from '../../shared/utils/logger';
-import { Credential } from './interfaces/brokers.interfaces';
+import { Credential } from './futures/interfaces/brokers.interfaces';
 
 export class BrokersClient {
     static createClient(credential: Credential): Exchange | null {
@@ -20,7 +20,21 @@ export class BrokersClient {
             enableRateLimit: true,
         });
 
-        logger.debug(`${credential.type} client initialized successfully for user ${credential.user_uuid}`);
+        const useTestnet = process.env.USE_TESTNET === 'true';
+
+        if (useTestnet) {
+            if (exchangeId === 'binance') {
+                client.setSandboxMode(true);
+            } else if (exchangeId === 'mexc') {
+                if (client.urls?.test) {
+                    client.urls['api'] = client.urls['test'];
+                }
+            }
+            logger.debug(`${credential.type} TESTNET client initialized for user ${credential.user_uuid}`);
+        } else {
+            logger.debug(`${credential.type} LIVE client initialized for user ${credential.user_uuid}`);
+        }
+
         return client;
     }
 }

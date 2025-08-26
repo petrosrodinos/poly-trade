@@ -77,14 +77,33 @@ export class BotSubscriptionsService {
                 }
             });
 
-            // await this.cryptoBotService.createBot(botExists);
-
             await this.cryptoSubscriptionService.createSubscription(botExists, subscription);
 
             return subscription;
         } catch (error: any) {
             console.error('Error creating bot subscription', error);
             throw new Error(error.message);
+        }
+    }
+
+    async getUserBotSubscriptions(user_uuid: string): Promise<BotSubscriptionResponse[]> {
+        try {
+            const subscriptions = await this.prisma.botSubscription.findMany({
+                where: { user_uuid },
+                include: {
+                    bot: {
+                        select: {
+                            symbol: true
+                        }
+                    }
+                }
+            });
+
+            return subscriptions;
+        }
+        catch (error) {
+            console.error('Error getting bot subscriptions', error);
+            throw new Error('Failed to get bot subscriptions');
         }
     }
 

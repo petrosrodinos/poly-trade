@@ -1,4 +1,4 @@
-export type ExchangeType = 'BINANCE' | 'ALPACA' | 'COINBASE' | 'KRAKEN';
+
 
 export interface Credential {
     user_uuid: string;
@@ -8,7 +8,7 @@ export interface Credential {
     passphrase?: string;
 }
 
-export interface BrokerAsset {
+export interface BrokerFuturesAsset {
     asset: string;
     walletBalance: string;
     unrealizedProfit: string;
@@ -24,7 +24,7 @@ export interface BrokerAsset {
     updateTime: number;
 }
 
-export interface BrokerAccountInfo {
+export interface BrokerFuturesAccountInfo {
     totalInitialMargin: string;
     totalMaintMargin: string;
     totalWalletBalance: string;
@@ -36,10 +36,10 @@ export interface BrokerAccountInfo {
     totalCrossUnPnl: string;
     availableBalance: string;
     maxWithdrawAmount: string;
-    assets: BrokerAsset[];
+    assets: BrokerFuturesAsset[];
 }
 
-export interface BrokerTrade {
+export interface BrokerFuturesTrade {
     symbol: string;
     id: number;
     orderId: number;
@@ -72,7 +72,18 @@ export interface BrokerIncomeTradesAndProfit {
     income: BrokerIncome[];
 }
 
-export interface BrokerTradeAndProfit {
+export interface BrokerFuturesTradeAndProfit {
     profit: number;
-    trades: BrokerTrade[];
+    trades: BrokerFuturesTrade[];
 }
+
+export const Exchanges = {
+    DEFAULT: 'BINANCE',
+    BINANCE: 'BINANCE',
+    ALPACA: 'ALPACA',
+    COINBASE: 'COINBASE',
+    KRAKEN: 'KRAKEN',
+    MEXC: 'MEXC'
+}
+
+export type ExchangeType = typeof Exchanges[keyof typeof Exchanges];
