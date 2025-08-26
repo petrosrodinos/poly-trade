@@ -1,9 +1,11 @@
 import ccxt, { Exchange } from 'ccxt';
 import { logger } from '../../shared/utils/logger';
-import { Credential } from './futures/interfaces/brokers.interfaces';
+import { Credential } from './futures/interfaces/brokers-account.interfaces';
+import { BrokerClient } from './interfaces/brokers.interfaces';
 
 export class BrokersClient {
-    static createClient(credential: Credential): Exchange | null {
+
+    static createClient(credential: Credential): BrokerClient | null {
         const exchangeId = credential.type.toLowerCase();
 
         if (!(exchangeId in ccxt)) {

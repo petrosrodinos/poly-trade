@@ -1,14 +1,14 @@
 import { BrokersClientManager } from "../../brokers-client-manager";
-import { ExchangeType } from "../interfaces/brokers.interfaces";
-import { BrokerFuturesAccountInfo, BrokerIncome, BrokerIncomeTradesAndProfit, BrokerFuturesTrade, BrokerFuturesTradeAndProfit } from "../interfaces/brokers.interfaces";
+import { ExchangeType } from "../interfaces/brokers-account.interfaces";
+import { BrokerFuturesAccountInfo, BrokerIncome, BrokerIncomeTradesAndProfit, BrokerFuturesTrade, BrokerFuturesTradeAndProfit } from "../interfaces/brokers-account.interfaces";
 import { BrokerFuturesAccountUtils } from "../utils/broker-account.utils";
 
 export class BrokersFuturesAccountService {
 
-    private brokerAccountUtils: BrokerFuturesAccountUtils;
+    private brokerFuturesAccountUtils: BrokerFuturesAccountUtils;
 
     constructor() {
-        this.brokerAccountUtils = new BrokerFuturesAccountUtils();
+        this.brokerFuturesAccountUtils = new BrokerFuturesAccountUtils();
     }
 
     async getAccountFutures(
@@ -71,9 +71,9 @@ export class BrokersFuturesAccountService {
 
             const trades = results.map((r: any) => r.value).flat();
 
-            const normalizedTrades = trades.map((trade) => this.brokerAccountUtils.normalizeTrade(trade));
+            const normalizedTrades = trades.map((trade) => this.brokerFuturesAccountUtils.normalizeTrade(trade));
 
-            return this.brokerAccountUtils.sortTrades(normalizedTrades);
+            return this.brokerFuturesAccountUtils.sortTrades(normalizedTrades);
 
         } catch (error) {
             console.error(`Failed to get futures user trades for ${type}: ${error}`);
@@ -96,7 +96,7 @@ export class BrokersFuturesAccountService {
             }
 
             const normalizedIncome = income.map(inc => this.normalizeIncome(inc, type));
-            return this.brokerAccountUtils.sortIncomes(normalizedIncome);
+            return this.brokerFuturesAccountUtils.sortIncomes(normalizedIncome);
         } catch (error) {
             throw new Error(`Failed to get futures income for ${type}: ${error}`);
         }
@@ -126,7 +126,7 @@ export class BrokersFuturesAccountService {
                 };
             }
 
-            const profit = this.brokerAccountUtils.calculateIncomeSummary(incomes).netProfit;
+            const profit = this.brokerFuturesAccountUtils.calculateIncomeSummary(incomes).netProfit;
 
             return {
                 profit,
@@ -150,7 +150,7 @@ export class BrokersFuturesAccountService {
             //     };
             // }
 
-            // const profit = this.brokerAccountUtils.calculateTradesSummary(trades).netProfit;
+            // const profit = this.brokerFuturesAccountUtils.calculateTradesSummary(trades).netProfit;
             // return {
             //     profit,
             //     trades

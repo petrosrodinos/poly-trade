@@ -1,23 +1,22 @@
-import { Exchange } from 'ccxt';
 import { CredentialsService } from "../../modules/credentials/credentials.service";
 import { EncryptionService } from "../../shared/utils/encryption";
-import { ExchangeType } from './futures/interfaces/brokers.interfaces';
+import { ExchangeType } from './futures/interfaces/brokers-account.interfaces';
 import { BrokersClient } from './brokers-client';
+import { BrokerClient } from './interfaces/brokers.interfaces';
 
 export class BrokersClientManager {
-    private static clients: Record<string, Exchange> = {};
+    private static clients: Record<string, BrokerClient> = {};
     private static credentialsService = new CredentialsService();
     private static encryptionService = new EncryptionService();
 
 
-    static async initializeClients(): Promise<Record<string, Exchange>> {
+    static async initializeClients(): Promise<Record<string, BrokerClient>> {
         try {
             const credentials = await this.credentialsService.getAllCredentials();
 
             const decryptedCredentials = await Promise.all(
                 credentials.map(async (credential) => ({
                     ...credential,
-                    type: credential.type as ExchangeType,
                     api_key: await this.encryptionService.decrypt(credential.api_key),
                     api_secret: await this.encryptionService.decrypt(credential.api_secret)
                 }))
@@ -37,7 +36,7 @@ export class BrokersClientManager {
         }
     }
 
-    static async getClientForUser(user_uuid: string, type: ExchangeType): Promise<Exchange> {
+    static async getClientForUser(user_uuid: string, type: ExchangeType): Promise<BrokerClient> {
         const key = `${user_uuid}_${type}`;
 
         if (!this.clients[key]) {
@@ -52,7 +51,6 @@ export class BrokersClientManager {
 
             const client = BrokersClient.createClient({
                 ...creds,
-                type: creds.type as ExchangeType,
                 api_key: decryptedApiKey,
                 api_secret: decryptedApiSecret,
             });
@@ -68,7 +66,7 @@ export class BrokersClientManager {
     }
 
 
-    static async getClients(): Promise<Record<string, Exchange>> {
+    static async getClients(): Promise<Record<string, BrokerClient>> {
         return this.clients;
     }
 

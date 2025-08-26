@@ -13,4 +13,8 @@ router.get('/info', authMiddleware.authenticate, authMiddleware.requireUser, acc
 router.get('/income/chart', authMiddleware.authenticate, authMiddleware.requireUser, accountController.getAccountIncomeChart);
 router.get('/ping', authMiddleware.authenticate, authMiddleware.requireUser, accountController.ping);
 
+router.get('/position', authMiddleware.authenticate, authMiddleware.requireUser, accountController.getPosition);
+router.post('/position', authMiddleware.authenticate, authMiddleware.requireUser, accountController.openPosition);
+router.post('/position/close', authMiddleware.authenticate, authMiddleware.requireUser, accountController.closePosition);
+
 export { router as accountRouter };

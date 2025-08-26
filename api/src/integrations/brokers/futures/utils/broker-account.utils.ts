@@ -1,4 +1,4 @@
-import { BrokerIncome, BrokerFuturesTrade } from "../interfaces/brokers.interfaces";
+import { BrokerIncome, BrokerFuturesTrade } from "../interfaces/brokers-account.interfaces";
 import { AccountChartData, Timeframe, TradeProfitSummary } from "../../../../modules/account/interfaces/account.interfaces";
 
 export class BrokerFuturesAccountUtils {

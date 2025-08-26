@@ -1,5 +1,3 @@
-
-
 export interface Credential {
     user_uuid: string;
     api_key: string;

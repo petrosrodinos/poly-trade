@@ -1,3 +1,4 @@
+import { CredentialsType } from '@prisma/client';
 import { z } from 'zod';
 
 export const CreateCredentialsSchema = z.object({
@@ -26,7 +27,7 @@ export interface CredentialsResponse {
     id: number;
     uuid: string;
     user_uuid: string;
-    type: string;
+    type: CredentialsType;
     api_key: string;
     api_secret: string;
     createdAt: Date;

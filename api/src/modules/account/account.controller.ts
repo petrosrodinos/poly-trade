@@ -88,4 +88,43 @@ export class AccountController {
         }
     }
 
+    getPosition = async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const symbol = req.query.symbol?.toString().toUpperCase() as string;
+            const position = await this.accountService.getPosition(req.user!.uuid, symbol);
+            res.status(200).json(position);
+        } catch (error: any) {
+            res.status(500).json({
+                message: 'Failed to get position',
+                error: error.message
+            });
+        }
+    }
+
+    openPosition = async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const { symbol, side, quantity, leverage } = req.body;
+            const position = await this.accountService.openPosition(req.user!.uuid, symbol, side, quantity, leverage);
+            res.status(200).json(position);
+        } catch (error: any) {
+            res.status(500).json({
+                message: 'Failed to open position',
+                error: error.message
+            });
+        }
+    }
+
+    closePosition = async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const symbol = req.query.symbol?.toString() as string;
+            const position = await this.accountService.closePosition(req.user!.uuid, symbol);
+            res.status(200).json(position);
+        } catch (error: any) {
+            res.status(500).json({
+                message: 'Failed to close position',
+                error: error.message
+            });
+        }
+    }
+
 }

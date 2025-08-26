@@ -3,18 +3,22 @@ import { AccountChartData, AccountSummary, Timeframe } from "./interfaces/accoun
 import { BrokersFuturesAccountService } from "../../integrations/brokers/futures/services/brokers-account.services";
 import { BrokerFuturesAccountUtils } from "../../integrations/brokers/futures/utils/broker-account.utils";
 import { BotSubscriptionsService } from "../bot-subscriptions/bot-subscriptions.service";
-import { Exchanges } from "../../integrations/brokers/futures/interfaces/brokers.interfaces";
+import { Exchanges } from "../../integrations/brokers/futures/interfaces/brokers-account.interfaces";
+import { BrokersFuturesTradesService } from "../../integrations/brokers/futures/services/brokers-trades.services";
+import { BrokerFuturesOrder, BrokerFuturesPosition } from "../../integrations/brokers/futures/interfaces/brokers-trades.interfaces";
 
 
 export class AccountService {
     private brokersFuturesAccountService: BrokersFuturesAccountService;
     private brokersFuturesAccountUtils: BrokerFuturesAccountUtils;
     private botbscriptionService: BotSubscriptionsService;
+    private brokersFuturesTradesService: BrokersFuturesTradesService;
 
     constructor() {
         this.brokersFuturesAccountService = new BrokersFuturesAccountService();
         this.brokersFuturesAccountUtils = new BrokerFuturesAccountUtils();
         this.botbscriptionService = new BotSubscriptionsService();
+        this.brokersFuturesTradesService = new BrokersFuturesTradesService();
     }
 
     getAccount = async (user_uuid: string): Promise<AccountSummary> => {
@@ -112,6 +116,34 @@ export class AccountService {
             };
         } catch (error: any) {
             throw new Error(`Failed to ping Binance: ${error}`);
+        }
+    }
+
+    getPosition = async (user_uuid: string, symbol: string): Promise<BrokerFuturesPosition | null> => {
+        try {
+            const position = await this.brokersFuturesTradesService.getPosition(user_uuid, symbol, Exchanges.DEFAULT);
+            return position;
+        } catch (error: any) {
+            throw new Error(`Failed to get position: ${error}`);
+        }
+    }
+
+    openPosition = async (user_uuid: string, symbol: string, side: 'buy' | 'sell', quantity: number, leverage?: number): Promise<BrokerFuturesOrder | null> => {
+
+        try {
+            const position = await this.brokersFuturesTradesService.openPosition(user_uuid, Exchanges.DEFAULT, symbol, side, quantity, leverage);
+            return position;
+        } catch (error: any) {
+            throw new Error(`Failed to open position: ${error}`);
+        }
+    }
+
+    closePosition = async (user_uuid: string, symbol: string): Promise<BrokerFuturesOrder | null> => {
+        try {
+            const position = await this.brokersFuturesTradesService.closePosition(user_uuid, Exchanges.DEFAULT, symbol);
+            return position;
+        } catch (error: any) {
+            throw new Error(`Failed to close position: ${error}`);
         }
     }
 
