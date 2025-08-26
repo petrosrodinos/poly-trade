@@ -26,11 +26,14 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
   const stats = React.useMemo(() => {
     if (!incomeData || incomeData.length === 0) return null;
 
-    const values = incomeData.map((item) => item.value);
+    const values = incomeData.map((item) => item.value).filter((val) => val !== null && val !== undefined);
+
+    if (values.length === 0) return null;
+
     const latest = values[values.length - 1];
-    const previous = values[values.length - 2];
-    const total = values.reduce((sum, val) => sum + val, 0);
-    const trend = previous ? ((latest - previous) / Math.abs(previous)) * 100 : 0;
+    const previous = values.length > 1 ? values[values.length - 2] : null;
+    const total = values.reduce((sum, val) => sum + (val || 0), 0);
+    const trend = previous && previous !== 0 ? ((latest - previous) / Math.abs(previous)) * 100 : 0;
 
     return { latest, total, trend };
   }, [incomeData]);
@@ -285,7 +288,7 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
               </div>
             </div>
             <div className="flex items-center justify-between sm:justify-end gap-4">
-              {stats && (
+              {stats && stats.latest !== null && stats.latest !== undefined && (
                 <div className="text-left sm:text-right">
                   <p className="text-xl sm:text-2xl font-bold text-foreground break-all sm:break-normal" title={`$${stats.latest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}>
                     ${stats.latest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -302,7 +305,7 @@ export function IncomeChart({ className = "", title = "Income Chart", height = 3
             </div>
           </div>
         </div>
-        {stats && (
+        {stats && stats.total !== null && stats.total !== undefined && (
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-6 mt-3 text-sm text-muted-foreground">
             <div className="flex items-center gap-2 min-w-0">
               <div className="w-2 h-2 rounded-full bg-chart-1 flex-shrink-0"></div>
