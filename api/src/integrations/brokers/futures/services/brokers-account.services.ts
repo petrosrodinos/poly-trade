@@ -137,26 +137,29 @@ export class BrokersFuturesAccountService {
         }
     }
 
-    async getFuturesUserTradesAndProfit(user_uuid: string, type: ExchangeType, symbol?: string): Promise<BrokerFuturesTradeAndProfit | null> {
+    async getFuturesUserTradesAndProfit(user_uuid: string, type: ExchangeType, symbol: string): Promise<BrokerFuturesTradeAndProfit> {
         try {
 
-            return null;
-            // const trades = await this.getFuturesUserTrades(user_uuid, type, symbol);
+            const trades = await this.getFuturesUserTrades(user_uuid, type, [symbol]);
 
-            // if (!trades || trades.length === 0) {
-            //     return {
-            //         profit: 0,
-            //         trades: []
-            //     };
-            // }
+            if (!trades || trades.length === 0) {
+                return {
+                    profit: 0,
+                    trades: []
+                };
+            }
 
-            // const profit = this.brokerFuturesAccountUtils.calculateTradesSummary(trades).netProfit;
-            // return {
-            //     profit,
-            //     trades
-            // };
+            const profit = this.brokerFuturesAccountUtils.calculateTradesSummary(trades).netProfit;
+            return {
+                profit,
+                trades
+            };
         } catch (error) {
-            throw new Error(`Failed to get futures user trades and profit for ${type}: ${error}`);
+            console.log(`Failed to get futures user trades and profit for ${type}: ${error}`);
+            return {
+                profit: 0,
+                trades: []
+            };
         }
     }
 

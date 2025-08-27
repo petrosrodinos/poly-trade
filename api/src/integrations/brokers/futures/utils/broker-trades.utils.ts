@@ -1,16 +1,17 @@
-import { BinanceExchangeInfo, TradeQuantity } from "../../../binance/binance.interfaces";
-import { BinanceClientManager } from "../../../binance/binance-client-manager";
+import { TradeQuantity } from "../../../binance/binance.interfaces";
+import { ExchangeType } from "../interfaces/brokers-account.interfaces";
+import { BrokersClientManager } from "../../brokers-client-manager";
 
 export class BrokerFuturesTradesUtils {
 
     constructor() {
     }
 
-    async getTradeQuantity(user_uuid: string, symbol: string, amount: number): Promise<TradeQuantity> {
+    async getTradeQuantity(user_uuid: string, type: ExchangeType, symbol: string, amount: number): Promise<TradeQuantity> {
 
-        const price = await this.getFuturesPrices(user_uuid, symbol);
+        const price = await this.getFuturesPrices(user_uuid, type, symbol);
 
-        const { minQty, stepSize } = await this.getExchangeInfo(user_uuid, symbol);
+        const { minQty, stepSize } = await this.getExchangeInfo(user_uuid, type, symbol);
 
         const quantityValue = this.calculateQuantity(amount, price || 0, minQty, stepSize);
 
@@ -22,29 +23,44 @@ export class BrokerFuturesTradesUtils {
         }
     }
 
-    async getExchangeInfo(user_uuid: string, symbol: string): Promise<BinanceExchangeInfo> {
+    async getExchangeInfo(user_uuid: string, type: ExchangeType, symbol: string): Promise<{ minQty: number; stepSize: number }> {
         try {
-            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
-            const info = await binanceClient.futuresExchangeInfo();
-            const symbolInfo = info.symbols.find((s: any) => s.symbol === symbol);
-            const lotSizeFilter = symbolInfo.filters.find((f: any) => f.filterType === "LOT_SIZE");
+            const brokerClient: any = await BrokersClientManager.getClientForUser(user_uuid, type);
+            if (!brokerClient) throw new Error("No broker client found");
+
+            await brokerClient.loadMarkets();
+
+            const formattedSymbol = symbol.replace('USDT', '/USDT') + ':USDT';
+
+            const market = brokerClient.market(formattedSymbol);
+
+            if (!market || !market.limits) {
+                throw new Error(`No market info found for ${symbol}`);
+            }
 
             return {
-                minQty: parseFloat(lotSizeFilter.minQty),
-                stepSize: parseFloat(lotSizeFilter.stepSize)
+                minQty: market.limits.amount?.min ?? 0,
+                stepSize: market.precision.amount ?? 0
             };
         } catch (error) {
             throw new Error(`Failed to get exchange info for ${symbol}: ${error}`);
         }
     }
 
-    async getFuturesPrices(user_uuid: string, symbol: string): Promise<number | null> {
+    async getFuturesPrices(user_uuid: string, type: ExchangeType, symbol: string): Promise<number | null> {
         try {
-            const binanceClient = await BinanceClientManager.getClientForUser(user_uuid);
-            const prices = await binanceClient.futuresPrices();
-            return parseFloat(prices?.[symbol] || 0);
+            const brokerClient: any = await BrokersClientManager.getClientForUser(user_uuid, type);
+            if (!brokerClient) return null;
+
+            await brokerClient.loadMarkets();
+
+            const formattedSymbol = symbol.replace('USDT', '/USDT') + ':USDT';
+
+            const ticker = await brokerClient.fetchTicker(formattedSymbol);
+
+            return ticker.last ?? null;
         } catch (error) {
-            throw new Error(`Failed to get futures prices for ${symbol}: ${error}`);
+            throw new Error(`Failed to get futures price for ${symbol}: ${error}`);
         }
     }
 

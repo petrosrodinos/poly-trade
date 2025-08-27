@@ -7,28 +7,29 @@ import {
     BotSubscriptionResponse,
     PaginatedBotSubscriptionsResponse
 } from './dto/bot-subscription.dto';
-import { BinanceAccountService } from '../../integrations/binance/services/binance-account.service';
 import { CryptoSubscriptionService } from '../../services/trades/crypto/crypto-subscription.service';
 import { CryptoBotService } from '../../services/trades/crypto/crypto-bot.service';
 import CryptoBotSingleton from '../../services/trades/models/crypto-bot-singleton.service';
-import { TradesUtils } from '../../integrations/binance/utils/trades.utils';
-import { BinanceTradesService } from '../../integrations/binance/services/binance-trades.service';
+import { BrokersFuturesTradesService } from '../../integrations/brokers/futures/services/brokers-trades.services';
+import { BrokerFuturesTradesUtils } from '../../integrations/brokers/futures/utils/broker-trades.utils';
+import { Exchanges } from '../../integrations/brokers/futures/interfaces/brokers-account.interfaces';
+import { BrokersFuturesAccountService } from '../../integrations/brokers/futures/services/brokers-account.services';
 
 export class BotSubscriptionsService {
     private prisma: any;
-    private binanceAccountService: BinanceAccountService;
-    private binanceTradesService: BinanceTradesService;
-    private tradesUtils: TradesUtils;
     private cryptoSubscriptionService: CryptoSubscriptionService;
     private cryptoBotService: CryptoBotService;
+    private brokersFuturesTradesService: BrokersFuturesTradesService;
+    private brokersTradesUtils: BrokerFuturesTradesUtils;
+    private brokersFuturesAccountService: BrokersFuturesAccountService;
 
     constructor() {
         this.prisma = prisma;
-        this.binanceAccountService = new BinanceAccountService();
-        this.binanceTradesService = new BinanceTradesService();
-        this.tradesUtils = new TradesUtils();
         this.cryptoBotService = CryptoBotSingleton.getInstance();
         this.cryptoSubscriptionService = new CryptoSubscriptionService(this.cryptoBotService);
+        this.brokersFuturesTradesService = new BrokersFuturesTradesService();
+        this.brokersFuturesAccountService = new BrokersFuturesAccountService();
+        this.brokersTradesUtils = new BrokerFuturesTradesUtils();
     }
 
     async createBotSubscription(data: CreateBotSubscriptionDto, user_uuid: string): Promise<BotSubscriptionResponse> {
@@ -53,13 +54,13 @@ export class BotSubscriptionsService {
                 throw new Error('User already subscribed to this bot');
             }
 
-            const balance = await this.binanceAccountService.getAccountBalance(user_uuid, "USDC");
+            const balance = await this.brokersFuturesAccountService.getAccountBalance(user_uuid, Exchanges.DEFAULT);
 
             if (balance < data.amount) {
                 throw new Error('Insufficient balance to create bot');
             }
 
-            const { quantity, minQty, price } = await this.tradesUtils.getTradeQuantity(user_uuid, botExists.symbol, data.amount);
+            const { quantity, minQty, price } = await this.brokersTradesUtils.getTradeQuantity(user_uuid, Exchanges.DEFAULT, botExists.symbol, data.amount);
 
             if (quantity === 0) {
                 throw new Error(`Minimum amount required is ${minQty * (price || 0)} USDT`);
@@ -176,7 +177,7 @@ export class BotSubscriptionsService {
 
             if (data.active !== existingSubscription.active) {
                 if (!data.active) {
-                    await this.binanceTradesService.closePosition(user_uuid, existingSubscription.bot.symbol);
+                    await this.brokersFuturesTradesService.closePosition(user_uuid, Exchanges.DEFAULT, existingSubscription.bot.symbol);
                 }
 
             }
@@ -222,7 +223,7 @@ export class BotSubscriptionsService {
             }
 
             try {
-                await this.binanceTradesService.closePosition(user_uuid, existingSubscription.bot.symbol);
+                await this.brokersFuturesTradesService.closePosition(user_uuid, Exchanges.DEFAULT, existingSubscription.bot.symbol);
             } catch (error) {
                 console.error('Error closing position', error);
             }
@@ -281,7 +282,7 @@ export class BotSubscriptionsService {
 
                 await this.cryptoSubscriptionService.stopAllSubscriptionsByUser(user_uuid);
 
-                await this.binanceTradesService.closeAllPositionsForUser(user_uuid, subscriptions.map((subscription: any) => subscription.bot.symbol));
+                await this.brokersFuturesTradesService.closeAllPositionsForUser(user_uuid, Exchanges.DEFAULT, subscriptions.map((subscription: any) => subscription.bot.symbol));
             }
 
 
@@ -315,7 +316,7 @@ export class BotSubscriptionsService {
             }
 
 
-            const { trades, profit } = await this.binanceAccountService.getFuturesUserTradesAndProfit(user_uuid, subscription.bot.symbol);
+            const { trades, profit } = await this.brokersFuturesAccountService.getFuturesUserTradesAndProfit(user_uuid, Exchanges.DEFAULT, subscription.bot.symbol);
 
             return {
                 ...subscription,

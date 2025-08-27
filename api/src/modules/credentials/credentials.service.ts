@@ -2,9 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import prisma from '../../core/prisma/prisma-client';
 import { CreateCredentialsDto, CredentialsResponse } from './dto/credentials.dto';
 import { EncryptionService } from '../../shared/utils/encryption';
-import { AccountService } from '../account/account.service';
-import { BinanceAccountService } from '../../integrations/binance/services/binance-account.service';
-
+import { BrokersFuturesAccountService } from '../../integrations/brokers/futures/services/brokers-account.services';
+import { Exchanges } from '../../integrations/brokers/futures/interfaces/brokers-account.interfaces';
 export class CredentialsService {
     private prisma: any;
     private encryptionService: EncryptionService;
@@ -42,9 +41,9 @@ export class CredentialsService {
                 }
             });
 
-            const binanceAccountService = new BinanceAccountService();
+            const brokersFuturesAccountService = new BrokersFuturesAccountService();
 
-            const account = await binanceAccountService.getAccountFutures(user_uuid);
+            const account = await brokersFuturesAccountService.getAccountFutures(user_uuid, Exchanges.DEFAULT);
 
             if (!account) {
                 await this.prisma.credentials.delete({
@@ -53,7 +52,7 @@ export class CredentialsService {
                     }
                 });
 
-                throw new Error('Account balance is 0, please transfer funds to your futures account');
+                throw new Error('Could not initialize account');
             }
 
             await this.prisma.user.update({

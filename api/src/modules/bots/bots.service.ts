@@ -4,19 +4,19 @@ import { CreateBotDto, UpdateBotDto, BotQueryDto } from './dto/bot.dto';
 import { Bot, UserBotSubscriptions } from './interfaces/bot.interface';
 import CryptoBotSingleton from '../../services/trades/models/crypto-bot-singleton.service';
 import { CryptoBotService } from '../../services/trades/crypto/crypto-bot.service';
-import { BinanceTradesService } from '../../integrations/binance/services/binance-trades.service';
 import { BotModel } from '../../services/trades/models/bot.model';
 import { BinanceClientManager } from '../../integrations/binance/binance-client-manager';
+import { BrokersFuturesTradesService } from '../../integrations/brokers/futures/services/brokers-trades.services';
 
 export class BotsService {
     private prisma: any;
     private cryptoBotService: CryptoBotService;
-    private binanceTradesService: BinanceTradesService;
+    private brokersFuturesTradesService: BrokersFuturesTradesService;
 
     constructor() {
         this.prisma = prisma;
         this.cryptoBotService = CryptoBotSingleton.getInstance();
-        this.binanceTradesService = new BinanceTradesService();
+        this.brokersFuturesTradesService = new BrokersFuturesTradesService();
     }
 
     async createBot(data: CreateBotDto, user_uuid: string): Promise<BotModel> {
@@ -145,7 +145,7 @@ export class BotsService {
                     await this.cryptoBotService.startBot(uuid);
                 } else {
                     await this.cryptoBotService.stopBot(uuid);
-                    await this.binanceTradesService.closeAllPositions([existingBot.symbol]);
+                    await this.brokersFuturesTradesService.closeAllPositions([existingBot.symbol]);
                 }
             }
 
@@ -189,7 +189,7 @@ export class BotsService {
 
             await this.cryptoBotService.deleteBot(uuid);
 
-            await this.binanceTradesService.closeAllPositions([existingBot.symbol]);
+            await this.brokersFuturesTradesService.closeAllPositions([existingBot.symbol]);
 
 
             return true;
@@ -205,7 +205,7 @@ export class BotsService {
 
             await this.cryptoBotService.stopAllBots();
 
-            await this.binanceTradesService.closeAllPositions(result.map((bot: Bot) => bot.symbol));
+            await this.brokersFuturesTradesService.closeAllPositions(result.map((bot: Bot) => bot.symbol));
 
             return result;
 
