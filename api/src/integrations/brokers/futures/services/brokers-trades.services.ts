@@ -2,22 +2,18 @@ import { logger } from "../../../../shared/utils/logger";
 import { BrokersClientManager } from "../../brokers-client-manager";
 import { ExchangeType } from "../interfaces/brokers-account.interfaces";
 import { BrokerFuturesOrder, BrokerFuturesOrderSide, BrokerFuturesPosition, BrokerFuturesPositionSide } from "../interfaces/brokers-trades.interfaces";
-import { BrokerFuturesTradesUtils } from "../utils/broker-trades.utils";
 import { TradesConfig } from "../../../../shared/constants/trades";
 import { BrokerClient } from "../../interfaces/brokers.interfaces";
 
 export class BrokersFuturesTradesService {
 
-    private brokerfuturesTradesUtils: BrokerFuturesTradesUtils;
-
     constructor() {
-        this.brokerfuturesTradesUtils = new BrokerFuturesTradesUtils();
     }
 
     async getPosition(
         user_uuid: string,
+        type: ExchangeType,
         symbol: string,
-        type: ExchangeType
     ): Promise<BrokerFuturesPosition | null> {
         try {
             const brokerClient: any = await BrokersClientManager.getClientForUser(user_uuid, type);
@@ -44,7 +40,7 @@ export class BrokersFuturesTradesService {
                 positionSide: pos.side.toUpperCase() as BrokerFuturesPositionSide
             };
         } catch (error: any) {
-            console.error(`Error getting position for ${symbol}:`, error);
+            console.error(`Error getting position for ${symbol}:`, error.message);
 
             return null;
         }
@@ -116,7 +112,7 @@ export class BrokersFuturesTradesService {
 
             const formattedSymbol = symbol.replace('USDT', '/USDT') + ':USDT';
 
-            const position = await this.getPosition(user_uuid, symbol, type);
+            const position = await this.getPosition(user_uuid, type, symbol);
             if (!position || parseFloat(position.positionAmt) === 0) {
                 return null;
             }
@@ -150,7 +146,7 @@ export class BrokersFuturesTradesService {
             }
 
             for (let retries = 0; retries < 15; retries++) {
-                const pos = await this.getPosition(user_uuid, symbol, type);
+                const pos = await this.getPosition(user_uuid, type, symbol);
                 if (!pos || parseFloat(pos.positionAmt) === 0) {
                     break;
                 }
@@ -169,8 +165,8 @@ export class BrokersFuturesTradesService {
                 type: order.type,
                 side: order.side.toUpperCase() as BrokerFuturesOrderSide,
             };
-        } catch (error) {
-            console.error(`Error closing position for ${symbol}:`, error);
+        } catch (error: any) {
+            console.error(`Error closing position for ${symbol}:`, error.message);
             return null;
         }
     }
@@ -179,17 +175,17 @@ export class BrokersFuturesTradesService {
 
     async closeAllPositions(symbols: string[]): Promise<boolean> {
         try {
-            const brokerClients: any = BrokersClientManager.getClients();
-            if (!brokerClients || Object.keys(brokerClients).length === 0) return false;
+            const brokerClients: any = await BrokersClientManager.getClients();
 
-            for (const [user_uuid, client] of Object.entries(brokerClients) as [string, BrokerClient][]) {
-                await Promise.all(symbols.map(symbol => this.closePosition(user_uuid, client.type as ExchangeType, symbol)));
+            for (const [_, client] of Object.entries(brokerClients) as [string, BrokerClient][]) {
+                console.log('client', client.user_uuid, client.type);
+                await Promise.all(symbols.map(symbol => this.closePosition(client.user_uuid, client.type, symbol)));
             }
 
             return true;
 
-        } catch (error) {
-            console.error(`Error closing all positions:`, error);
+        } catch (error: any) {
+            console.error(`Error closing all positions:`, error.message);
             return false;
         }
     }
@@ -198,8 +194,8 @@ export class BrokersFuturesTradesService {
         try {
             await Promise.all(symbols.map(symbol => this.closePosition(user_uuid, type, symbol)));
             return true;
-        } catch (error) {
-            console.error(`Error closing all positions for user:`, error);
+        } catch (error: any) {
+            console.error(`Error closing all positions for user:`, error.message);
             return false;
         }
     }

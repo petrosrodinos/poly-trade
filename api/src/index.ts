@@ -13,6 +13,7 @@ import { botService } from './modules/bots/bots.service';
 import prisma from './core/prisma/prisma-client';
 import { accountRouter } from './modules/account/account.routes';
 import { adminRouter } from './modules/admin/admin.routes';
+import { BrokersClientManager } from './integrations/brokers/brokers-client-manager';
 
 dotenv.config();
 
@@ -73,7 +74,8 @@ app.listen(PORT, async () => {
     try {
         await prisma.$connect();
         await botService.initializeBots();
-        logger.debug('All bots started successfully');
+        await BrokersClientManager.initializeClients();
+        logger.debug('Bots initialized successfully');
     } catch (error: any) {
         logger.error('Failed to start all bots:', error?.message);
     }

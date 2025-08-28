@@ -22,6 +22,9 @@ export class BrokersClient {
             enableRateLimit: true,
         });
 
+        client.type = credential.type;
+        client.user_uuid = credential.user_uuid;
+
         const useTestnet = process.env.USE_TESTNET === 'true';
 
         if (useTestnet) {

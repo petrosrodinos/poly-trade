@@ -1,16 +1,17 @@
-import { BinanceTradesService } from "../../../integrations/binance/services/binance-trades.service";
 import { TradingviewAlertWebhookDto } from "../../../modules/webhooks/tradingview/dto/tradingview.dto";
 import CryptoBotSingleton from "../models/crypto-bot-singleton.service";
 import { CryptoBotService } from "./crypto-bot.service";
 import { BotModel } from "../models/bot.model";
+import { BrokersFuturesTradesService } from "../../../integrations/brokers/futures/services/brokers-trades.services";
+import { Exchanges } from "../../../integrations/brokers/futures/interfaces/brokers-account.interfaces";
 
 export class CryptoTradesService {
-    private binanceTradesService: BinanceTradesService;
     private cryptoBotService: CryptoBotService;
+    private brokersFuturesTradesService: BrokersFuturesTradesService;
 
     constructor() {
         this.cryptoBotService = CryptoBotSingleton.getInstance();
-        this.binanceTradesService = new BinanceTradesService();
+        this.brokersFuturesTradesService = new BrokersFuturesTradesService();
     }
 
     async handleAlertWebhook(data: TradingviewAlertWebhookDto) {
@@ -32,9 +33,10 @@ export class CryptoTradesService {
                     .filter(s => s.active)
                     .map(async s => {
                         try {
-                            await this.binanceTradesService.closePosition(s.user_uuid, bot.symbol);
-                            await this.binanceTradesService.openPosition(
+                            await this.brokersFuturesTradesService.closePosition(s.user_uuid, Exchanges.DEFAULT, bot.symbol);
+                            await this.brokersFuturesTradesService.openPosition(
                                 s.user_uuid,
+                                Exchanges.DEFAULT,
                                 symbol,
                                 action,
                                 s.quantity,

@@ -4,6 +4,8 @@ import { CreateCredentialsDto, CredentialsResponse } from './dto/credentials.dto
 import { EncryptionService } from '../../shared/utils/encryption';
 import { BrokersFuturesAccountService } from '../../integrations/brokers/futures/services/brokers-account.services';
 import { Exchanges } from '../../integrations/brokers/futures/interfaces/brokers-account.interfaces';
+import { BrokersClientManager } from '../../integrations/brokers/brokers-client-manager';
+
 export class CredentialsService {
     private prisma: any;
     private encryptionService: EncryptionService;
@@ -64,6 +66,8 @@ export class CredentialsService {
                 }
             });
 
+            await BrokersClientManager.addClient(user_uuid, data.type, data.api_key, data.api_secret);
+
             return credentials;
         } catch (error) {
             console.log(error);
@@ -117,6 +121,8 @@ export class CredentialsService {
                 }
             });
 
+            await BrokersClientManager.removeClient(existingCredentials.user_uuid, existingCredentials.type);
+
             return credentials;
         } catch (error) {
             throw error;
@@ -147,6 +153,26 @@ export class CredentialsService {
             return credential;
         } catch (error) {
             throw error;
+        }
+    }
+
+    async getUserCredentialByType(user_uuid: string, type: string): Promise<CredentialsResponse | null> {
+        try {
+            const where = {
+                user_uuid: user_uuid,
+                type: type
+            };
+
+            console.log('credential', user_uuid, type);
+
+            const credential = await this.prisma.credentials.findFirst({
+                where,
+            });
+
+            return credential;
+        } catch (error: any) {
+            // console.log('error', error.message);
+            return null;
         }
     }
 
