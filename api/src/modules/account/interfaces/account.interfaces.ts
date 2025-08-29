@@ -13,7 +13,7 @@ export interface AccountSummary {
     totalWalletBalance: number;
     availableBalance: number;
     trades?: TradeProfitSummary;
-    income: TradeProfitSummary;
+    income?: any;
 }
 
 export interface AccountChartData {

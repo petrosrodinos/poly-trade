@@ -2,8 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 import prisma from '../../core/prisma/prisma-client';
 import { CreateCredentialsDto, CredentialsResponse } from './dto/credentials.dto';
 import { EncryptionService } from '../../shared/utils/encryption';
-import { AccountService } from '../account/account.service';
-import { BinanceAccountService } from '../../integrations/binance/services/binance-account.service';
+import { BrokersFuturesAccountService } from '../../integrations/brokers/futures/services/brokers-account.services';
+import { Exchanges } from '../../integrations/brokers/futures/interfaces/brokers-account.interfaces';
+import { BrokersClientManager } from '../../integrations/brokers/brokers-client-manager';
 
 export class CredentialsService {
     private prisma: any;
@@ -42,9 +43,9 @@ export class CredentialsService {
                 }
             });
 
-            const binanceAccountService = new BinanceAccountService();
+            const brokersFuturesAccountService = new BrokersFuturesAccountService();
 
-            const account = await binanceAccountService.getAccountFutures(user_uuid);
+            const account = await brokersFuturesAccountService.getAccountFutures(user_uuid, Exchanges.DEFAULT);
 
             if (!account) {
                 await this.prisma.credentials.delete({
@@ -53,7 +54,7 @@ export class CredentialsService {
                     }
                 });
 
-                throw new Error('Account balance is 0, please transfer funds to your futures account');
+                throw new Error('Could not initialize account');
             }
 
             await this.prisma.user.update({
@@ -64,6 +65,8 @@ export class CredentialsService {
                     verified: true
                 }
             });
+
+            await BrokersClientManager.addClient(user_uuid, data.type, data.api_key, data.api_secret);
 
             return credentials;
         } catch (error) {
@@ -118,6 +121,8 @@ export class CredentialsService {
                 }
             });
 
+            await BrokersClientManager.removeClient(existingCredentials.user_uuid, existingCredentials.type);
+
             return credentials;
         } catch (error) {
             throw error;
@@ -148,6 +153,26 @@ export class CredentialsService {
             return credential;
         } catch (error) {
             throw error;
+        }
+    }
+
+    async getUserCredentialByType(user_uuid: string, type: string): Promise<CredentialsResponse | null> {
+        try {
+            const where = {
+                user_uuid: user_uuid,
+                type: type
+            };
+
+            console.log('credential', user_uuid, type);
+
+            const credential = await this.prisma.credentials.findFirst({
+                where,
+            });
+
+            return credential;
+        } catch (error: any) {
+            // console.log('error', error.message);
+            return null;
         }
     }
 

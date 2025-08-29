@@ -75,6 +75,7 @@ model Credentials {
   type  CredentialsType @default(BINANCE)
   api_key    String
   api_secret    String
+  passphrase    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
 
@@ -89,6 +90,11 @@ enum Role {
 
 enum CredentialsType {
   BINANCE
+  ALPACA
+  COINBASE
+  KRAKEN
+  MEXC
+  BYBIT
 }
 
 
