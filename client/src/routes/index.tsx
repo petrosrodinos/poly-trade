@@ -11,12 +11,12 @@ import ConfirmationPage from "@/pages/auth/pages/confirmation";
 import ProtectedRoute from "./protected-route";
 import AuthLayout from "@/pages/auth/layout";
 import DashboardLayout from "@/components/layout/dashboard-layout";
-// import { RoleTypes } from "@/features/user/interfaces/user.interface";
+import LandingPage from "@/pages/landing";
 
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/auth/sign-in" replace />} />
+      <Route path="/" element={<LandingPage />} />
 
       <Route path="/auth" element={<AuthLayout />}>
         <Route
@@ -70,7 +70,7 @@ export default function AppRoutes() {
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
 
-      <Route path="*" element={<Navigate to="/auth/sign-in" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
