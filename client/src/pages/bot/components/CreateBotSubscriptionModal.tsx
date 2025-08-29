@@ -105,7 +105,7 @@ export const CreateBotSubscriptionModal: React.FC<CreateBotSubscriptionModalProp
                 </svg>
                 <div className="text-sm text-red-600 dark:text-red-400">
                   <p className="font-medium">No Available Balance</p>
-                  <p className="text-xs mt-1 text-red-600/80 dark:text-red-400/80">Please ensure you have sufficient balance in your account to create a bot subscription.</p>
+                  <p className="text-xs mt-1 text-red-600/80 dark:text-red-400/80">Please ensure you have sufficient balance in your futures account to create a bot subscription.</p>
                 </div>
               </div>
             </div>
